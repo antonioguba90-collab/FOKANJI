@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+<title>FOKANJI</title>
+<style>
+  html, body {
+    margin: 0; padding: 0; background: #050510; color: #fff;
+    font-family: "Segoe UI", sans-serif; overflow: hidden;
+    height: 100%; width: 100%; -webkit-tap-highlight-color: transparent; user-select: none;
+  }
+  #game {
+    display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(ellipse at center, #0a0a25 0%, #02020a 100%); touch-action: none;
+  }
+  #hud {
+    position: fixed; top: 8px; left: 8px; font-size: 14px; color: #9cf;
+    pointer-events: none; text-shadow: 0 0 4px #000;
+  }
+  #msg {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    text-align: center; font-size: 24px; color: #fff; background: rgba(0,0,0,0.75);
+    padding: 18px 30px; border: 1px solid #444; border-radius: 10px; display: none; max-width: 90%; z-index: 20;
+  }
+  #msg small { display: block; font-size: 14px; color: #aaa; margin-top: 10px; }
+  #msg button {
+    margin-top: 14px; padding: 10px 20px; font-size: 16px; background: #2a5; color: #fff; border: none; border-radius: 6px; cursor: pointer;
+  }
+  #mobile-input {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; border: none; outline: none; font-size: 16px; background: transparent; color: transparent; caret-color: transparent; z-index: 5; -webkit-appearance: none; appearance: none;
+  }
+  #menu {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background: rgba(0,0,0,0.85); padding: 24px 28px; border: 1px solid #444; border-radius: 12px; z-index: 25; max-width: 90%; box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  }
+  #menu h1 { font-size: 24px; margin: 0 0 6px; color: #fff; text-shadow: 0 0 8px #4dd0e1; }
+  #menu p { font-size: 14px; color: #aaa; margin: 0 0 16px; }
+  
+  /* Contenedores de vistas para alternar pantallas de configuración */
+  .menu-view { display: flex; flex-direction: column; gap: 10px; min-width: 240px; }
+  .hidden { display: none !important; }
+
+  #menu button {
+    padding: 12px 20px; font-size: 16px; background: #2a5; color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: background 0.2s, transform 0.1s;
+  }
+  #menu button:active { transform: scale(0.98); }
+  
+  /* Estilos específicos de los botones de modos de juego */
+  #menu button.mode-classic { background: #37474f; border: 2px solid #4dd0e1; }
+  #menu button.mode-arcade { background: #4a148c; border: 2px solid #b388ff; }
+  
+  /* Estilos específicos del vocabulario */
+  #menu button.kata { background: #25a; }
+  #menu button.kanji { background: #a25; }
+  #menu button.back { background: #555; font-size: 14px; padding: 8px 12px; margin-top: 6px; }
+  
+  #menu small { display: block; margin-top: 12px; font-size: 11px; color: #888; }
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="hud">Puntos: 0 | Destruidos: 0</div>
+<input id="mobile-input" type="text" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+
+<div id="menu">
+  <h1>FOKANJI</h1>
+  
+  <!-- PANTALLA 1: ELEGIR CÓMO JUGAR -->
+  <div id="view-structure" class="menu-view">
+    <p>Elige la estructura de juego</p>
+    <button class="mode-classic" data-structure="fases">🎯 Modo Fases (Clásico)</button>
+    <button class="mode-arcade" data-structure="arcade">🕹️ Modo Arcade (Aleatorio)</button>
+  </div>
+
+  <!-- PANTALLA 2: ELEGIR QUÉ VOCABULARIO APRENDER (Oculta por defecto) -->
+  <div id="view-vocabulary" class="menu-view hidden">
+    <p>Elige el vocabulario para la partida</p>
+    <button data-mode="hiragana">Hiragana (ねこ)</button>
+    <button class="kata" data-mode="katakana">Katakana (コーヒー)</button>
+    <button class="kanji" data-mode="kanji">Kanji (猫)</button>
+    <button class="kanji" data-mode="KANJI_SEMANA_3">KANJI SEMANA 3 (第四週)</button>
+    <button class="kanji" data-mode="KANJI_SEMANA_4">KANJI SEMANA 4 (第四週)</button>
+    <button class="kanji" data-mode="KANJI_SEMANA_6">KANJI SEMANA 6 (第六週)</button>
+    <button class="kanji" data-mode="KANJI_SEMANA_7">KANJI SEMANA 7 (第七週)</button>
+    <button class="back" id="btn-back-structure">⬅️ Cambiar Modo de Juego</button>
+  </div>
+
+  <small>Módulos independientes cargados externos</small>
+</div>
+<div id="msg"></div>
+
+<script type="module" src="juego.js"></script>
+<script type="module" src="modulos/reproductor.js"></script>
+</body>
+</html>

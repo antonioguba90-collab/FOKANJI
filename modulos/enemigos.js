@@ -1,5 +1,5 @@
 const spriteMuneco = new Image();
-spriteMuneco.src = '/personajes/munecoNieveReposo1.png'; 
+spriteMuneco.src = './personajes/munecoNieveReposo1.png'; 
 
 const TOTAL_FRAMES = 2;
 

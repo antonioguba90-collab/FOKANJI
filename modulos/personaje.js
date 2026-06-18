@@ -1,69 +1,94 @@
 // ==========================================
-// MÓDULO DEL PERSONAJE (NAVE FOCA)
+// MÓDULO DEL PERSONAJE (NAVE FOCA ANIMADA)
 // ==========================================
+
+// 1. Precarga de las imágenes de las hojas de sprites
+const spriteSaludar = new Image();
+spriteSaludar.src = './personajes/Foca_Saludando.png'; // Asegúrate de que la ruta apunte a tu archivo
+
+const spriteDisparar = new Image();
+spriteDisparar.src = './personajes/Foca_Disparando2.png'; // Asegúrate de que la ruta apunte a tu archivo
+
+// 2. Configuración de fotogramas y velocidad de la animación
+const animConfig = {
+  saludar: { frames: 4, velocidad: 0.12 },   // Cambia el frame cada ~8 fotogramas de juego
+  disparar: { frames: 3, velocidad: 0.12 }   // Disparo un poco más rápido y dinámico
+};
+
+/**
+ * Renderiza y gestiona las hojas de sprites del personaje de la foca.
+ * 
+ * @param {CanvasRenderingContext2D} ctx - El contexto de renderizado en 2D del Canvas.
+ * @param {Object} player - El objeto del jugador alojado en el estado global.
+ */
 export function dibujarPersonaje(ctx, player) {
-  const fx = player.x; 
-  const fy = player.y + 10; 
-  const r = player.size * 0.6; 
+  if (!player) return;
 
-  // Base de la nave/aletas posteriores
-  ctx.fillStyle = "#e0f7fa"; 
-  ctx.strokeStyle = "#4dd0e1"; 
-  ctx.lineWidth = 3;
-  ctx.beginPath(); 
-  ctx.moveTo(fx - r * 2, fy + r); 
-  ctx.lineTo(fx + r * 2, fy + r);
-  ctx.lineTo(fx + r * 1.4, fy + r * 1.8); 
-  ctx.lineTo(fx - r * 1.4, fy + r * 1.8);
-  ctx.closePath(); 
-  ctx.fill(); 
-  ctx.stroke();
-
-  // Aletas laterales de la foca
-  ctx.fillStyle = "#78909c";
-  ctx.beginPath(); 
-  ctx.ellipse(fx - r * 1.1, fy + r * 0.7, r * 0.5, r * 0.2, -Math.PI / 6, 0, Math.PI * 2); 
-  ctx.fill();
-  ctx.beginPath(); 
-  ctx.ellipse(fx + r * 1.1, fy + r * 0.7, r * 0.5, r * 0.2, Math.PI / 6, 0, Math.PI * 2); 
-  ctx.fill();
-
-  // Cuerpo central
-  ctx.beginPath(); 
-  ctx.ellipse(fx, fy + r * 0.4, r * 1.1, r * 0.7, 0, 0, Math.PI * 2); 
-  ctx.fill();
-
-  // Cabeza
-  ctx.beginPath(); 
-  ctx.arc(fx, fy - r * 0.4, r * 0.7, 0, Math.PI * 2); 
-  ctx.fill();
-
-  // Ojos (Pupilas grandes)
-  ctx.fillStyle = "#000";
-  ctx.beginPath(); 
-  ctx.arc(fx - r * 0.25, fy - r * 0.5, r * 0.08, 0, Math.PI * 2); 
-  ctx.fill();
-  ctx.beginPath(); 
-  ctx.arc(fx + r * 0.25, fy - r * 0.5, r * 0.08, 0, Math.PI * 2); 
-  ctx.fill();
-
-  // Brillo de los ojos
-  ctx.fillStyle = "#fff";
-  ctx.beginPath(); 
-  ctx.arc(fx - r * 0.28, fy - r * 0.53, r * 0.03, 0, Math.PI * 2); 
-  ctx.fill();
-  ctx.beginPath(); 
-  ctx.arc(fx + r * 0.22, fy - r * 0.53, r * 0.03, 0, Math.PI * 2); 
-  ctx.fill();
-
-  // Hocico y nariz
-  ctx.fillStyle = "#cfd8dc"; 
-  ctx.beginPath(); 
-  ctx.ellipse(fx, fy - r * 0.25, r * 0.25, r * 0.15, 0, 0, Math.PI * 2); 
-  ctx.fill();
+  const fx = player.x;
+  const fy = player.y + 10;
   
-  ctx.fillStyle = "#263238"; 
-  ctx.beginPath(); 
-  ctx.arc(fx, fy - r * 0.3, r * 0.08, 0, Math.PI * 2); 
-  ctx.fill();
-}
+  // Establecemos un tamaño de renderizado proporcional al tamaño (size) del jugador
+  const anchoRender = player.size * 2.2;
+  const altoRender = player.size * 2.2;
+
+  // Inicializamos el estado interno de la animación en el jugador si no existe todavía
+  if (player.frameAnim === undefined) player.frameAnim = 0;
+  if (player.estadoAnim === undefined) player.estadoAnim = 'saludar'; 
+
+  let spriteActual = spriteSaludar;
+  let configActual = animConfig.saludar;
+
+  // Intercambiamos la hoja de trabajo si el estado cambia a disparo
+  if (player.estadoAnim === 'disparar') {
+    spriteActual = spriteDisparar;
+    configActual = animConfig.disparar;
+  }
+
+  // Avanzamos el contador interno de fotogramas según la velocidad asignada
+  player.frameAnim += configActual.velocidad;
+  
+  // Control del ciclo de animación y sus transiciones de estado
+  if (player.frameAnim >= configActual.frames) {
+    if (player.estadoAnim === 'disparar') {
+      // Al terminar la animación de disparo, regresamos inmediatamente a saludar
+      player.estadoAnim = 'saludar';
+      player.frameAnim = 0;
+    } else {
+      // Si está saludando, simplemente reinicia el ciclo de forma infinita
+      player.frameAnim = 0;
+    }
+  }
+
+  // Obtenemos el índice del fotograma real (un entero limpio)
+  const frameIndex = Math.floor(player.frameAnim);
+
+  // Validamos si la imagen del sprite ya está totalmente cargada en memoria
+  if (spriteActual.complete && spriteActual.width > 0) {
+    // Calculamos las dimensiones del fragmento individual (asumiendo tira horizontal)
+    const anchoFrameOriginal = spriteActual.width / configActual.frames;
+    const altoFrameOriginal = spriteActual.height;
+
+    ctx.drawImage(
+      spriteActual,
+      frameIndex * anchoFrameOriginal, 0,    // Coordenadas X e Y de origen (recorte)
+      anchoFrameOriginal, altoFrameOriginal, // Ancho y alto originales del recorte
+      fx - anchoRender / 2, fy - altoRender / 2, // Coordenadas del destino centradas en la foca
+      anchoRender, altoRender                // Escala final dibujada en pantalla
+    );
+  } else {
+    // FALLBACK GEOMÉTRICO: Si hay lentitud en la red o falla el archivo, no rompe el juego
+    ctx.fillStyle = player.estadoAnim === 'disparar' ? "#4dd0e1" : "#78909c";
+    ctx.beginPath();
+    ctx.arc(fx, fy, player.size * 0.8, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Pequeña referencia visual para el hocico en el fallback
+    ctx.fillStyle = "#263238";
+    ctx.beginPath();
+    ctx.arc(fx, fy - 10, 5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+// Dentro de dibujarPersonaje en personaje.js, abajo de donde sumas la velocidad:
+if (player.estadoAnim === 'disparar') {
+  console.log("¡La foca está en estado DISPARAR!, Frame actual:", Math.floor(player.frameAnim));
+}}

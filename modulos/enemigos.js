@@ -1,7 +1,7 @@
 const spriteMuneco = new Image();
-spriteMuneco.src = './personajes/munecoNieveReposo1.png'; 
+spriteMuneco.src = './personajes/Golem_Granizo1.PNG'; 
 
-const TOTAL_FRAMES = 2;
+const TOTAL_FRAMES = 4;
 
 export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
   // ==========================================

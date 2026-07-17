@@ -1,5 +1,5 @@
 const spriteGranJefe = new Image();
-spriteGranJefe.src = "personajes/JEFE_FINAL.png"; // Tu ruta de imagen
+spriteGranJefe.src = "personajes/Guardian_Hacha3.png"; // Tu ruta de imagen
 
 export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, sistemaLector) {
   
@@ -16,8 +16,8 @@ export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, 
   const configSprite = {
     img: spriteGranJefe, 
     
-    frameWidth: 169,   
-    frameHeight: 369,  
+    frameWidth: 1028/4,   
+    frameHeight: 243,  
     
     totalFrames: 4,   
     

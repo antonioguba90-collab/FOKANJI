@@ -6,10 +6,16 @@ const sprites = {
   //muneco: { img: new Image(), frames: 2, src: './personajes/munecoNieveReposo1.png' },
   //golem:  { img: new Image(), frames: 4, src: './personajes/Golem_Granizo1.png' },
   //craken:   { img: new Image(), frames: 4, src: './personajes/Craken1.png' },
-  Munecoartico:   { img: new Image(), frames: 5, src: './personajes/munecoArtico_1.png' },
-  CrakenArticoFuego:   { img: new Image(), frames: 5, src: './personajes/crakenArticoFuego1.png' },
-  golemArtico_2:   { img: new Image(), frames: 6, src: './personajes/golemArtico.png' },
-  golemArtico_1:   { img: new Image(), frames: 5, src: './personajes/golemArtico_1.png' },
+ // Munecoartico:   { img: new Image(), frames: 5, src: './personajes/munecoArtico_1.png' },
+ // CrakenArticoFuego:   { img: new Image(), frames: 5, src: './personajes/crakenArticoFuego1.png' },
+ // golemArtico_2:   { img: new Image(), frames: 6, src: './personajes/golemArtico.png' },
+ // golemArtico_1:   { img: new Image(), frames: 5, src: './personajes/golemArtico_1.png' },
+  OsoPolar:   { img: new Image(), frames: 4, src: './personajes/OsoPolar.png' },
+  PinguinoBurla:   { img: new Image(), frames: 4, src: './personajes/PinguinoBurla.png' },
+  MorsaRisa:   { img: new Image(), frames: 4, src: './personajes/MorsaRisa.png' },
+  Frailecillo:   { img: new Image(), frames: 4, src: './personajes/Frailecillo.png' },
+  Ballena2:   { img: new Image(), frames: 4, src: './personajes/Ballena2.png' },
+  PinguinoEnfadado:   { img: new Image(), frames: 4, src: './personajes/PinguinoEnfadado.png' },
 
 };
 
@@ -120,66 +126,69 @@ const frameActual = Math.floor(Date.now() / e.velocidadAnimacion) % totalFrames;
   }
 
   // ==========================================
-  // TEXTOS DEL ENEMIGO (KANJI Y ROMAJI) ABAJO
-  // ==========================================
+ // TEXTOS DEL ENEMIGO (KANJI AL CENTRO Y POR DELANTE)
+  // ========================================================
 
   ctx.textAlign = "center";
-  ctx.textBaseline = "top"; 
+  ctx.textBaseline = "middle"; 
 
-// 1. Posición del Kanji: Centro + la mitad del alto visual del muñeco + un margen de 12px
-const kanjiY = e.y + (destinoHeight / 2) + 12; 
+  // 1. Posición del Kanji: Centro geométrico del sprite (e.y)
+  const kanjiY = e.y+ (destinoHeight / 4); 
 
-/// Dibujar Kanji/Kana con su nueva escala y contorno
-ctx.font = `bold ${e.radius * escalaKanji}px sans-serif`;
+  // Dibujar Kanji/Kana con su nueva escala y contorno
+  ctx.font = `bold ${e.radius * escalaKanji}px sans-serif`;
 
-// 1. Dibujamos el contorno negro (primero, para que quede atrás)
-ctx.strokeStyle = "#000000";       // Color del contorno
-ctx.lineWidth = 4;                 // Grosor del contorno (ajusta a tu gusto)
-ctx.lineJoin = "round";            // Evita esquinas picudas en trazos complejos
-ctx.strokeText(e.jp, e.x, kanjiY);
+  // 1. Contorno negro con un 80% de opacidad (rgba con alfa en 0.8)
+  ctx.strokeStyle = "rgba(0, 0, 0, 0.8)";       
+  ctx.lineWidth = 6;                 
+  ctx.lineJoin = "round";            
+  ctx.strokeText(e.jp, e.x, kanjiY);
 
-// 2. Dibujamos el relleno blanco (segundo, para que tape el interior)
-ctx.fillStyle = "#ffffff";         // Color del relleno
-ctx.fillText(e.jp, e.x, kanjiY);
+  // 2. Relleno blanco con un 80% de opacidad (rgba con alfa en 0.8)
+  ctx.fillStyle = "rgba(255, 255, 255, 1)";         
+  ctx.fillText(e.jp, e.x, kanjiY);
+  // --- TRADUCCIÓN Y ROMAJI (Re-ubicados abajo del todo para no solaparse con el centro) ---
+  ctx.textBaseline = "top"; // Restauramos para los textos inferiores
 
-// --- TRADUCCIÓN ---
-if (state.mostrarTraduccion && e.es) {
-  ctx.save();
-  ctx.font = "bold 14px sans-serif"; 
-  ctx.fillStyle = "#0c2905";         
-  ctx.textAlign = "center";
-  
-  const traduccionY = kanjiY + (e.radius * escalaKanji) + 15; 
-  
-  ctx.fillText(`(${e.es})`, e.x, traduccionY); 
-  ctx.restore();
-}
+  // La base de los textos inferiores se calculará desde la parte baja del sprite
+  const textoBaseY = e.y + (destinoHeight / 2) + 10; 
 
-// 2. Texto de ayuda Romaji
-if (e.timerAyuda >= 600) {
-  const offsetTraduccion = (state.mostrarTraduccion && e.es) ? 25 : 0;
-  const romajiY = kanjiY + (e.radius * escalaKanji) + 15 + offsetTraduccion; 
-
-  ctx.font = `bold ${baseFontR * escalaRomaji}px monospace`;
-
-  // Convertimos la cadena base a mayúsculas para evitar conflictos visuales
-  const romajiMayus = e.romaji.toUpperCase();
-
-  if (isLocked) {
-    // Cortamos el texto usando la cadena ya convertida en mayúsculas
-    const typed = romajiMayus.slice(0, state.typedLen); 
-    const rest = romajiMayus.slice(state.typedLen);
-    const fullW = ctx.measureText(romajiMayus).width; 
-    const startX = e.x - fullW / 2;
+  if (state.mostrarTraduccion && e.es) {
+    ctx.save();
+    ctx.font = "bold 14px sans-serif"; 
+    ctx.fillStyle = "#0c2905";         
+    ctx.textAlign = "center";
     
-    ctx.textAlign = "left"; 
-    ctx.fillStyle = "#1a3a4a"; 
-    ctx.fillText(typed, startX, romajiY);
-    ctx.fillStyle = "#005a8d"; 
-    ctx.fillText(rest, startX + ctx.measureText(typed).width, romajiY);
-    ctx.textAlign = "center"; 
-  } else {
-    ctx.fillStyle = "#005a8d"; 
-    ctx.fillText(romajiMayus, e.x, romajiY);
+    ctx.fillText(`(${e.es})`, e.x, textoBaseY); 
+    ctx.restore();
   }
-}}
+
+  // 2. Texto de ayuda Romaji
+  if (e.timerAyuda >= 600) {
+    const offsetTraduccion = (state.mostrarTraduccion && e.es) ? 25 : 0;
+    const romajiY = textoBaseY + offsetTraduccion; 
+
+    ctx.font = `bold ${baseFontR * escalaRomaji}px monospace`;
+
+    // Convertimos la cadena base a mayúsculas para evitar conflictos visuales
+    const romajiMayus = e.romaji.toUpperCase();
+
+    if (isLocked) {
+      // Cortamos el texto usando la cadena ya convertida en mayúsculas
+      const typed = romajiMayus.slice(0, state.typedLen); 
+      const rest = romajiMayus.slice(state.typedLen);
+      const fullW = ctx.measureText(romajiMayus).width; 
+      const startX = e.x - fullW / 2;
+      
+      ctx.textAlign = "left"; 
+      ctx.fillStyle = "#1a3a4a"; 
+      ctx.fillText(typed, startX, romajiY);
+      ctx.fillStyle = "#005a8d"; 
+      ctx.fillText(rest, startX + ctx.measureText(typed).width, romajiY);
+      ctx.textAlign = "center"; 
+    } else {
+      ctx.fillStyle = "#005a8d"; 
+      ctx.fillText(romajiMayus, e.x, romajiY);
+    }
+  }
+}

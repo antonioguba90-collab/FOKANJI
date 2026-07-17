@@ -3,7 +3,7 @@
 // ==========================================
 
 const spriteGuardianGlobal = new Image();
-spriteGuardianGlobal.src = "personajes/GUARDIAN3.png"; // Tu ruta de imagen
+spriteGuardianGlobal.src = "personajes/Guardian_Kawaii.png"; // Tu ruta de imagen
 
 export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, sistemaLector) {
   
@@ -20,10 +20,10 @@ export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, 
   const configSprite = {
     img: spriteGuardianGlobal, 
     
-    frameWidth: 169,   
-    frameHeight: 150,  
+    frameWidth: 1028/3,   
+    frameHeight: 243,  
     
-    totalFrames: 4,   
+    totalFrames: 3,   
     
     // Usamos la velocidad que tiene guardada este enemigo específico
     msPerFrame: e.ultimaVelocidadAnimacion, 

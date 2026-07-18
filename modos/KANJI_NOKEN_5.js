@@ -3,12 +3,15 @@ export const KANJI_NOKEN_5_RAW = `
 一|いち|ICHI|UNO
 二|に|NI|DOS
 三|さん|SAN|TRES
-四|よん / し|YON / SHI|CUATRO
+四|し|SHI|CUATRO
+四|よん|YON|CUATRO
 五|ご|GO|CINCO
 六|ろく|ROKU|SEIS
-七|なな / しち|NANA / SHICHI|SIETE
+七|しち|SHICHI|SIETE
+七|なな|NANA|SIETE
 八|はち|HACHI|OCHO
-九|きゅう / く|KYUU / KU|NUEVE
+九|く|KU|NUEVE
+九|きゅう|KYUU|NUEVE
 十|じゅう|JUU|DIEZ
 百|ひゃく|HYAKU|CIEN
 千|せん|SEN|MIL

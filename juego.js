@@ -36,7 +36,7 @@ export const MUSIC = {
   KANJI_SEMANA_2: "./audios/musica_semana2.mp3",
   KANJI_SEMANA_3: "./audios/musica_semana3.mp3",
   KANJI_SEMANA_4: "./audios/musica_semana4.mp3",
-  KANJI_SEMANA_5: "/audios/musica_semana5.mp3",
+  KANJI_SEMANA_5: "./audios/musica_semana5.mp3",
   KANJI_SEMANA_6: "./audios/musica_semana6.mp3",
   KANJI_SEMANA_7: "./audios/musica_semana7.mp3",
   Guardian: "./audios/musica_guardian.mp3",

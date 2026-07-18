@@ -84,8 +84,22 @@ body::before {
   #menu button.mode-arcade { background: #4a148c; border: 2px solid #000000; }
   
   /* Estilos específicos del vocabulario */
-  #menu button.kata { background: #25a; border: 2px solid #000000; }
-  #menu button.kanji { background: #229daa; border: 2px solid #000000; }
+  #menu button.hiragana { 
+  background: #4A90E2; /* Azul cielo ártico */
+  border: 2px solid #000000; 
+}
+#menu button.katakana { 
+  background: #2C3E50; /* Azul noche profundo */
+  border: 2px solid #000000; 
+}
+#menu button.noken5 { 
+  background: #76D7EA; /* Azul hielo brillante */
+  border: 2px solid #000000; 
+}
+#menu button.noken2 { 
+  background: #A9C9D7; /* Gris azulado glacial */
+  border: 2px solid #000000; 
+}
   #menu button.back { background: #f0040f; border: 2px solid #000000; font-size: 14px; padding: 8px 12px; margin-top: 6px; }
   
   #menu small { display: block; margin-top: 12px; font-size: 11px; color: #888; }
@@ -151,14 +165,15 @@ style="
   <!-- PANTALLA 2: ELEGIR QUÉ VOCABULARIO APRENDER (Oculta por defecto) -->
   <div id="view-vocabulary" class="menu-view hidden">
     <p>ELIGE EL VOCABULARIO DE LA PARTIDA</p>
-    <button data-mode="hiragana">Hiragana (ねこ)</button>
-    <button class="kata" data-mode="katakana">Katakana (コーヒー)</button>
-    <button class="kanji" data-mode="KANJI_SEMANA_2">KANJI SEMANA 2 (第二週)</button>
-    <button class="kanji" data-mode="KANJI_SEMANA_3">KANJI SEMANA 3 (第四週)</button>
-    <button class="kanji" data-mode="KANJI_SEMANA_4">KANJI SEMANA 4 (第四週)</button>
-    <button class="kanji" data-mode="KANJI_SEMANA_5">KANJI SEMANA 5 (第二週)</button>
-    <button class="kanji" data-mode="KANJI_SEMANA_6">KANJI SEMANA 6 (第六週)</button>
-    <button class="kanji" data-mode="KANJI_SEMANA_7">KANJI SEMANA 7 (第七週)</button>
+    <button class="hiragana" data-mode="hiragana">HIRAGANA</button>
+    <button class="katakana" data-mode="katakana">KATAKANA</button>
+    <button class="noken5" data-mode="KANJI_NOKEN_5">KANJI NOKEN 5</button>
+    <button class="noken2" data-mode="KANJI_SEMANA_2">NOKEN 2.1</button>
+    <button class="noken2" data-mode="KANJI_SEMANA_3">NOKEN 2.2</button>
+    <button class="noken2" data-mode="KANJI_SEMANA_4">NOKEN 2.3</button>
+    <button class="noken2" data-mode="KANJI_SEMANA_5">NOKEN 2.4</button>
+    <button class="noken2" data-mode="KANJI_SEMANA_6">NOKEN 2.5</button>
+    <button class="noken2" data-mode="KANJI_SEMANA_7">NOKEN 2.6</button>
     <button class="back" id="btn-back-structure">⬅️ Cambiar Modo de Juego</button>
   </div>
 </div>

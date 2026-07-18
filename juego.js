@@ -13,6 +13,7 @@ import { ReproductorMP3 }  from './modulos/reproductor.js';
 // Importación de los RAW externos de vocabulario
 import { HIRAGANA_RAW } from './modos/hiragana.js';
 import { KATAKANA_RAW } from './modos/katakana.js';
+import { KANJI_NOKEN_5_RAW } from './modos/KANJI_NOKEN_5.js';
 import { KANJI_SEMANA_2_RAW } from './modos/KANJI_SEMANA_2.js';
 import { KANJI_SEMANA_3_RAW } from './modos/KANJI_SEMANA_3.js';
 import { KANJI_SEMANA_4_RAW } from './modos/KANJI_SEMANA_4.js';
@@ -23,6 +24,7 @@ import { KANJI_SEMANA_7_RAW } from './modos/KANJI_SEMANA_7.js';
 const MODES = { 
   hiragana: parsearLista(HIRAGANA_RAW), 
   katakana: parsearLista(KATAKANA_RAW), 
+  KANJI_NOKEN_5: parsearLista(KANJI_NOKEN_5_RAW),
   KANJI_SEMANA_2: parsearLista(KANJI_SEMANA_2_RAW),
   KANJI_SEMANA_3: parsearLista(KANJI_SEMANA_3_RAW),
   KANJI_SEMANA_4: parsearLista(KANJI_SEMANA_4_RAW),
@@ -31,8 +33,9 @@ const MODES = {
   KANJI_SEMANA_7: parsearLista(KANJI_SEMANA_7_RAW),
 };
 export const MUSIC = { 
-  hiragana: null, 
-  katakana: null, 
+  hiragana: "./audios/musica_hiragana.mp3", 
+  katakana: "./audios/musica_katakana.mp3", 
+  KANJI_NOKEN_5: "./audios/musica_NOKEN_5.mp3",
   KANJI_SEMANA_2: "./audios/musica_semana2.mp3",
   KANJI_SEMANA_3: "./audios/musica_semana3.mp3",
   KANJI_SEMANA_4: "./audios/musica_semana4.mp3",

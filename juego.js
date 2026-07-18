@@ -114,7 +114,7 @@ function spawnEnemy() {
   let x = 60 + Math.random() * (state.W - 120);
   const longLetras = w.romaji.length;
   const multiplicadorTamano = 1 + (longLetras * 0.12); 
-  const radius = (Math.min(state.W, state.H) * 0.024 + 10) * multiplicadorTamano;
+  const radius = (Math.min(state.W, state.H) * 0.024 + 20);
   
   for (let intento = 0; intento < 10; intento++) {
     const solapa = state.enemies.some(e => {

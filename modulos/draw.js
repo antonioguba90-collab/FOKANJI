@@ -281,20 +281,35 @@ ctx.textBaseline = "alphabetic";
   ctx.globalAlpha = 1;
 
   // ========================================================
-  // 5. Actualización del HUD del Texto Superior
-  // ========================================================
-  const progresoFase = Math.max(0, sistemaLector.TOTAL_PALABRAS_FASE - sistemaLector.palabrasUnicasCompletadasSet.size);
+// 5. Actualización del HUD del Texto Superior
+const progresoFase = Math.max(0, sistemaLector.TOTAL_PALABRAS_FASE - sistemaLector.palabrasUnicasCompletadasSet.size);
   
-  const totalSet = sistemaLector.CANTIDAD_NUEVAS + sistemaLector.CANTIDAD_REPASO;
+const totalSet = sistemaLector.CANTIDAD_NUEVAS + sistemaLector.CANTIDAD_REPASO;
 const completadas = sistemaLector.palabrasUnicasCompletadasSet.size;
 
-let textoHud = `Puntos: ${state.score}  |  Fase Actual: ${sistemaLector.miniJefesDerrotados + 1}  |  Progreso: ${sistemaLector.bossMode ? "¡JEFE!" : `${completadas}/${totalSet}`}`;
-  
-  // 🔥 MODIFICADO: Condición más segura y directa
-  // Si el total de palabras del nivel existe, es mayor que 0, y no es el modo arcade puro, lo pintamos:
-  if (state.totalPalabrasNivel !== undefined && state.gameStructure !== "arcade") {
-    textoHud += `  (Restan del Nivel: ${state.totalPalabrasNivel})`;
-  }
+// Preparamos el nombre del modo para que sea legible (ej: KANJI_NOKEN_5 -> Kanji Noken 5)
+const nombresPersonalizados = {
+  hiragana: "HIRAGANA",
+  katakana: "KATAKANA",
+  KANJI_NOKEN_5: "NIVEL NOKEN 5",
+  KANJI_SEMANA_2: "NOKEN 2 - 1",
+  KANJI_SEMANA_3: "NOKEN 2 - 2",
+  KANJI_SEMANA_4: "NOKEN 2 - 3",
+  KANJI_SEMANA_5: "NOKEN 2 - 4",
+  KANJI_SEMANA_6: "NOKEN 2 - 5",
+  KANJI_SEMANA_7: "NOKEN 2 - 6"
+};
 
-  hud.textContent = textoHud;
+const modoFormateado = state.currentMode 
+  ? (nombresPersonalizados[state.currentMode] || state.currentMode.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()))
+  : "Desconocido";
+
+let textoHud = `Modo: ${modoFormateado} | Puntos: ${state.score} | Fase: ${sistemaLector.miniJefesDerrotados + 1} | Progreso: ${sistemaLector.bossMode ? "¡JEFE!" : `${completadas}/${totalSet}`}`;
+  
+// Mantener tu lógica de progreso de nivel si aplica
+if (state.totalPalabrasNivel !== undefined && state.gameStructure !== "arcade") {
+  textoHud += `  (Restan del Nivel: ${state.totalPalabrasNivel})`;
+}
+
+hud.textContent = textoHud;
 }

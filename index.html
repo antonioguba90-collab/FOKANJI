@@ -12,7 +12,7 @@
   background-position: center;
   background-repeat: no-repeat;
   color: #0c0c0c;
-  font-family: "Segoe UI", sans-serif;
+  font-family: 'Courier New', monospace;
   overflow: hidden;
   height: 100vh;
   width: 100vw;
@@ -31,8 +31,8 @@ body::before {
   background: radial-gradient(ellipse at center, #0a0a25 0%, #02020a 100%); 
 }
   #hud {
-    position: fixed; top: 8px; left: 8px; font-size: 20px; color: rgb(2, 2, 2);
-    pointer-events: none; text-shadow: 0 0 4px #ffffff;
+    position: fixed; top: 8px; left: 8px; font-size: 20px; color: rgb(255, 255, 255);
+    pointer-events: none; text-shadow: 0 0 4px #000000;
   }
   #msg {
     position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
@@ -49,16 +49,34 @@ body::before {
     position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
     text-align: center; background: rgba(255, 255, 255, 0.85); padding: 24px 28px; border: 1px solid #444; border-radius: 12px; z-index: 25; max-width: 90%; box-shadow: 0 0 20px rgba(0,0,0,0.7);
   }
-  #menu h1 { font-size: 24px; margin: 0 0 6px; color: #fff; text-shadow: 0 0 8px #4dd0e1; }
-  #menu p { font-size: 14px; font-weight: bold; color: #000000; margin: 0 0 16px; }
-  
+  #menu h1 { font-size: 24px; margin: 0 0 6px; color: #bc13fe; text-shadow:0 0 10px #6cffeb; }
+  #menu p { 
+    font-size: 16px; 
+    font-weight: bold; 
+    color: #ffffff;             /* Texto blanco para máximo contraste */
+    font-family: 'Courier New', monospace; 
+    margin: 0 0 16px;
+    /* Fondo oscuro semitransparente para el texto */
+    background: rgba(0, 0, 0, 0.3); 
+    padding: 8px 12px;
+    border-radius: 6px;
+   } 
   /* Contenedores de vistas para alternar pantallas de configuración */
   .menu-view { display: flex; flex-direction: column; gap: 10px; min-width: 240px; }
   .hidden { display: none !important; }
 
   #menu button {
-    padding: 12px 20px; font-size: 16px; background: rgb(34, 0, 112); color: #fff; border: 1px solid #000000; border-radius: 8px; cursor: pointer; transition: background 0.2s, transform 0.1s;
-  }
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  padding: 12px 20px;
+  font-size: 16px;
+  background: #bc13fe; /* Violeta Vibrante */
+  color: #fff;
+  border: 2px solid #000000; /* <--- AQUÍ FALTABA "border:" */
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
   #menu button:active { transform: scale(0.98); }
   
   /* Estilos específicos de los botones de modos de juego */
@@ -138,6 +156,7 @@ style="
     <button class="kanji" data-mode="KANJI_SEMANA_2">KANJI SEMANA 2 (第二週)</button>
     <button class="kanji" data-mode="KANJI_SEMANA_3">KANJI SEMANA 3 (第四週)</button>
     <button class="kanji" data-mode="KANJI_SEMANA_4">KANJI SEMANA 4 (第四週)</button>
+    <button class="kanji" data-mode="KANJI_SEMANA_5">KANJI SEMANA 5 (第二週)</button>
     <button class="kanji" data-mode="KANJI_SEMANA_6">KANJI SEMANA 6 (第六週)</button>
     <button class="kanji" data-mode="KANJI_SEMANA_7">KANJI SEMANA 7 (第七週)</button>
     <button class="back" id="btn-back-structure">⬅️ Cambiar Modo de Juego</button>

@@ -16,6 +16,7 @@ import { KATAKANA_RAW } from './modos/katakana.js';
 import { KANJI_SEMANA_2_RAW } from './modos/KANJI_SEMANA_2.js';
 import { KANJI_SEMANA_3_RAW } from './modos/KANJI_SEMANA_3.js';
 import { KANJI_SEMANA_4_RAW } from './modos/KANJI_SEMANA_4.js';
+import { KANJI_SEMANA_5_RAW } from './modos/KANJI_SEMANA_5.js';
 import { KANJI_SEMANA_6_RAW } from './modos/KANJI_SEMANA_6.js';
 import { KANJI_SEMANA_7_RAW } from './modos/KANJI_SEMANA_7.js';
 
@@ -25,6 +26,7 @@ const MODES = {
   KANJI_SEMANA_2: parsearLista(KANJI_SEMANA_2_RAW),
   KANJI_SEMANA_3: parsearLista(KANJI_SEMANA_3_RAW),
   KANJI_SEMANA_4: parsearLista(KANJI_SEMANA_4_RAW),
+  KANJI_SEMANA_5: parsearLista(KANJI_SEMANA_5_RAW),
   KANJI_SEMANA_6: parsearLista(KANJI_SEMANA_6_RAW),
   KANJI_SEMANA_7: parsearLista(KANJI_SEMANA_7_RAW),
 };
@@ -34,6 +36,7 @@ export const MUSIC = {
   KANJI_SEMANA_2: "./audios/musica_semana2.mp3",
   KANJI_SEMANA_3: "./audios/musica_semana3.mp3",
   KANJI_SEMANA_4: "./audios/musica_semana4.mp3",
+  KANJI_SEMANA_5: "/audios/musica_semana5.mp3",
   KANJI_SEMANA_6: "./audios/musica_semana6.mp3",
   KANJI_SEMANA_7: "./audios/musica_semana7.mp3",
   Guardian: "./audios/musica_guardian.mp3",
@@ -138,7 +141,7 @@ if (state.gameStructure === "arcade") {
 } else {
   // 🎯 Configuración para el MODO FASES (Clásico):
   // Mantiene la velocidad original orientada al aprendizaje pausado
-  baseSpeed = 0.18 + Math.random() * 0.18;
+  baseSpeed = 0.25 + Math.random() * 0.25;
   speedAdaptada = Math.max(0.12, baseSpeed - (longLetras * 0.015));
 }
   const paleta = ["#ff5252", "#34ace0", "#33d9b2", "#ffb142", "#ff793f"]; 
@@ -473,10 +476,24 @@ function togglePause() {
   if (state.paused) {
     btnPausa.innerHTML = "▶️ Reanudar";
     mp3.pause();
-    msg.innerHTML = `JUEGO EN PAUSA<br><br>
-                     <button id="btn-resume" style="padding:10px 20px; font-size:16px; margin:5px; cursor:pointer;">Reanudar juego</button><br>
-                     <button id="btn-restart" style="padding:10px 20px; font-size:16px; margin:5px; cursor:pointer;">Volver a empezar</button><br>
-                     <button id="btn-menu" style="padding:10px 20px; font-size:16px; margin:5px; cursor:pointer;">Cambiar modo</button>`;
+    msg.innerHTML = `
+  <div style="
+    font-size: 16px; 
+    font-weight: bold; 
+    color: #ffffff; 
+    font-family: 'Courier New', monospace; 
+    margin: 0 0 16px;
+    background: rgba(0, 0, 0, 0.3); 
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-shadow: 1px 1px 2px #000;
+  ">JUEGO EN PAUSA</div>
+  
+  <button id="btn-resume" style="font-family: 'Courier New', monospace; font-weight: bold; background: #25a; border: 2px solid #000000; padding: 10px 20px; font-size: 16px; margin: 5px; cursor: pointer; color: #fff; width: 200px;">Reanudar juego</button><br>
+  
+  <button id="btn-restart" style="font-family: 'Courier New', monospace; font-weight: bold; background: #229daa; border: 2px solid #000000; padding: 10px 20px; font-size: 16px; margin: 5px; cursor: pointer; color: #fff; width: 200px;">Volver a empezar</button><br>
+  
+  <button id="btn-menu" style="font-family: 'Courier New', monospace; font-weight: bold; background: #f0040f; border: 2px solid #000000; padding: 10px 20px; font-size: 16px; margin-top: 15px; cursor: pointer; color: #fff; width: 200px;">Cambiar modo</button>`;
     msg.style.display = "block"; mobileInput.blur();
     
     document.getElementById("btn-resume").addEventListener("click", togglePause);

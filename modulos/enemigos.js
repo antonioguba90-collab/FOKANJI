@@ -12,7 +12,7 @@ const sprites = {
  // golemArtico_1:   { img: new Image(), frames: 5, src: './personajes/golemArtico_1.png' },
   Tiburon:   { img: new Image(), frames: 4,  src: './personajes/Tiburon1.png' },
   Delfin:   { img: new Image(), frames: 4,  src: './personajes/Delfin5.png' },
- // Tiburoncito:   { img: new Image(), frames: 4,  src: './personajes/Tiburoncito.png' },
+  Tiburoncito:   { img: new Image(), frames: 4,  src: './personajes/Tiburoncito.png' },
   OsoPolar:   { img: new Image(), frames: 4,  src: './personajes/OsoPolar.png' },
   PinguinoBurla:   { img: new Image(), frames: 4, src: './personajes/PinguinoBurla.png' },
   MorsaRisa:   { img: new Image(), frames: 4, src: './personajes/MorsaRisa.png' },

@@ -153,7 +153,12 @@ ctx.lineJoin = "round";
 const gradient = ctx.createLinearGradient(0, kanjiY - fontSize * 0.5, 0, kanjiY + fontSize * 0.5);
 gradient.addColorStop(0, "#ffffff"); 
 gradient.addColorStop(1, "#77ddff"); 
-
+//CAPA: Resplandor blanco (se dibuja primero para quedar detrás)
+ctx.shadowColor = "#ffffff";
+ctx.shadowBlur = 15; // Intensidad del brillo
+ctx.lineWidth = fontSize * 0.3;
+ctx.strokeStyle = "#ffffff";
+ctx.strokeText(e.jp, textoX, kanjiY);
 // 3. CAPA DE CONTORNO (Alineado a la izquierda)
 ctx.shadowBlur = 0; 
 ctx.strokeStyle = "#002b5c";

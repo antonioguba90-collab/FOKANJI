@@ -1,0 +1,303 @@
+export const KANJI_NOKEN_5_RAW = `
+
+一|いち|ICHI|UNO
+二|に|NI|DOS
+三|さん|SAN|TRES
+四|よん / し|YON / SHI|CUATRO
+五|ご|GO|CINCO
+六|ろく|ROKU|SEIS
+七|なな / しち|NANA / SHICHI|SIETE
+八|はち|HACHI|OCHO
+九|きゅう / く|KYUU / KU|NUEVE
+十|じゅう|JUU|DIEZ
+百|ひゃく|HYAKU|CIEN
+千|せん|SEN|MIL
+万|まん|MAN|DIEZ MIL
+人|ひと|HITO|PERSONA
+日本人|にほんじん|NIHONJIN|JAPONÉS
+子ども|こども|KODOMO|NIÑO
+男|おとこ|OTOKO|HOMBRE
+女|おんな|ONNA|MUJER
+男の子|おとこのこ|OTOKONOKO|NIÑO
+女の子|おんなのこ|ONNANOKO|NIÑA
+父|ちち|CHICHI|PADRE (MI)
+お父さん|おとうさん|OTOUSAN|PADRE
+母|はは|HAHA|MADRE (MI)
+お母さん|おかあさん|OKAASAN|MADRE
+先生|せんせい|SENSEI|PROFESOR
+友達|ともだち|TOMODACHI|AMIGO
+高校生|こうこうせい|KOUKOUSEI|ESTUDIANTE DE BACHILLERATO
+目|め|ME|OJO
+口|くち|KUCHI|BOCA
+耳|みみ|MIMI|OREJA
+手|て|TE|MANO
+足|あし|ASHI|PIE
+力|ちから|CHIKARA|FUERZA
+学校|がっこう|GAKKOU|ESCUELA
+会社|かいしゃ|KAISHA|EMPRESA
+駅|えき|EKI|ESTACIÓN
+店|みせ|MISE|TIENDA
+空港|くうこう|KUUKOU|AEROPUERTO
+大学|だいがく|DAIGAKU|UNIVERSIDAD
+入口|いりぐち|IRIGUCHI|ENTRADA
+出口|でぐち|DEGUCHI|SALIDA
+車|くるま|KURUMA|COCHE
+電車|でんしゃ|DENSHA|TREN
+時間|じかん|JIKAN|TIEMPO / HORA
+一週間|いっしゅうかん|ISSHUUKAN|UNA SEMANA
+毎日|まいにち|MAINICHI|TODOS LOS DÍAS
+毎週|まいしゅう|MAISHUU|CADA SEMANA
+毎年|まいとし|MAITOSHI|CADA AÑO
+今日|きょう|KYOU|HOY
+明日|あした|ASHITA|MAÑANA
+今週|こんしゅう|KONSHUU|ESTA SEMANA
+先週|せんしゅう|SENSHUU|LA SEMANA PASADA
+来週|らいしゅう|RAISHUU|LA SEMANA QUE VIENE
+今月|こんげつ|KONGETSU|ESTE MES
+先月|せんげつ|SENGETSU|EL MES PASADO
+来月|らいげつ|RAIGETSU|EL MES QUE VIENE
+新年|しんねん|SHINNEN|AÑO NUEVO
+午前|ごぜん|GOZEN|A.M. / MAÑANA
+午後|ごご|GOGO|P.M. / TARDE
+白|しろ|SHIRO|BLANCO
+黒|くろ|KURO|NEGRO
+上|うえ|UE|ENCIMA / ARRIBA
+下|した|SHITA|DEBAJO / ABAJO
+右|みぎ|MIGI|DERECHA
+左|ひだり|HIDARI|IZQUIERDA
+前|まえ|MAE|DELANTE
+後|うしろ|USHIRO|DETRÁS
+中|なか|NAKA|DENTRO
+外|そと|SOTO|FUERA
+北|きた|KITA|NORTE
+南|みなみ|MINAMI|SUR
+東|ひがし|HIGASHI|ESTE
+西|にし|NISHI|OESTE
+日曜日|にちようび|NICHIYOUBI|DOMINGO
+月曜日|げつようび|GETSUYOUBI|LUNES
+火曜日|かようび|KAYOUBI|MARTES
+水曜日|すいようび|SUIYOUBI|MIÉRCOLES
+木曜日|もくようび|MOKUYOUBI|JUEVES
+金曜日|きんようび|KINYOUBI|VIERNES
+土曜日|どようび|DOYOUBI|SÁBADO
+山|やま|YAMA|MONTAÑA
+川|かわ|KAWA|RÍO
+空|そら|SORA|CIELO
+空気|くうき|KUUUKI|AIRE
+花|はな|HANA|FLOR
+牛|うし|USHI|VACA
+馬|うま|UMA|CABALLO
+魚|さかな|SAKANA|PEZ
+貝|かい|KAI|CONCHA / MARISCO
+日本語|にほんご|NIHONGO|IDIOMA JAPONÉS
+中国語|ちゅうごくご|CHUUGOKUGO|IDIOMA CHINO
+英語|えいご|EIGO|INGLÉS
+新聞|しんぶん|SHINBUN|PERIÓDICO
+本|ほん|HON|LIBRO
+天気|てんき|TENKI|TIEMPO (CLIMATOLÓGICO)
+雨|あめ|AME|LLUVIA
+大きい|おおきい|OOKII|GRANDE
+小さい|ちいさい|CHIISAI|PEQUEÑO
+新しい|あたらしい|ATARASHII|NUEVO
+古い|ふるい|FURUI|VIEJO
+高い|たかい|TAKAI|CARO / ALTO
+安い|やすい|YASUI|BARATO
+多い|おおい|OOI|MUCHOS
+少ない|すくない|SUKUNAI|POCOS
+少し|すこし|SUKOSHI|UN POCO
+長い|ながい|NAGAI|LARGO
+早い|はやい|HAYAI|TEMPRANO / RÁPIDO
+行く|いく|IKU|IR
+来る|くる|KURU|VENIR
+食べる|たべる|TABERU|COMER
+飲む|のむ|NOMU|BEBER
+書く|かく|KAKU|ESCRIBIR
+見る|みる|MIRU|VER / MIRAR
+言う|いう|IU|DECIR
+立つ|たつ|TATSU|ESTAR DE PIE
+出る|でる|DERU|SALIR
+入る|はいる|HAIRU|ENTRAR
+話す|はなす|HANASU|HABLAR
+読む|よむ|YOMU|LEER
+買う|かう|KAU|COMPRAR
+聞く|きく|KIKU|ESCUCHAR / PREGUNTAR
+休む|やすむ|YASUMU|DESCANSAR
+会う|あう|AU|ENCONTRARSE
+上がる|あがる|AGARU|SUBIR
+安い|やすい|YASUI|BARATO
+一日|ついたち|TSUITACHI|PRIMER DÍA DEL MES
+一つ|ひとつ|HITOTSU|UNO (CONTADOR)
+一月|いちがつ|ICHIGATSU|ENERO
+一人|ひとり|HITORI|UNA PERSONA
+下手な|へたな|HETANA|TORPE / MALO
+火|ひ|HI|FUEGO
+火ようび|かようび|KAYOUBI|MARTES
+何|なに|NANI|QUÉ
+外国|がいこく|GAIKOKU|EXTRANJERO
+外に|そとに|SOTONI|FUERA
+学生|がくせい|GAKUSEI|ESTUDIANTE
+入学|にゅうがく|NYUUGAKU|INGRESO ESCOLAR
+間|あいだ|AIDA|ENTRE
+週間|しゅうかん|SHUUKAN|SEMANA (DURACIÓN)
+電気|でんき|DENKI|ELECTRICIDAD
+九つ|ここのつ|KOKONOTSU|NUEVE (CONTADOR)
+九日|ここのか|KOKONOKA|DÍA 9
+休み|やすみ|YASUMI|DESCANSO
+お金|おかね|OKANE|DINERO
+ヶ月|かげつ|KAGETSU|MESES (CONTADOR)
+月|つき|TSUKI|LUNA / MES
+毎月|まいつき|MAITSUKI|CADA MES
+犬|いぬ|INU|PERRO
+見せる|みせる|MISERU|MOSTRAR
+五つ|いつつ|ITSUTSU|CINCO (CONTADOR)
+五日|いつか|ITSUKA|DÍA 5
+後|あと|ATO|DESPUÉS
+後ろ|うしろ|USHIRO|DETRÁS
+広い|ひろい|HIROI|AMPLIO
+お国|おくに|OKUNI|PAÍS (HONORÍFICO)
+今年|ことし|KOTOSHI|ESTE AÑO
+三日|みっか|MIKKA|DÍA 3
+三つ|みっつ|MITTSU|TRES (CONTADOR)
+四日|よっか|YOKKA|DÍA 4
+四つ|よっつ|YOTTSU|CUATRO (CONTADOR)
+時|とき|TOKI|TIEMPO
+七つ|ななつ|NANATSU|SIETE (CONTADOR)
+七日|なのか|NANOKA|DÍA 7
+上手な|じょうずな|JOUZUNA|HÁBIL
+十日|とおか|TOOKA|DÍA 10
+二十日|はつか|HATSUKA|DÍA 20
+出す|だす|DASU|SACAR
+女の人|おんなのひと|ONNANOHITO|MUJER
+上げる|あげる|AGERU|SUBIR / LEVANTAR
+男の人|おとこのひと|OTOKONOHITO|HOMBRE
+二人|ふたり|FUTARI|DOS PERSONAS
+水|みず|MIZU|AGUA
+水ようび|すいようび|SUIYOUBI|MIÉRCOLES
+生まれる|うまれる|UMARERU|NACER
+青い|あおい|AOI|AZUL
+赤|あか|AKA|ROJO
+赤い|あかい|AKAI|ROJO
+先|さき|SAKI|ANTES
+名前|なまえ|NAMAE|NOMBRE
+一年中|いちねんじゅう|ICHINENJUU|TODO EL AÑO
+世界中|せかいじゅう|SEKAIJUU|EN TODO EL MUNDO
+長い|ながい|NAGAI|LARGO
+電話|でんわ|DENWA|TELÉFONO
+土ようび|どようび|DOYOUBI|SÁBADO
+同じ|おなじ|ONAJI|MISMO
+二つ|ふたつ|FUTATSU|DOS (CONTADOR)
+日|ひ|HI|DÍA
+日本|にほん|NIHON|JAPÓN
+よう日|ようび|YOUBI|DÍA DE LA SEMANA
+入れる|いれる|IRERU|INTRODUCIR
+年|とし|TOSHI|AÑO
+半年|はんとし|HANTOSHI|MEDIO AÑO
+来年|らいねん|RAINEN|EL AÑO QUE VIENE
+白い|しろい|SHIROI|BLANCO
+八つ|やっつ|YATTSU|OCHO (CONTADOR)
+八日|ようか|YOUKA|DÍA 8
+半分|はんぶん|HANBUN|MITAD
+一時半|いちじはん|ICHIJIHAN|LA UNA Y MEDIA
+二分|にふん|NIFUN|DOS MINUTOS
+三分|さんぷん|SANPUN|TRES MINUTOS
+分かる|わかる|WAKARU|ENTENDER
+四本|よんほん|YONHON|CUATRO (CONTADOR DE OBJETOS LARGOS)
+毎|まい|MAI|CADA
+友人|ゆうじん|YUUJIN|AMIGO
+六日|むいか|MUIKA|DÍA 6
+六つ|むっつ|MUTTSU|SEIS (CONTADOR)
+話|はなし|HANASHI|HISTORIA / CHARLA
+百円|ひゃくえん|HYAKUEN|100 YENES
+百人|ひゃくにん|HYAKUNIN|100 PERSONAS
+千円|せんえん|SENEN|1.000 YENES
+千葉|ちば|CHIBA|CHIBA (LUGAR)
+一万|いちまん|ICHIMAN|10.000
+万年筆|まんねんひつ|MANNENHITSU|PLUMA ESTILOGRÁFICA
+花火|はなび|HANABI|FUEGOS ARTIFICIALES
+天|てん|TEN|CIELO
+北アメリカ|きたあめりか|KITAAMERIKA|AMÉRICA DEL NORTE
+東京|とうきょう|TOUKYOU|TOKIO
+西洋|せいよう|SEIYOU|OCCIDENTE
+南アメリカ|みなみあめりか|MINAMIAMERIKA|AMÉRICA DEL SUR
+左側|ひだりがわ|HIDARIGAWA|LADO IZQUIERDO
+右側|みぎがわ|MIGIGAWA|LADO DERECHO
+花見|はなみ|HANAMI|CONTEMPLACIÓN DE FLORES
+金魚|きんぎょ|KINGYO|PEZ DORADO
+富士山|ふじさん|FUJISAN|MONTE FUJI
+河川|かせん|KASEN|RÍOS
+雨天|うてん|UTEN|TIEMPO LLUVIOSO
+目的|もくてき|MOKUTEKI|PROPÓSITO
+人口|じんこう|JINKOU|POBLACIÓN
+耳鼻科|じびか|JIBIKA|OTORRINOLARINGOLOGÍA
+手紙|てがみ|TEGAMI|CARTA
+足りる|たりる|TARIRU|SER SUFICIENTE
+母親|ははおや|HAHAOYA|MADRE
+父親|ちちおや|CHICHIOYA|PADRE
+女性|じょせい|JOSEI|MUJER / FEMENINO
+男性|だんせい|DANSEI|HOMBRE / MASCULINO
+小学校|しょうがっこう|SHOUGAKKOU|ESCUELA PRIMARIA
+中国|ちゅうごく|CHUUGOKU|CHINA
+大人|おとな|OTONA|ADULTO
+下げる|さげる|SAGERU|BAJAR
+何時|なんじ|NANJI|¿QUÉ HORA?
+銀行|ぎんこう|GINKOU|BANCO
+見学|けんがく|KENGAKU|VISITA DE ESTUDIO
+言葉|ことば|KOTOBA|PALABRA
+食事|しょくじ|SHOKUJI|COMIDA
+飲み物|のみもの|NOMIMONO|BEBIDA
+学ぶ|まなぶ|MANABU|APRENDER
+休日|きゅうじつ|KYUUJITSU|DÍA LIBRE
+買い物|かいもの|KAIMONO|COMPRAS
+読書|どくしょ|DOKUSHO|LECTURA
+古代|こだい|KODAI|ANTIGÜEDAD
+安全|あんぜん|ANZEN|SEGURIDAD
+多数|たすう|TASUU|MAYORÍA
+社長|しゃちょう|SHACHOU|PRESIDENTE DE EMPRESA
+分|ふん|FUN|MINUTO
+店員|てんいん|TENIN|VENDEDOR
+道|みち|MICHI|CAMINO
+道路|どうろ|DOURO|CARRETERA
+有名|ゆうめい|YUUMEI|FAMOSO
+円い|まるい|MARUI|REDONDO
+自動車|じどうしゃ|JIDOUSHA|AUTOMÓVIL
+駅前|えきまえ|EKIMAE|FRENTE A LA ESTACIÓN
+元気|げんき|GENKI|SALUDABLE
+日本国|にほんこく|NIHONKOKU|JAPÓN
+社会|しゃかい|SHAKAI|SOCIEDAD
+
+// --- Frases del repertorio del Jefe (Se elegirán 2 al azar cada 1000 puntos) ---
+//BOSS_FRAS|frase japonesa|Frase en Romaji|Traducción al español
+BOSS_FRAS|先週デパートに買い物に行きました。|SENSHUDEPATONIKAIMONONIIKIMASHITA|Fui de compras al centro comercial la semana pasada.
+BOSS_FRAS|ご飯の後で散歩します。|GOHANNOATODESANPOSHIMASU|Daré un paseo después de comer.
+BOSS_FRAS|もう一度言ってください。|MOUICHIDOITTEKUDASAI|Por favor, dígalo una vez más.
+BOSS_FRAS|近くに山があります。|CHIKAKUNIYAMAGAARIMASU|Hay una montaña cerca.
+BOSS_FRAS|このホテルは部屋が多いです。|KONOHOTERUWAHEYAGAOOIDESU|Este hotel tiene muchas habitaciones.
+BOSS_FRAS|ともだちといっしょに学校に行きます。|TOMODACHITOISSHONIGAKKOONIIKIMASU|Voy a la escuela con un amigo.
+BOSS_FRAS|えんぴつが六本あります。|ENPITSUGAROPPONARIMASU|Hay seis lápices.
+BOSS_FRAS|この新聞はいくらですか。|KONOSHINBUNWAIKURADESUKA|¿Cuánto cuesta este periódico?
+BOSS_FRAS|このカメラは安いです。|KONOKAMERAWAYASUIDESU|Esta cámara es barata.
+BOSS_FRAS|かさは外にあります。|KASAWASOTONIARIMASU|El paraguas está afuera.
+BOSS_FRAS|けさシャワーを浴びました。|KESASHAWAAOABIMASHITA|Esta mañana me duché.
+BOSS_FRAS|コーヒーを飲みました。|KOOHIIONOMIMASHITA|Bebí café.
+BOSS_FRAS|あたらしい車をかいました。|ATARASHIIKURUMAOKAIMASHITA|Compré un coche nuevo.
+BOSS_FRAS|このぼうしは1000円です。|KONOBOUSHIWASENENDESU|Este sombrero cuesta 1000 yenes.
+BOSS_FRAS|しゅくだいが半分おわりました。|SHUKUDAIGAHANBUNOWARIMASHITA|La tarea terminó a la mitad.
+BOSS_FRAS|わたしのうちにきませんか。|WATASHINOUCHINIKIMASENKA|¿No quieres venir a mi casa?
+BOSS_FRAS|きのうたなかさんとあいました。|KINOUTANAKASANTOAIMASHITA|Ayer me reuní con Tanaka-san.
+BOSS_FRAS|いもうととおなじふくをかいました。|IMOOTOTOONAJIFUKUOKAIMASHITA|Compré la misma ropa que mi hermana pequeña.
+BOSS_FRAS|わたしのへやはこのアパートの2かいです。|WATASHINOHEYAWAKONOAPAATONONIKAIDESU|Mi cuarto es el del segundo piso de este apartamento.
+BOSS_FRAS|さとうさんはギターをじょうずにひきます。|SATOOSANWAGITAAROJOZUNIHIKIMASU|Sato-san toca la guitarra muy bien.
+BOSS_FRAS|テーブルにおさらとはしをならべてください。|TEEBURUNIOSARATOHASHIONARABETEKUDASAI|Por favor, alinea los platos y palillos en la mesa.
+BOSS_FRAS|けさそうじをしたからへやはきれいです。|KESASOOJIOSHITAKARAHEYAWAKIREIDESU|Como limpié esta mañana, la habitación está limpia.
+BOSS_FRAS|きょうは500メートルおよぎました。|KYOOWA500MEETORUOYOGIMASHITA|Hoy nadé 500 metros.
+BOSS_FRAS|えきからたいしかんまでのちずをかいてください。|EKIKARATAISHIKANMADENOCHIZUOKAITEKUDASAI|Por favor, dibuja el mapa desde la estación hasta la embajada.
+BOSS_FRAS|うるさいからテレビをけしてください。|URUSAIKARATEREBIOKESHITEKUDASAI|Por favor apaga la televisión porque hace ruido.
+BOSS_FRAS|きょうはゆきがふっています。|KYOOWAYUKIGAFUTTEIMASU|Hoy está nevando.
+BOSS_FRAS|はこにりんごがいつつあります。|HAKONIRINGOGAIITSUTSUARIMASU|Hay cinco manzanas en la caja.
+BOSS_FRAS|めがねはつくえのうえにあります。|MEGANEWATSUKUENOUEINIARIMASU|Los anteojos están encima del escritorio.
+BOSS_FRAS|まいばんくにのかぞくにでんわします。|MAIBANKUNINOKAZOKUNIDENWASHIMASU|Llamo a mi familia en mi país todas las noches.
+BOSS_FRAS|このまちにはゆうめいなビルがあります。|KONOMACHINIWAYUUMEINABIRUGAARIMASU|Hay un edificio famoso en esta ciudad.
+BOSS_FRAS|そのえいがはつまらなかったです。|SONOEEGAWATSUMARANAKATTADESU|Esa película fue aburrida.
+BOSS_FRAS|6がつ15にちにうまれました。|ROKUGATSU15NICHINIUMAREMASHITA|Nací el 15 de junio.
+BOSS_FRAS|おととしきょうとへいきました。|OTOTOSHIKYOOTOEIKIMASHITA|Fui a Kioto hace dos años.
+`.trim();

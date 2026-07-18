@@ -74,61 +74,86 @@ export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, 
   ctx.lineWidth = 5; 
   ctx.stroke();
   }
-  //Titulo del Gran Jefe
+  // A. TÍTULO DEL GRAN JEFE (Violeta Vibrante + Estilo Épico)
+  const titleY = e.y - e.radius - 40; // Un poco más arriba para destacar
+  
+  ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
-  ctx.fillStyle = "#ff0800"; 
-  ctx.font = "bold 30px monospace";
-  ctx.fillText(`👑 🔥 ${e.name} 🔥 👑`, e.x, e.y - e.radius - 32);
+  ctx.font = "bold 35px monospace"; // Un poco más grande para el Gran Jefe
   
-  // Barra de progreso del Gran Jefe
+  // Contorno oscuro para legibilidad total
+  ctx.strokeStyle = "rgba(0, 0, 0, 0.8)";
+  ctx.lineWidth = 6;
+  ctx.strokeText(`👑 🔥 ${e.name} 🔥 👑`, e.x, titleY);
+  
+  // Relleno Violeta Vibrante
+  ctx.fillStyle = "#bc13fe"; 
+  ctx.fillText(`👑 🔥 ${e.name} 🔥 👑`, e.x, titleY);
+
+  // B. BARRA DE VIDA (Con marco estilo interfaz)
+  const barWidth = 150;
+  const barHeight = 12;
+  const barX = e.x - (barWidth / 2);
+  const barY = e.y - e.radius - 22;
+
+  // Marco negro
+  ctx.fillStyle = "#000000"; 
+  ctx.fillRect(barX - 2, barY - 2, barWidth + 4, barHeight + 4);
+  
+  // Fondo barra
   ctx.fillStyle = "#111"; 
-  ctx.fillRect(e.x - 75, e.y - e.radius - 20, 150, 10);
+  ctx.fillRect(barX, barY, barWidth, barHeight);
+  
+  // Relleno vida
+  const vidaRestante = (e.fases.length - e.faseActual) / e.fases.length;
   ctx.fillStyle = "#f32408"; 
-  ctx.fillRect(e.x - 75, e.y - e.radius - 20, ((e.fases.length - e.faseActual) / e.fases.length) * 150, 10);
-  //Dibujar frase del Gran Jefe
- ctx.textBaseline = "middle"; 
-ctx.font = `bold ${baseFontJp * 1.5}px sans-serif`;
+  ctx.fillRect(barX, barY, barWidth * vidaRestante, barHeight);
 
-      // 1. Configurar y dibujar el contorno (atrás)
-ctx.strokeStyle = "#000000"; // Color del contorno (Negro)
-ctx.lineWidth = 4;           // Grosor del contorno
-ctx.lineJoin = "round";      // Suaviza los bordes y uniones de los trazos
-ctx.strokeText(e.jp, e.x, e.y);
-
-      // 2. Configurar y dibujar el relleno (adelante)
-ctx.fillStyle = "#fbf8ff";   // Tu color original (Blanco hueso)
-ctx.fillText(e.jp, e.x, e.y);
+  // C. DIBUJAR KANJI (Contorno estándar 4px)
+  ctx.textBaseline = "middle"; 
+  ctx.font = `bold ${baseFontJp * 1.8}px sans-serif`; // Más grande por ser jefe
+  ctx.strokeStyle = "#000000";
+  ctx.lineWidth = 4;
+  ctx.strokeText(e.jp, e.x, e.y);
+  ctx.fillStyle = "#fbf8ff";
+  ctx.fillText(e.jp, e.x, e.y);
   
-  if (sistemaLector.bossTimerAyuda >= 600) {
-    ctx.textBaseline = "alphabetic"; 
+  // D. ROMAJI DE AYUDA (Estilo Ártico: Cian Eléctrico con borde)
+if (sistemaLector.bossTimerAyuda >= 600) {
+    // Definimos la base debajo del Kanji tal como en el Guardián
+    const textoBaseY = e.y + 60; 
+    // Calculamos la Y final (añadiendo espacio si mostraras traducción, 
+    // ajusta el '+ 0' si decides agregar la traducción también)
+    const romajiY = textoBaseY + 0; 
+    
     ctx.font = `bold ${baseFontR * 1.5}px monospace`;
-    const romajiYBoss = e.y - e.radius - 60;
+    ctx.lineJoin = "round";
 
-   if (isLocked) {
-  // Convertimos todo a mayúsculas primero
-  const romajiMayus = e.romaji.toUpperCase(); 
-  
-  // Cortamos sobre la versión en mayúsculas
-  const typed = romajiMayus.slice(0, state.typedLen); 
-  const rest = romajiMayus.slice(state.typedLen);
-  
-  // Medimos el ancho correcto de las mayúsculas
-  const fullW = ctx.measureText(romajiMayus).width; 
-  const startX = e.x - fullW / 2;
-  const typedWidth = ctx.measureText(typed).width; // Guardamos el ancho para evitar repetir código
-  
-  ctx.textAlign = "left"; 
-  ctx.fillStyle = "#aa5555"; 
-  ctx.fillText(typed, startX, romajiYBoss);
-  
-  ctx.textAlign = "left"; // Ojo aquí: lo cambié a "left" para que el 'rest' encaje perfecto después del 'typed'
-  ctx.fillStyle = "#6cffeb"; 
-  ctx.fillText(rest, startX + typedWidth, romajiYBoss);
-} else {
-  const romajiMayus = e.romaji.toUpperCase();
-  ctx.textAlign = "center"; 
-  ctx.fillStyle = "#6cffeb"; 
-  ctx.fillText(romajiMayus, e.x, romajiYBoss);
-}
-ctx.textBaseline = "middle";
-}}
+    const romajiMayus = e.romaji.toUpperCase();
+    const fullW = ctx.measureText(romajiMayus).width;
+    const startX = e.x - fullW / 2;
+
+    // Configuración de bordes para que coincida con el estilo del guardián
+    ctx.strokeStyle = "rgba(0,0,0,0.6)";
+    ctx.lineWidth = 4;
+
+    if (isLocked) {
+      const typed = romajiMayus.slice(0, state.typedLen);
+      const rest = romajiMayus.slice(state.typedLen);
+      const typedWidth = ctx.measureText(typed).width;
+
+      ctx.textAlign = "left"; 
+      ctx.strokeText(typed, startX, romajiY);
+      ctx.fillStyle = "#ffeb3b"; 
+      ctx.fillText(typed, startX, romajiY);
+      
+      ctx.strokeText(rest, startX + typedWidth, romajiY);
+      ctx.fillStyle = "#6cffeb"; 
+      ctx.fillText(rest, startX + typedWidth, romajiY);
+    } else {
+      ctx.textAlign = "center"; 
+      ctx.strokeText(romajiMayus, e.x, romajiY);
+      ctx.fillStyle = "#6cffeb"; 
+      ctx.fillText(romajiMayus, e.x, romajiY);
+    }
+  }}

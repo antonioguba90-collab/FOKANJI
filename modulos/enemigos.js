@@ -10,11 +10,14 @@ const sprites = {
  // CrakenArticoFuego:   { img: new Image(), frames: 5, src: './personajes/crakenArticoFuego1.png' },
  // golemArtico_2:   { img: new Image(), frames: 6, src: './personajes/golemArtico.png' },
  // golemArtico_1:   { img: new Image(), frames: 5, src: './personajes/golemArtico_1.png' },
-  OsoPolar:   { img: new Image(), frames: 4, src: './personajes/OsoPolar.png' },
+  Tiburon:   { img: new Image(), frames: 4,  src: './personajes/Tiburon1.png' },
+  Delfin:   { img: new Image(), frames: 4,  src: './personajes/Delfin5.png' },
+  Tiburoncito:   { img: new Image(), frames: 4,  src: './personajes/Tiburoncito.png' },
+  OsoPolar:   { img: new Image(), frames: 4,  src: './personajes/OsoPolar.png' },
   PinguinoBurla:   { img: new Image(), frames: 4, src: './personajes/PinguinoBurla.png' },
   MorsaRisa:   { img: new Image(), frames: 4, src: './personajes/MorsaRisa.png' },
   Frailecillo:   { img: new Image(), frames: 4, src: './personajes/Frailecillo.png' },
-  Ballena2:   { img: new Image(), frames: 4, src: './personajes/Ballena2.png' },
+  Ballena2:   { img: new Image(), frames: 4, src: './personajes/Ballena4.png' },
   PinguinoEnfadado:   { img: new Image(), frames: 4, src: './personajes/PinguinoEnfadado.png' },
 
 };
@@ -44,11 +47,15 @@ export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
   const totalFrames = datosEnemigo.frames;
 
   // ==========================================
-  // CONFIGURACIÓN DE TAMAÑOS (¡AJUSTA AQUÍ!)
+  // CONFIGURACIÓN DE TAMAÑOS (PERSPECTIVA DINÁMICA)
   // ==========================================
-  const escalaSprite = 2.5; 
-  const escalaKanji = 0.8;   
-  const escalaRomaji = 0.9;  
+  // Factor de profundidad: 0.2 (arriba/lejos) a 1.0 (abajo/cerca)
+  const factorProfundidad = Math.min(2, Math.max(0.2, e.y / state.H));
+  
+  // Escala base multiplicada por el factor de profundidad
+  const escalaSprite = 1.0 + (factorProfundidad * 2.5); // Escala de 0.5 a 2.5
+  const escalaKanji = 0.9 * factorProfundidad;          // El texto también escala
+  const escalaRomaji = 0.7 * factorProfundidad;         // El texto también escala 
   
 
 if (isLocked) {
@@ -126,69 +133,91 @@ const frameActual = Math.floor(Date.now() / e.velocidadAnimacion) % totalFrames;
   }
 
   // ==========================================
- // TEXTOS DEL ENEMIGO (KANJI AL CENTRO Y POR DELANTE)
-  // ========================================================
+/// TEXTOS DEL ENEMIGO (A LA DERECHA DEL SPRITE)
+// ========================================================
+ctx.textAlign = "left"; // Ahora alineamos a la izquierda desde el punto de origen
+ctx.textBaseline = "middle"; 
 
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle"; 
+// Calculamos la posición X: margen derecho del sprite + 15px de separación
+const textoX = e.x + (destinoWidth / 2) + 15;
+const kanjiY = e.y + 10; // Centrado verticalmente con el sprite
 
-  // 1. Posición del Kanji: Centro geométrico del sprite (e.y)
-  const kanjiY = e.y+ (destinoHeight / 4); 
+// 1. Tamaño mínimo garantizado
+const fontSizeBase = e.radius * escalaKanji;
+const fontSize = Math.max(30, fontSizeBase); 
 
-  // Dibujar Kanji/Kana con su nueva escala y contorno
-  ctx.font = `bold ${e.radius * escalaKanji}px sans-serif`;
+ctx.font = `bold ${fontSize}px sans-serif`;
+ctx.lineJoin = "round";
 
-  // 1. Contorno negro con un 80% de opacidad (rgba con alfa en 0.8)
-  ctx.strokeStyle = "rgba(0, 0, 0, 0.8)";       
-  ctx.lineWidth = 6;                 
-  ctx.lineJoin = "round";            
-  ctx.strokeText(e.jp, e.x, kanjiY);
+// 2. Degradado brillante
+const gradient = ctx.createLinearGradient(0, kanjiY - fontSize * 0.5, 0, kanjiY + fontSize * 0.5);
+gradient.addColorStop(0, "#ffffff"); 
+gradient.addColorStop(1, "#77ddff"); 
 
-  // 2. Relleno blanco con un 80% de opacidad (rgba con alfa en 0.8)
-  ctx.fillStyle = "rgba(255, 255, 255, 1)";         
-  ctx.fillText(e.jp, e.x, kanjiY);
-  // --- TRADUCCIÓN Y ROMAJI (Re-ubicados abajo del todo para no solaparse con el centro) ---
-  ctx.textBaseline = "top"; // Restauramos para los textos inferiores
+// 3. CAPA DE CONTORNO (Alineado a la izquierda)
+ctx.shadowBlur = 0; 
+ctx.strokeStyle = "#002b5c";
+ctx.lineWidth = fontSize * 0.35;
+ctx.strokeText(e.jp, textoX, kanjiY);
 
-  // La base de los textos inferiores se calculará desde la parte baja del sprite
-  const textoBaseY = e.y + (destinoHeight / 2) + 10; 
+// 4. CAPA DE RELLENO
+ctx.fillStyle = gradient;
+ctx.fillText(e.jp, textoX, kanjiY);
 
-  if (state.mostrarTraduccion && e.es) {
+// ========================================================
+// TEXTOS INFERIORES: Traducción (es) y Romaji (CENTRADOS BAJO EL SPRITE)
+// ========================================================
+ctx.textAlign = "center"; // Centramos respecto a la posición X del enemigo
+const posInferiorX = e.x; // Punto de anclaje centrado en el sprite
+const bloqueInferiorY = e.y + (destinoHeight / 2) + 15; // Debajo del sprite
+
+const fontSizeSecundario = Math.max(16, baseFontR * escalaRomaji * 1.5); 
+
+if (state.mostrarTraduccion && e.es) {
     ctx.save();
-    ctx.font = "bold 14px sans-serif"; 
-    ctx.fillStyle = "#0c2905";         
-    ctx.textAlign = "center";
+    ctx.font = `bold ${fontSizeSecundario}px sans-serif`;
     
-    ctx.fillText(`(${e.es})`, e.x, textoBaseY); 
+    const textoTraduccion = `(${e.es})`;
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.8)";
+    ctx.lineWidth = 4;
+    ctx.strokeText(textoTraduccion, posInferiorX, bloqueInferiorY);
+    ctx.fillStyle = "#ffffff";         
+    ctx.fillText(textoTraduccion, posInferiorX, bloqueInferiorY);
     ctx.restore();
-  }
+}
 
-  // 2. Texto de ayuda Romaji
-  if (e.timerAyuda >= 600) {
-    const offsetTraduccion = (state.mostrarTraduccion && e.es) ? 25 : 0;
-    const romajiY = textoBaseY + offsetTraduccion; 
+if (e.timerAyuda >= 600) {
+    const offsetTraduccion = (state.mostrarTraduccion && e.es) ? (fontSizeSecundario * 1.2) : 0;
+    const romajiY = bloqueInferiorY + offsetTraduccion;
 
-    ctx.font = `bold ${baseFontR * escalaRomaji}px monospace`;
-
-    // Convertimos la cadena base a mayúsculas para evitar conflictos visuales
+    ctx.font = `bold ${fontSizeSecundario}px monospace`;
     const romajiMayus = e.romaji.toUpperCase();
+    
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.8)";
 
     if (isLocked) {
-      // Cortamos el texto usando la cadena ya convertida en mayúsculas
-      const typed = romajiMayus.slice(0, state.typedLen); 
-      const rest = romajiMayus.slice(state.typedLen);
-      const fullW = ctx.measureText(romajiMayus).width; 
-      const startX = e.x - fullW / 2;
-      
-      ctx.textAlign = "left"; 
-      ctx.fillStyle = "#1a3a4a"; 
-      ctx.fillText(typed, startX, romajiY);
-      ctx.fillStyle = "#005a8d"; 
-      ctx.fillText(rest, startX + ctx.measureText(typed).width, romajiY);
-      ctx.textAlign = "center"; 
+        const typed = romajiMayus.slice(0, state.typedLen);
+        const rest = romajiMayus.slice(state.typedLen);
+        
+        // Centramos el bloque completo de romaji calculando su ancho total
+        const totalW = ctx.measureText(romajiMayus).width;
+        const startX = posInferiorX - (totalW / 2);
+
+        ctx.textAlign = "left"; // Usamos left para la escritura progresiva con startX
+        ctx.fillStyle = "#ffeb3b"; 
+        ctx.strokeText(typed, startX, romajiY);
+        ctx.fillText(typed, startX, romajiY);
+
+        ctx.fillStyle = "#e0e0e0";
+        const typedW = ctx.measureText(typed).width;
+        ctx.strokeText(rest, startX + typedW, romajiY);
+        ctx.fillText(rest, startX + typedW, romajiY);
     } else {
-      ctx.fillStyle = "#005a8d"; 
-      ctx.fillText(romajiMayus, e.x, romajiY);
+        ctx.textAlign = "center"; // Centrado cuando no está bloqueado
+        ctx.fillStyle = "#4dd0e1"; 
+        ctx.strokeText(romajiMayus, posInferiorX, romajiY);
+        ctx.fillText(romajiMayus, posInferiorX, romajiY);
     }
-  }
+}
 }

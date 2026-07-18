@@ -38,7 +38,7 @@ export let btnPausa = document.getElementById("btn-pausa") || (() => {
   const btn = document.createElement("button");
   btn.id = "btn-pausa";
   btn.innerHTML = "⏸️ Pausa";
-  btn.style = "position:fixed; top:15px; right:15px; z-index:100; padding:6px 12px; font-size:14px; background:rgb(0, 170, 255); color:#ffffff; border:2px solid #ffffff; border-radius:6px; cursor:pointer;";
+  btn.style = "position:fixed; top:15px; right:15px; z-index:100; padding:6px 12px; font-size:14px; background:rgb(34, 157, 170); color:rgb(255, 255, 255); border:2px solid #000000; border-radius:6px; cursor:pointer;";
   document.body.appendChild(btn);
   return btn;
 })();
@@ -47,7 +47,7 @@ export let btnCheatBoss = document.getElementById("btn-cheat-boss") || (() => {
   const btn = document.createElement("button");
   btn.id = "btn-cheat-boss";
   btn.innerHTML = "⚡ Skip to Boss";
-  btn.style = "position:fixed; top:55px; right:15px; z-index:100; padding:6px 12px; font-size:14px; background:rgb(238, 255, 3); color: #000000; border:2px solid #ffffff; border-radius:6px; cursor:pointer; display:none;";
+  btn.style = "position:fixed; top:55px; right:15px; z-index:100; padding:6px 12px; font-size:14px; background: #4a148c; color: #ffffff; border:2px solid #000000; border-radius:6px; cursor:pointer; display:none;";
   document.body.appendChild(btn);
   return btn;
 })();

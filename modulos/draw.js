@@ -51,127 +51,82 @@ export function ejecutarDrawLoop() {
 // 1. FONDO: Azul océano ártico profundo
 // ==========================================
 const gradienteFondo = ctx.createLinearGradient(0, 0, 0, state.H);
-gradienteFondo.addColorStop(0, "#87CEEB");   
-gradienteFondo.addColorStop(0.6, "#E0F7FA"); 
-gradienteFondo.addColorStop(1, "#B2EBF2");   
+gradienteFondo.addColorStop(0, "#001f3f"); 
+gradienteFondo.addColorStop(0.6, "#0074D9"); 
+gradienteFondo.addColorStop(1, "#7FDBFF"); 
 ctx.fillStyle = gradienteFondo;
 ctx.fillRect(0, 0, state.W, state.H);
 
 const time = performance.now() / 1000;
-// Delta time estimado para mantener la velocidad constante a 60fps
 const dt = 1 / 60; 
 
 // ==========================================
+// 2. ICEBERGS CON ESCALADO POR PROFUNDIDAD
 // ==========================================
-// 2. ICEBERGS CON GENERACIÓN Y DESTRUCCIÓN EN VIVO (Sin patrones)
-// ==========================================
 
-// Función interna para generar un iceberg único sin colisiones en una Y específica
-function crearNuevoIceberg(yInicial, intentosMax = 30) {
-  let intentos = 0;
-  while (intentos < intentosMax) {
-    intentos++;
-    
-    // Proporciones y escala únicas
-    const escalaAncho = 0.25 + Math.random() * 0.22;
-    const escalaAlto = 0.15 + Math.random() * 0.15;
-    const bW = state.W * escalaAncho;
-    const bH = state.H * escalaAlto;
-    const x = Math.random() * (state.W - bW);
-    
-    const radioColision = Math.max(bW, bH) * 0.5;
-    const centroX = x + bW / 2;
-    const centroY = yInicial + bH / 2;
-
-    // Verificar si colisiona con los existentes en el state
-    let solapado = false;
-    if (state.icebergs) {
-      for (let j = 0; j < state.icebergs.length; j++) {
-        const otro = state.icebergs[j];
-        const dx = centroX - (otro.x + otro.bW / 2);
-        const dy = centroY - (otro.y + otro.bH / 2);
-        const distancia = Math.sqrt(dx * dx + dy * dy);
-        
-        if (distancia < (radioColision + otro.radio + 25)) {
-          solapado = true;
-          break;
-        }
-      }
-    }
-
-    if (!solapado) {
-      return {
-        x: x,
-        y: yInicial,
-        bW: bW,
-        bH: bH,
-        radio: radioColision,
-        velocidad: 16 + escalaAlto * 18
-      };
-    }
-  }
-  return null; // Si no encuentra sitio libre, devuelve null para reintentar en el próximo frame
+function crearNuevoIceberg(yInicial) {
+  // El factor de escala va de 0.2 (arriba/lejos) a 1.0 (abajo/cerca)
+  const factorEscala = Math.min(1.0, Math.max(0.2, yInicial / state.H));
+  
+  // Tamaño base que se multiplica por el factor de perspectiva
+  const bW = (state.W * 0.3) * factorEscala;
+  const bH = (state.H * 0.2) * factorEscala;
+  
+  return {
+    x: Math.random() * (state.W - bW),
+    y: yInicial,
+    bW: bW,
+    bH: bH,
+    velocidad: 30 + (factorEscala * 60), // Más rápido cuanto más cerca
+    factor: factorEscala // Guardamos el factor para usarlo en el dibujo
+  };
 }
 
-// INICIALIZACIÓN ÚNICA: Poblado inicial repartido por la pantalla
-if (!state.icebergs) {
-  state.icebergs = [];
-  const cantidadInicial = 4;
-  for (let i = 0; i < cantidadInicial; i++) {
-    // En el inicio los repartimos verticalmente por toda la pantalla
-    const yRepartida = (i * (state.H * 0.25)) - (state.H * 0.1);
-    const berg = crearNuevoIceberg(yRepartida);
-    if (berg) state.icebergs.push(berg);
-  }
+// Inicialización
+if (!state.icebergs) state.icebergs = [];
+if (state.icebergs.length < 5) {
+  state.icebergs.push(crearNuevoIceberg(Math.random() * state.H));
 }
 
-// ACTUALIZACIÓN DEL CICLO DE VIDA (Movimiento y Filtrado)
+// Actualización y movimiento
 state.icebergs.forEach((berg) => {
   berg.y += berg.velocidad * dt;
+  // Actualizar escala dinámicamente según la nueva posición Y
+  berg.factor = Math.min(1.0, Math.max(0.2, berg.y / state.H));
+  // Re-ajustar dimensiones basadas en la nueva escala
+  berg.bW = (state.W * 0.3) * berg.factor;
+  berg.bH = (state.H * 0.2) * berg.factor;
 });
 
-// 1. DESTRUCCIÓN: Eliminamos del mapa los que se han hundido por el fondo
-const longitudAntes = state.icebergs.length;
-state.icebergs = state.icebergs.filter(berg => berg.y < state.H);
-const cuantosMurieron = longitudAntes - state.icebergs.length;
+// Filtrado (se destruyen al salir por abajo)
+state.icebergs = state.icebergs.filter(berg => berg.y < state.H + 100);
 
-// 2. NACIMIENTO: Si murió algún iceberg (o hay menos del mínimo), creamos nuevos ARRIBA
-// Ponemos un límite máximo de 5 a la vez para mantener el equilibrio visual
-if (cuantosMurieron > 0 || state.icebergs.length < 3) {
-  if (state.icebergs.length < 5) {
-    // Nacen ocultos en la parte superior (-bH aprox), con un desfase aleatorio de tiempo
-    const desfaseSuperior = -120 - Math.random() * 100;
-    const nuevoBerg = crearNuevoIceberg(desfaseSuperior);
-    if (nuevoBerg) {
-      state.icebergs.push(nuevoBerg);
-    }
-  }
+// Nacimiento arriba
+if (state.icebergs.length < 5) {
+  state.icebergs.push(crearNuevoIceberg(-50));
 }
 
-// RENDERIZADO DE LOS ICEBERGS ÚNICOS
+// RENDERIZADO
 state.icebergs.forEach((berg) => {
-  const xBase = berg.x;
-  const y = berg.y;
-  const bW = berg.bW;
-  const bH = berg.bH;
+  const { x, y, bW, bH } = berg;
 
   // --- Cara en sombra (Izquierda) ---
-  ctx.fillStyle = "rgba(130, 148, 168, 0.35)";
+  ctx.fillStyle = "rgba(130, 148, 168, 0.6)";
   ctx.beginPath();
-  ctx.moveTo(xBase, y + bH * 0.5);
-  ctx.lineTo(xBase + bW * 0.4, y); 
-  ctx.lineTo(xBase + bW * 0.45, y + bH);
-  ctx.lineTo(xBase - bW * 0.1, y + bH * 0.8);
+  ctx.moveTo(x, y + bH * 0.5);
+  ctx.lineTo(x + bW * 0.4, y); 
+  ctx.lineTo(x + bW * 0.45, y + bH);
+  ctx.lineTo(x - bW * 0.1, y + bH * 0.8);
   ctx.closePath();
   ctx.fill();
 
   // --- Cara iluminada (Derecha) ---
-  ctx.fillStyle = "rgba(205, 225, 245, 0.55)";
+  ctx.fillStyle = "rgba(220, 240, 255, 0.9)";
   ctx.beginPath();
-  ctx.moveTo(xBase + bW * 0.4, y); 
-  ctx.lineTo(xBase + bW, y + bH * 0.4);
-  ctx.lineTo(xBase + bW * 0.8, y + bH);
-  ctx.lineTo(xBase + bW * 0.45, y + bH);
+  ctx.moveTo(x + bW * 0.4, y); 
+  ctx.lineTo(x + bW, y + bH * 0.4);
+  ctx.lineTo(x + bW * 0.8, y + bH);
+  ctx.lineTo(x + bW * 0.45, y + bH);
   ctx.closePath();
   ctx.fill();
 });
@@ -278,42 +233,46 @@ state.snowflakes.forEach((flake) => {
   ctx.globalAlpha = 1;
 
   
-  // 4. Carteles emergentes con significados en Español (Popups)
+// 4. Carteles emergentes (Popups) - Traducción y Romaji separados
   for (const p of state.popups) {
-  ctx.globalAlpha = Math.min(1, p.life * 2);
-  ctx.textAlign = "center"; 
-  ctx.textBaseline = "middle";
+    ctx.globalAlpha = Math.min(1, p.life * 2);
+    ctx.textAlign = "center"; 
+    ctx.textBaseline = "middle";
 
-  const size = (Math.min(state.W, state.H) * 0.07 + 15) * p.scale;
-  const maxWidth = state.W * 0.8; // Máximo 80% del ancho de pantalla
-  const lineHeight = size * 1.1;
+    const size = (Math.min(state.W, state.H) * 0.07 + 15) * p.scale;
+    const maxWidth = state.W * 0.8;
+    const lineHeight = size * 1.1;
 
-  // --- Dibujo del texto principal (Español) ---
-  ctx.font = `bold ${size}px sans-serif`;
-  
-  // Sombra
-  ctx.fillStyle = "#000";
-  drawWrappedText(ctx, p.text, state.W / 2 + 3, state.H / 2 + 3, maxWidth, lineHeight);
-  // Color principal
-  ctx.fillStyle = "#ffeb3b";
-  drawWrappedText(ctx, p.text, state.W / 2, state.H / 2, maxWidth, lineHeight);
-  
-  // --- Dibujo del texto secundario (Japonés + Romaji) ---
-  if (p.jp && p.romaji) {
-    const subSize = Math.min(state.W, state.H) * 0.03 + 10;
-    ctx.font = `bold ${subSize}px sans-serif`;
-    const subText = `${p.jp} (${p.romaji.toUpperCase()})`;
+    // --- A. Texto principal (Español) ---
+    ctx.font = `bold ${size}px sans-serif`;
+    ctx.fillStyle = "#000"; // Sombra
+    drawWrappedText(ctx, p.text, state.W / 2 + 3, state.H / 2 + 3, maxWidth, lineHeight);
+    ctx.fillStyle = "#ffeb3b"; // Color principal
+    drawWrappedText(ctx, p.text, state.W / 2, state.H / 2, maxWidth, lineHeight);
     
-    // Calculamos posición justo debajo del texto principal
-    // (Aproximamos la altura basada en el número de líneas dibujadas)
-    const offset = (size * 0.6) + (size * 0.3); 
+    // --- B. Texto secundario (Japonés y Romaji) ---
+    if (p.jp && p.romaji) {
+      
+      const subSize = Math.min(state.W, state.H) * 0.04 + 10;
+      const offsetBase = (size * 0.6) + (size * 0.3); // Posición inicial debajo del principal
 
-    ctx.fillStyle = "#000";
-    drawWrappedText(ctx, subText, state.W / 2 + 2, state.H / 2 + offset + 2, maxWidth, subSize * 1.2);
-    
-    ctx.fillStyle = "#fff";
-    drawWrappedText(ctx, subText, state.W / 2, state.H / 2 + offset, maxWidth, subSize * 1.2);
-  }
+      // 1. Dibujar Japonés (Traducción)
+      ctx.font = `bold ${subSize}px sans-serif`;
+      ctx.fillStyle = "#000"; // Sombra
+      drawWrappedText(ctx, p.jp, state.W / 2 + 2, state.H / 2 + offsetBase + 2, maxWidth, subSize * 1.2);
+      ctx.fillStyle = "#fff"; // Color Japonés
+      drawWrappedText(ctx, p.jp, state.W / 2, state.H / 2 + offsetBase, maxWidth, subSize * 1.2);
+
+      // 2. Dibujar Romaji (Debajo de la traducción con color de ayuda)
+      const romajiOffset = offsetBase + (subSize * 1.5); // Separación adicional
+      ctx.font = `bold ${subSize * 1.1}px monospace`; // Un poco más pequeño y en monospace
+      
+      const romajiText = p.romaji.toUpperCase();
+      ctx.fillStyle = "#000"; // Sombra Romaji
+      drawWrappedText(ctx, romajiText, state.W / 2 + 2, state.H / 2 + romajiOffset + 2, maxWidth, subSize * 1.2);
+      ctx.fillStyle = "#6cffeb"; // COLOR DE AYUDA (Cian Eléctrico)
+      drawWrappedText(ctx, romajiText, state.W / 2, state.H / 2 + romajiOffset, maxWidth, subSize * 1.2);
+    }
 }
 // Importante: resetear alineación para no afectar otros dibujos del juego
 ctx.textAlign = "start";

@@ -81,68 +81,96 @@ export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, 
   }
 
   // ========================================================
-  // 3. CAPA TEXTOS Y HUD (POR ENCIMA DEL SPRITE)
-  // ========================================================
-  //TITULO DEL GUARDIAN
+  // Posición base para los textos debajo del Kanji
+  const textoBaseY = e.y + 60; // Ajustado según la escala del Guardian
+
+ // A. TÍTULO DEL GUARDIÁN Y BARRA
+  const titleY = e.y - e.radius - 35;
+  
   ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
-  ctx.fillStyle = "#ff5"; 
   ctx.font = "bold 30px monospace";
-  ctx.fillText(`[ ${e.name} ]`, e.x, e.y - e.radius - 32);
-  //BARRA DE PROGRESO
-  ctx.fillStyle = "#222"; 
-  ctx.fillRect(e.x - 50, e.y - e.radius - 18, 100, 8);
-  ctx.fillStyle = "#f05"; 
-  ctx.fillRect(e.x - 50, e.y - e.radius - 18, ((e.fases.length - e.faseActual) / e.fases.length) * 100, 8);
-  //DIBUJAR PALABRA
+  
+  // Contorno oscuro para el nombre del jefe
+  ctx.strokeStyle = "rgba(0, 0, 0, 0.8)";
+  ctx.lineWidth = 5;
+  ctx.strokeText(`[ ${e.name} ]`, e.x, titleY);
+  
+  // Relleno amarillo
+  ctx.fillStyle = "#00e5ff"; 
+  ctx.fillText(`[ ${e.name} ]`, e.x, titleY);
+  
+  // BARRA DE VIDA (Con borde estilo UI)
+  const barWidth = 100;
+  const barHeight = 12;
+  const barX = e.x - (barWidth / 2);
+  const barY = e.y - e.radius - 22;
+
+  // Marco negro de la barra
+  ctx.fillStyle = "#000000"; 
+  ctx.fillRect(barX - 2, barY - 2, barWidth + 4, barHeight + 4);
+
+  // Fondo de la barra
+  ctx.fillStyle = "#222222"; 
+  ctx.fillRect(barX, barY, barWidth, barHeight);
+
+  // Relleno de vida restante
+  const vidaRestante = (e.fases.length - e.faseActual) / e.fases.length;
+  ctx.fillStyle = "#ff0055"; 
+  ctx.fillRect(barX, barY, barWidth * vidaRestante, barHeight);
+
+  // B. DIBUJAR KANJI (Con contorno sólido)
   ctx.textBaseline = "middle"; 
-  ctx.fillStyle = "#ffffff"; 
   ctx.font = `bold ${baseFontJp * 1.5}px sans-serif`;
-      //CONTORNO DEL KANJI
   ctx.strokeStyle = "#000000";
-  ctx.lineWidth = 4;
+  ctx.lineWidth = 6; // Contorno un poco más grueso para jefes
   ctx.strokeText(e.jp, e.x, e.y);
+  ctx.fillStyle = "#ffffff"; 
   ctx.fillText(e.jp, e.x, e.y); 
   
+  // C. TRADUCCIÓN (Estilo Ártico: Blanco brillante + Borde)
+  if (state.mostrarTraduccion && e.es) {
+      ctx.font = "bold 18px sans-serif";
+      ctx.strokeStyle = "rgba(0,0,0,0.6)";
+      ctx.lineWidth = 4;
+      ctx.strokeText(`(${e.es})`, e.x, textoBaseY);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(`(${e.es})`, e.x, textoBaseY);
+  }
+
+  // D. ROMAJI DE AYUDA (Estilo Ártico: Cian Eléctrico + Borde)
   if (sistemaLector.bossTimerAyuda >= 600) {
-    ctx.textBaseline = "alphabetic"; 
+    const romajiY = textoBaseY + (state.mostrarTraduccion ? 25 : 0);
     ctx.font = `bold ${baseFontR * 1.5}px monospace`;
-    const romajiYBoss = e.y - e.radius - 60;
+    ctx.lineJoin = "round";
 
-    ctx.strokeStyle = "#000000";
-    ctx.lineWidth = 3;
-    ctx.lineJoin = "round"; // Un extra para suavizar el contorno de las mayúsculas
-
-    // Convertimos a mayúsculas aquí para usarlo en todo el bloque
     const romajiMayus = e.romaji.toUpperCase();
+    const fullW = ctx.measureText(romajiMayus).width;
+    const startX = e.x - fullW / 2;
 
     if (isLocked) {
-      // Cortamos y medimos usando la cadena en mayúsculas
-      const typed = romajiMayus.slice(0, state.typedLen); 
+      const typed = romajiMayus.slice(0, state.typedLen);
       const rest = romajiMayus.slice(state.typedLen);
-      const fullW = ctx.measureText(romajiMayus).width; 
-      const startX = e.x - fullW / 2;
-      
-      // Ancho del texto ya escrito para posicionar correctamente el resto
-      const typedWidth = ctx.measureText(typed).width;
-      const restWidth = ctx.measureText(rest).width;
 
-      ctx.textAlign = "left"; 
-      ctx.strokeText(typed, startX, romajiYBoss);
-      ctx.fillStyle = "#888"; 
-      ctx.fillText(typed, startX, romajiYBoss);
+      // Texto escrito (Amarillo para feedback de usuario)
+      ctx.textAlign = "left";
+      ctx.strokeStyle = "rgba(0,0,0,0.6)";
+      ctx.lineWidth = 4;
+      ctx.strokeText(typed, startX, romajiY);
+      ctx.fillStyle = "#ffeb3b";
+      ctx.fillText(typed, startX, romajiY);
       
-      ctx.textAlign = "center"; 
-      ctx.strokeText(rest, startX + typedWidth + (restWidth / 2), romajiYBoss);
-      ctx.fillStyle = "#6cffeb"; 
-      ctx.fillText(rest, startX + typedWidth + (restWidth / 2), romajiYBoss);
+      // Texto pendiente (Cian brillante)
+      const typedWidth = ctx.measureText(typed).width;
+      ctx.strokeText(rest, startX + typedWidth, romajiY);
+      ctx.fillStyle = "#6cffeb";
+      ctx.fillText(rest, startX + typedWidth, romajiY);
     } else {
       ctx.textAlign = "center";
-      ctx.strokeText(romajiMayus, e.x, romajiYBoss);
-      ctx.fillStyle = "#6cffeb"; 
-      ctx.fillText(romajiMayus, e.x, romajiYBoss);
+      ctx.strokeStyle = "rgba(0,0,0,0.6)";
+      ctx.lineWidth = 4;
+      ctx.strokeText(romajiMayus, e.x, romajiY);
+      ctx.fillStyle = "#6cffeb";
+      ctx.fillText(romajiMayus, e.x, romajiY);
     }
-    ctx.textBaseline = "middle";
-
-  }
-}
+  }}

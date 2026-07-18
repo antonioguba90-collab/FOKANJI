@@ -30,10 +30,23 @@ body::before {
   z-index: 10; /* Superior al fondo del body */
   background: radial-gradient(ellipse at center, #0a0a25 0%, #02020a 100%); 
 }
-  #hud {
-    position: fixed; top: 8px; left: 8px; font-size: 20px; color: rgb(255, 255, 255);
-    pointer-events: none; text-shadow: 0 0 4px #000000;
-  }
+#hud {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    font-size: 18px; 
+    font-family: 'Arial Black', sans-serif; /* Fuente más gruesa para mayor legibilidad */
+    font-weight: 900;
+    color: #ffffff;
+    /* Sombras múltiples para crear un efecto de "bordes duros" */
+    text-shadow: 
+        2px 2px 0px #000, 
+        -1px -1px 0px #000, 
+        1px -1px 0px #000, 
+        -1px 1px 0px #000;
+    pointer-events: none;
+    padding: 12px 18px;
+}
   #msg {
     position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
     text-align: center; background: rgba(255, 255, 255, 0.85); padding: 24px 28px; border: 1px solid #444; border-radius: 12px; z-index: 25; max-width: 90%; box-shadow: 0 0 20px rgba(0,0,0,0.7);

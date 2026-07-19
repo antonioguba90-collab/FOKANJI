@@ -2,7 +2,7 @@ const spriteGranJefe = new Image();
 spriteGranJefe.src = "personajes/Guardian_Hacha3.png"; // Tu ruta de imagen
 
 export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, sistemaLector) {
-  const factorMobile = state.isMobile ? 0.85 : 1.0;
+  
   // === INICIALIZACIÓN DE ESTADO ALEATORIO EN EL ENEMIGO ===
   // Si el enemigo no tiene estas propiedades guardadas, las creamos la primera vez
   if (e.ultimaVelocidadAnimacion === undefined) {
@@ -28,8 +28,8 @@ export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, 
     minMs: 550, // Lo más rápido (aprox 10 frames por segundo)
     maxMs: 1000, // Lo más lento (aprox 3.5 frames por segundo)
     
-    renderWidth: (e.radius * 8) * factorMobile,  
-    renderHeight: (e.radius * 8) * factorMobile,
+    renderWidth: e.radius * 8,  
+    renderHeight: e.radius * 8,
     
     offsetX: 0, 
     offsetY: 200  
@@ -75,7 +75,7 @@ export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, 
   ctx.stroke();
   }
   // A. TÍTULO DEL GRAN JEFE (Violeta Vibrante + Estilo Épico)
-  const titleY = e.y - e.radius - (40 * factorMobile); // Un poco más arriba para destacar
+  const titleY = e.y - e.radius - 40; // Un poco más arriba para destacar
   
   ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
@@ -91,7 +91,8 @@ export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, 
   ctx.fillText(`👑 🔥 ${e.name} 🔥 👑`, e.x, titleY);
 
   // B. BARRA DE VIDA (Con marco estilo interfaz)
-  const barWidth = 150 * factorMobile;  const barHeight = 12;
+  const barWidth = 150;
+  const barHeight = 12;
   const barX = e.x - (barWidth / 2);
   const barY = e.y - e.radius - 22;
 
@@ -110,7 +111,7 @@ export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, 
 
   // C. DIBUJAR KANJI (Contorno estándar 4px)
   ctx.textBaseline = "middle"; 
-  ctx.font = `bold ${baseFontJp * 1.8 * factorMobile}px sans-serif`; // Más grande por ser jefe
+  ctx.font = `bold ${baseFontJp * 1.8}px sans-serif`; // Más grande por ser jefe
   ctx.strokeStyle = "#000000";
   ctx.lineWidth = 4;
   ctx.strokeText(e.jp, e.x, e.y);
@@ -125,7 +126,7 @@ if (sistemaLector.bossTimerAyuda >= 600) {
     // ajusta el '+ 0' si decides agregar la traducción también)
     const romajiY = textoBaseY + 0; 
     
-    ctx.font = `bold ${baseFontR * 1.5*factorMobile}px monospace`;
+    ctx.font = `bold ${baseFontR * 1.5}px monospace`;
     ctx.lineJoin = "round";
 
     const romajiMayus = e.romaji.toUpperCase();

@@ -28,7 +28,6 @@ Object.keys(sprites).forEach(key => {
 });
 
 export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
- const factorMobile = state.isMobile ? 0.7 : 1.0;
  // ---------------------------------------------------------------------------
   // ASIGNACIÓN ALEATORIA ÚNICA POR ENEMIGO (Soporta N cantidad de enemigos)
   // ---------------------------------------------------------------------------
@@ -112,8 +111,8 @@ const frameActual = Math.floor(Date.now() / e.velocidadAnimacion) % totalFrames;
   const sourceY = 0;
 
   // 5. Dimensiones y centrado dinámico basados en la nueva escala
- const destinoWidth = (e.radius * escalaSprite) * factorMobile;
-  const destinoHeight = (e.radius * escalaSprite) * factorMobile;
+  const destinoWidth = e.radius * escalaSprite;
+  const destinoHeight = e.radius * escalaSprite;
   
   const destinoX = e.x - (destinoWidth / 2);
   const destinoY = e.y - (destinoHeight / 2);
@@ -141,13 +140,13 @@ ctx.textBaseline = "middle";
 
 // Calculamos la posición X: margen derecho del sprite + 15px de separación
 const textoX = e.x + (destinoWidth / 2) + 15;
-const kanjiY = e.y + (10 * factorMobile); // Centrado verticalmente con el sprite
+const kanjiY = e.y + 10; // Centrado verticalmente con el sprite
 
 // 1. Tamaño mínimo garantizado
-const fontSizeBase = Math.max(30, e.radius * escalaKanji) * factorMobile;
+const fontSizeBase = e.radius * escalaKanji;
 const fontSize = Math.max(30, fontSizeBase); 
 
-ctx.font = `bold ${fontSize*factorMobile}px sans-serif`;
+ctx.font = `bold ${fontSize}px sans-serif`;
 ctx.lineJoin = "round";
 
 // 2. Degradado brillante
@@ -182,7 +181,7 @@ const fontSizeSecundario = Math.max(16, baseFontR * escalaRomaji * 1.5);
 
 if (state.mostrarTraduccion && e.es) {
     ctx.save();
-    ctx.font = `bold ${fontSizeSecundario*factorMobile}px sans-serif`;
+    ctx.font = `bold ${fontSizeSecundario}px sans-serif`;
     
     const textoTraduccion = `(${e.es})`;
     ctx.strokeStyle = "rgba(0, 0, 0, 0.8)";

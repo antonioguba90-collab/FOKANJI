@@ -6,7 +6,7 @@ const spriteGuardianGlobal = new Image();
 spriteGuardianGlobal.src = "personajes/Guardian_Kawaii.png"; // Tu ruta de imagen
 
 export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, sistemaLector) {
- const factorMobile = state.isMobile ? 0.8 : 1.0; 
+  
   // === INICIALIZACIÓN DE ESTADO ALEATORIO EN EL ENEMIGO ===
   // Si el enemigo no tiene estas propiedades guardadas, las creamos la primera vez
   if (e.ultimaVelocidadAnimacion === undefined) {
@@ -17,7 +17,6 @@ export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, 
   // ========================================================
   // 1. CONFIGURACIÓN DEL SPRITE (EDITABLE)
   // ========================================================
-  
   const configSprite = {
     img: spriteGuardianGlobal, 
     
@@ -26,7 +25,6 @@ export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, 
     
     totalFrames: 3,   
     
-
     // Usamos la velocidad que tiene guardada este enemigo específico
     msPerFrame: e.ultimaVelocidadAnimacion, 
     
@@ -34,8 +32,8 @@ export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, 
     minMs: 550, // Lo más rápido (aprox 10 frames por segundo)
     maxMs: 1000, // Lo más lento (aprox 3.5 frames por segundo)
     
-    renderWidth: (e.radius * 8) * factorMobile,  
-    renderHeight: (e.radius * 8) * factorMobile,
+    renderWidth: e.radius * 8,  
+    renderHeight: e.radius * 8,
     
     offsetX: 0, 
     offsetY: 200  
@@ -81,16 +79,17 @@ export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, 
     ctx.lineWidth = 4; 
     ctx.stroke();
   }
+
   // ========================================================
   // Posición base para los textos debajo del Kanji
   const textoBaseY = e.y + 60; // Ajustado según la escala del Guardian
 
  // A. TÍTULO DEL GUARDIÁN Y BARRA
-const titleY = e.y - e.radius - (35 * factorMobile);
-
+  const titleY = e.y - e.radius - 35;
+  
   ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
-  ctx.font = "bold 30px monospace*factorMobile";
+  ctx.font = "bold 30px monospace";
   
   // Contorno oscuro para el nombre del jefe
   ctx.strokeStyle = "rgba(0, 0, 0, 0.8)";
@@ -102,7 +101,7 @@ const titleY = e.y - e.radius - (35 * factorMobile);
   ctx.fillText(`[ ${e.name} ]`, e.x, titleY);
   
   // BARRA DE VIDA (Con borde estilo UI)
-  const barWidth = 100 * factorMobile;
+  const barWidth = 100;
   const barHeight = 12;
   const barX = e.x - (barWidth / 2);
   const barY = e.y - e.radius - 22;
@@ -122,7 +121,8 @@ const titleY = e.y - e.radius - (35 * factorMobile);
 
   // B. DIBUJAR KANJI (Con contorno sólido)
   ctx.textBaseline = "middle"; 
-  ctx.font = `bold ${baseFontJp * 1.5 * factorMobile}px sans-serif`;  ctx.strokeStyle = "#000000";
+  ctx.font = `bold ${baseFontJp * 1.5}px sans-serif`;
+  ctx.strokeStyle = "#000000";
   ctx.lineWidth = 6; // Contorno un poco más grueso para jefes
   ctx.strokeText(e.jp, e.x, e.y);
   ctx.fillStyle = "#ffffff"; 
@@ -130,7 +130,7 @@ const titleY = e.y - e.radius - (35 * factorMobile);
   
   // C. TRADUCCIÓN (Estilo Ártico: Blanco brillante + Borde)
   if (state.mostrarTraduccion && e.es) {
-      ctx.font = "bold 18px sans-serif*factorMobile";
+      ctx.font = "bold 18px sans-serif";
       ctx.strokeStyle = "rgba(0,0,0,0.6)";
       ctx.lineWidth = 4;
       ctx.strokeText(`(${e.es})`, e.x, textoBaseY);
@@ -141,7 +141,7 @@ const titleY = e.y - e.radius - (35 * factorMobile);
   // D. ROMAJI DE AYUDA (Estilo Ártico: Cian Eléctrico + Borde)
   if (sistemaLector.bossTimerAyuda >= 600) {
     const romajiY = textoBaseY + (state.mostrarTraduccion ? 25 : 0);
-    ctx.font = `bold ${baseFontR * 1.5*factorMobile}px monospace`;
+    ctx.font = `bold ${baseFontR * 1.5}px monospace`;
     ctx.lineJoin = "round";
 
     const romajiMayus = e.romaji.toUpperCase();

@@ -30,8 +30,7 @@ export const state = {
   currentMode: "hiragana",
   ALL_WORDS_POOL: [],
   BOSS_POOL: [],
-  music:null,
-  isMobile: window.innerWidth < 768,
+  music:null
 };
 
 // Inyección de botones del DOM

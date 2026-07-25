@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
 <title>FOKANJI</title>
 <style>
+  /* Sistema tipográfico unificado: una familia para toda la UI */
+  :root {
+    --fuente-ui: 'Courier New', Courier, monospace;
+    --violeta: #bc13fe;
+    --azul: #009fff;
+    --cian: #ffffff;
+    --rojo: #f0040f;
+  }
   html, body {margin: 0; padding: 0;
   /* Fondo aplicado al body */
   background-image: url('./personajes/PORTADA.png');
@@ -12,84 +20,136 @@
   background-position: center;
   background-repeat: no-repeat;
   color: #0c0c0c;
-  font-family: 'Courier New', monospace;
+  font-family: var(--fuente-ui);
   overflow: hidden;
   height: 100vh;
   width: 100vw;
   font-weight: bold;
 }
-/* Capa oscura para que el texto de los menús siempre sea legible */
+/* Velo con degradado: legibilidad de menús sin apagar la portada */
 body::before {
   content: "";
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(8, 113, 246, 0.73); /* Oscurece la imagen un 70% */
+  background: linear-gradient(180deg,
+    rgba(3, 15, 45, 0.55) 0%,
+    rgba(8, 80, 190, 0.32) 50%,
+    rgba(2, 10, 35, 0.65) 100%);
   z-index: -1; /* Detrás de todo el contenido */
+}
+/* Fade de entrada al mostrar pantallas (se dispara al pasar de display:none a visible) */
+@keyframes fokFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+#menu:not(.hidden), #game:not(.hidden), #start-screen:not(.hidden), #msg {
+  animation: fokFadeIn 0.35s ease;
 }
   #game {
   z-index: 10; /* Superior al fondo del body */
-  background: radial-gradient(ellipse at center, #0a0a25 0%, #02020a 100%); 
+  background: radial-gradient(ellipse at center, #0a0a25 0%, #02020a 100%);
 }
 #hud {
     position: fixed;
     bottom: 20px;
     left: 20px;
-    font-size: 18px; 
-    font-family: 'Arial Black', sans-serif; /* Fuente más gruesa para mayor legibilidad */
+    font-size: 16px;
+    font-family: 'Arial Black', 'Segoe UI', sans-serif; /* Fuente gruesa: más legible en juego */
     font-weight: 900;
     color: #ffffff;
+    /* Cada dato en su línea (el texto llega con saltos \n) */
+    white-space: pre-line;
+    line-height: 1.55;
+    text-align: left;
     /* Sombras múltiples para crear un efecto de "bordes duros" */
-    text-shadow: 
-        2px 2px 0px #000, 
-        -1px -1px 0px #000, 
-        1px -1px 0px #000, 
+    text-shadow:
+        2px 2px 0px #000,
+        -1px -1px 0px #000,
+        1px -1px 0px #000,
         -1px 1px 0px #000;
     pointer-events: none;
     padding: 12px 18px;
 }
   #msg {
-    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-    text-align: center; background: rgba(255, 255, 255, 0.85); padding: 24px 28px; border: 1px solid #444; border-radius: 12px; z-index: 25; max-width: 90%; box-shadow: 0 0 20px rgba(0,0,0,0.7);
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    text-align: center; padding: 24px 28px; border-radius: 12px; z-index: 25; max-width: 90%;
+    /* Panel "noche ártica": hielo profundo con borde helado, texto claro siempre legible */
+    background: linear-gradient(180deg, #0d2440 0%, #0a1b31 100%);
+    border: 2px solid rgba(127, 219, 255, 0.55);
+    color: #eaf6ff;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.75);
   }
   #msg small { display: block; font-size: 14px; color: #aaa; margin-top: 10px; }
   #msg button {
-    margin-top: 14px; padding: 10px 20px; font-size: 16px; background: #009fff; color: #fff; border:1px solid #000000; border-radius: 6px; cursor: pointer;
+    margin-top: 14px; padding: 10px 20px; font-size: 16px; background: var(--azul); color: #fff; border:1px solid #000000; border-radius: 6px; cursor: pointer;
+    font-family: var(--fuente-ui); font-weight: bold;
   }
   #mobile-input {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; border: none; outline: none; font-size: 16px; background: transparent; color: transparent; caret-color: transparent; z-index: 5; -webkit-appearance: none; appearance: none;
   }
+
+  /* --- MENÚ A PANTALLA COMPLETA SIN SCROLL --- */
   #menu {
-    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-    text-align: center; background: rgba(255, 255, 255, 0.85); padding: 24px 28px; border: 1px solid #444; border-radius: 12px; z-index: 25; max-width: 90%; box-shadow: 0 0 20px rgba(0,0,0,0.7);
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100vw; 
+    height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centrado vertical absoluto */
+    align-items: center;     /* Centrado horizontal absoluto */
+    text-align: center; 
+    padding: 20px; 
+    z-index: 25;
+    background: linear-gradient(180deg, rgba(13, 36, 64, 0.20) 0%, rgba(10, 27, 49, 0.65) 100%);
+    color: #eaf6ff;
+    overflow: hidden;
   }
-  #menu h1 { font-size: 24px; margin: 0 0 6px; color: #bc13fe; text-shadow:0 0 10px #6cffeb; }
-  #menu p { 
-    font-size: 16px; 
-    font-weight: bold; 
-    color: #ffffff;             /* Texto blanco para máximo contraste */
-    font-family: 'Courier New', monospace; 
-    margin: 0 0 16px;
-    /* Fondo oscuro semitransparente para el texto */
-    background: rgba(0, 0, 0, 0.3); 
-    padding: 8px 12px;
+
+  #menu h1 { font-size: 24px; margin: 0 0 6px; color: var(--violeta); text-shadow:0 0 10px var(--cian); }
+  #menu p {
+    font-size: 15px;
+    font-weight: bold;
+    color: #ffffff;
+    font-family: var(--fuente-ui);
+    margin: 0 0 10px;
+    background: rgb(0, 0, 0);
+    border: 1px solid rgba(127, 219, 255, 0.25);
+    padding: 6px 10px;
     border-radius: 6px;
-   } 
-  /* Contenedores de vistas para alternar pantallas de configuración */
-  .menu-view { display: flex; flex-direction: column; gap: 10px; min-width: 240px; }
+   }
+
+  /* Contenedores de vistas distribuidos por pantalla completa */
+  .menu-view { 
+    display: flex; 
+    flex-direction: column; 
+    width: 100%; 
+    max-width: 900px;
+    height: 100%;
+    max-height: 92vh;
+    justify-content: center;
+    align-items: center;     /* Evita que los hijos flote a la izquierda */
+    margin: auto;            /* Fuerza el centrado automático en contenedores flexibles */
+    gap: 8px; 
+  }
   .hidden { display: none !important; }
 
   #menu button {
-  font-family: 'Courier New', monospace;
-  font-weight: bold;
-  padding: 12px 20px;
-  font-size: 16px;
-  background: #bc13fe; /* Violeta Vibrante */
-  color: #fff;
-  border: 2px solid #000000; /* <--- AQUÍ FALTABA "border:" */
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-}
+    font-family: var(--fuente-ui);
+    font-weight: bold;
+    padding: 10px 16px;
+    font-size: 15px;
+    background: var(--violeta);
+    color: #fff;
+    border: 2px solid #000000;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    width: 100%;
+    box-sizing: border-box;
+  }
   #menu button:active { transform: scale(0.98); }
   
   /* Estilos específicos de los botones de modos de juego */
@@ -97,27 +157,155 @@ body::before {
   #menu button.mode-arcade { background: #4a148c; border: 2px solid #000000; }
   
   /* Estilos específicos del vocabulario */
-  #menu button.hiragana { 
-  background: #4A90E2; /* Azul cielo ártico */
-  border: 2px solid #000000; 
-}
-#menu button.katakana { 
-  background: #2C3E50; /* Azul noche profundo */
-  border: 2px solid #000000; 
-}
-#menu button.noken5 { 
-  background: #76D7EA; /* Azul hielo brillante */
-  border: 2px solid #000000; 
-}
-#menu button.noken2 { 
-  background: #A9C9D7; /* Gris azulado glacial */
-  border: 2px solid #000000; 
-}
-  #menu button.back { background: #f0040f; border: 2px solid #000000; font-size: 14px; padding: 8px 12px; margin-top: 6px; }
+  #menu button.hiragana { background: #4A90E2; border: 2px solid #000000; }
+  #menu button.katakana { background: #2C3E50; border: 2px solid #000000; }
+  #menu button.noken5 { background: #76D7EA; border: 2px solid #000000; }
+  #menu button.noken2 { background: #A9C9D7; border: 2px solid #000000; }
+  #menu button.back { background: var(--rojo); border: 2px solid #000000; font-size: 13px; padding: 6px 10px; }
+  #menu button.ajustes { background: #2C3E50; }
+  #menu button.propio { background: #b8860b; }
+
+  /* --- Secciones y Contenedores en Cuadrícula para Ajustes --- */
+  .ajuste-seccion {
+    font-size: 11px !important;
+    letter-spacing: 1px;
+    margin: 2px 0 0 !important;
+    padding: 3px 8px !important;
+    color: var(--cian) !important;
+    background: rgb(0, 0, 0) !important;
+    border: 1px solid rgba(108, 255, 235, 0.35) !important;
+  }
+
+  .grid-ajustes-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* --- Manual e instrucciones de vocabulario --- */
+  .manual-texto {
+    text-align: left;
+    font-size: 12px;
+    line-height: 1.35;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.80);
+    border: 1px solid rgba(127, 219, 255, 0.18);
+    padding: 8px 12px;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+    white-space: pre-line;
+  }
+  .manual-texto b { color: var(--cian); display: block; margin-top: 4px; }
+  .manual-texto b:first-child { margin-top: 0; }
+
+  /* --- Editor de vocabulario propio --- */
+  #custom-texto {
+    font-family: var(--fuente-ui);
+    font-size: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    resize: none;
+    height: 120px;
+    border: 2px solid #000;
+    border-radius: 6px;
+    padding: 6px;
+    background: #f4faff;
+    color: #111;
+  }
+  #custom-estado {
+    font-size: 12px; font-weight: bold;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(127, 219, 255, 0.18);
+    color: #ffffff;
+    padding: 4px 8px; border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* --- Vista de Ajustes Filas --- */
+  .ajuste-fila {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(127, 219, 255, 0.18);
+    padding: 6px 10px; border-radius: 6px;
+    color: #fff; font-size: 13px; font-weight: bold;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  .ajuste-fila label { flex: 1; text-align: left; white-space: nowrap; font-size: 12px; }
+  .ajuste-fila input[type="range"] { flex: 2; accent-color: var(--violeta); cursor: pointer; min-width: 70px; }
+  .ajuste-fila .valor { width: 36px; text-align: right; color: var(--cian); font-size: 12px; }
+  .ajuste-columna { flex-direction: column; align-items: stretch; }
+  .grupo-toggle { display: flex; gap: 4px; margin-top: 4px; width: 100%; }
+  #menu .grupo-toggle button { flex: 1; padding: 6px 4px; font-size: 11px; background: #16324f; border: 2px solid rgba(127, 219, 255, 0.35); }
+  #menu .grupo-toggle button.activo { background: var(--violeta); border-color: #000; box-shadow: 0 0 6px var(--cian); }
   
-  #menu small { display: block; margin-top: 12px; font-size: 11px; color: #888; }
-.hidden {
-  display: none !important;
+  #dato-dominadas {
+    font-size: 12px; color: var(--cian); font-weight: bold;
+    background: rgba(0, 0, 0, 0.80);
+    border: 1px solid rgba(127, 219, 255, 0.18);
+    padding: 6px 10px; border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .progreso-mazo { display: block; font-size: 10px; color: var(--cian); margin-top: 2px; font-weight: normal; }
+
+  #menu small { display: block; margin-top: 8px; font-size: 10px; color: #888; }
+
+  /* Cuadrícula para botones de selección de vocabulario principal */
+  .vocab-grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    width: 100%;
+  }
+
+.control-btn1 {
+    position: fixed;
+    left: 15px;
+    z-index: 100;
+    padding: 10px 18px;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid #000000;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.control-btn2 {
+    position: fixed;
+    right: 15px;
+    z-index: 100;
+    padding: 10px 18px;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid #000000;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    #hud {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+    .grid-ajustes-container {
+        grid-template-columns: 1fr; /* Una columna en pantallas muy estrechas si es necesario, o mantenemos grid compacta */
+        gap: 5px;
+    }
+    .vocab-grid-container {
+        grid-template-columns: 1fr;
+    }
+    #menu button {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    .control-btn1, .control-btn2 {
+        padding: 8px 12px;
+        font-size: 9px;  
+    }
 }
 </style>
 </head>
@@ -137,7 +325,6 @@ body::before {
     pointer-events: none;
     white-space: nowrap;">
     Creado por NIHONGOCONTONIO 2026
-</div>
 </div>
 <div id="start-screen"
 style="
@@ -162,31 +349,144 @@ style="
 <canvas id="game" class="hidden" ></canvas>
 <div id="hud" class="hidden">Puntos: 0 | Destruidos: 0</div><input id="mobile-input" type="text" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
 
-<div id="menu"class="hidden">
- <div id="view-translation" class="menu-view">
-  <p>¿QUIERES VER LA TRADUCCION EN ESPAÑOL DURANTE LA PARTIDA?</p>
-  <button class="mode-classic" id="btn-with-translation">Muestra el carácter y la traducción</button>
-  <button class="mode-arcade" id="id-no-translation">Modo Clásico (Sin traducción)</button>
-</div>
-<div id="view-structure" class="menu-view hidden">
-  <p>ELIGE ESTRUCTURA DE JUEGO</p>
-  <button class="mode-classic" data-structure="fases">🎯 Modo Fases (Clásico)</button>
-  <button class="mode-arcade" data-structure="arcade">🕹️ Modo Arcade (Aleatorio)</button>
-  <button id="btn-back-translation" style="background:#f0040f; margin-top:15px;">⬅️ Atrás</button>
-</div>
+<div id="menu" class="hidden">
+  <div id="view-structure" class="menu-view">
+    <p>ELIGE ESTRUCTURA DE JUEGO</p>
+    <button class="mode-classic" data-structure="fases">🎯 Modo Fases (Clásico)</button>
+    <button class="mode-arcade" data-structure="arcade">🕹️ Modo Arcade (Aleatorio)</button>
+    <button class="ajustes" id="btn-ajustes">⚙️ Ajustes</button>
+    <button class="ajustes" id="btn-manual">📖 Cómo jugar</button>
+  </div>
+
+  <!-- VISTA DE AJUSTES (Oculta por defecto) -->
+  <div id="view-settings" class="menu-view hidden">
+    <p>⚙️ AJUSTES</p>
+    
+    <div class="grid-ajustes-container">
+      <div>
+        <p class="ajuste-seccion">SONIDO</p>
+        <div class="ajuste-fila">
+          <label for="ajuste-musica">🎵 Música</label>
+          <input type="range" id="ajuste-musica" min="0" max="100" step="5">
+          <span class="valor" id="valor-musica"></span>
+        </div>
+        <div class="ajuste-fila">
+          <label for="ajuste-efectos">💥 Efectos</label>
+          <input type="range" id="ajuste-efectos" min="0" max="100" step="5">
+          <span class="valor" id="valor-efectos"></span>
+        </div>
+
+        <p class="ajuste-seccion">PARTIDA</p>
+        <div class="ajuste-fila ajuste-columna">
+          <label>🈯 Traducción en español</label>
+          <div class="grupo-toggle" id="grupo-traduccion">
+            <button data-trad="si">Mostrar</button>
+            <button data-trad="no">Ocultar</button>
+          </div>
+        </div>
+        <div class="ajuste-fila ajuste-columna">
+          <label>💡 Ayuda de romaji</label>
+          <div class="grupo-toggle" id="grupo-ayuda-romaji">
+            <button data-ayuda="inmediata">Inmediata</button>
+            <button data-ayuda="normal">10 s</button>
+            <button data-ayuda="tardia">20 s</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="ajuste-seccion">DIFICULTAD</p>
+        <div class="ajuste-fila">
+          <label for="ajuste-palabras-fase">📚 Palabras/fase</label>
+          <input type="range" id="ajuste-palabras-fase">
+          <span class="valor" id="valor-palabras-fase"></span>
+        </div>
+        <div class="ajuste-fila">
+          <label for="ajuste-palabras-guardian">🛡️ P. guardián</label>
+          <input type="range" id="ajuste-palabras-guardian">
+          <span class="valor" id="valor-palabras-guardian"></span>
+        </div>
+        <div class="ajuste-fila">
+          <label for="ajuste-palabras-jefe">👑 P. jefe final</label>
+          <input type="range" id="ajuste-palabras-jefe">
+          <span class="valor" id="valor-palabras-jefe"></span>
+        </div>
+        <div class="ajuste-fila">
+          <label for="ajuste-frases-jefe">📜 Frases jefe</label>
+          <input type="range" id="ajuste-frases-jefe">
+          <span class="valor" id="valor-frases-jefe"></span>
+        </div>
+        <div class="ajuste-fila">
+          <label for="ajuste-arcade-kills">🕹️ Guardián arcade</label>
+          <input type="range" id="ajuste-arcade-kills">
+          <span class="valor" id="valor-arcade-kills"></span>
+        </div>
+      </div>
+    </div>
+
+    <div id="dato-dominadas"></div>
+    <div style="display: flex; gap: 8px; width: 100%;">
+      <button id="btn-borrar-progreso" class="back" style="flex:1;">🗑️ Borrar progreso</button>
+      <button id="btn-back-ajustes" class="back" style="flex:1;">⬅️ Atrás</button>
+    </div>
+  </div>
+
+  <!-- MANUAL DE INSTRUCCIONES (Oculto por defecto) -->
+  <div id="view-manual" class="menu-view hidden">
+    <p>📖 CÓMO JUGAR</p>
+    <div class="manual-texto">
+      <b>🎯 Objetivo</b>
+      Los enemigos caen con una palabra japonesa. Escribe su ROMAJI para disparar bolas de nieve. Si un enemigo llega a la foca, pierdes.
+      <b>❄️ Las palabras reaparecen</b>
+      Cada palabra se supera 2 veces para dominarla (la segunda vez su círculo es azul).
+      <b>🎯 Modo Fases & 🕹️ Modo Arcade</b>
+      Supera fases examinándote con guardianes o enfréntate a palabras aleatorias sin fin con jefes periódicos.
+      <b>📈 Tu progreso y vocabulario</b>
+      Tus récords se guardan solos y puedes crear listas de estudio propias en la sección de vocabulario.
+    </div>
+    <button id="btn-back-manual" class="back">⬅️ Atrás</button>
+  </div>
+
+  <!-- VOCABULARIO PROPIO (Oculto por defecto) -->
+  <div id="view-custom" class="menu-view hidden">
+    <p>📂 MI VOCABULARIO DESDE FICHERO</p>
+    <div class="manual-texto">
+      <b>Sube un fichero de texto (.txt) con el formato:</b>
+      japonés|kana|romaji|traducción
+      Frases jefe: BOSS_FRAS|frase|romaji|traducción
+    </div>
+    
+    <!-- Nuevo input de tipo file oculto estilizado con un botón -->
+    <div style="width: 100%; display: flex; flex-direction: column; gap: 8px; align-items: center;">
+      <input type="file" id="custom-file-input" accept=".txt,.csv" style="display: none;">
+      <button type="button" id="btn-seleccionar-fichero" style="background: #2C3E50; border: 2px solid #000; border-radius: 8px; color: #fff; cursor:pointer; width: 100%; padding: 10px;">📂 Seleccionar fichero del dispositivo</button>
+    </div>
+
+    <textarea id="custom-texto" spellcheck="false" placeholder="El contenido del fichero aparecerá aquí..." style="height: 90px;"></textarea>
+    <div id="custom-estado"></div>
+    <div style="display: flex; gap: 8px; width: 100%;">
+      <button class="mode-classic" id="btn-custom-jugar" style="flex:1;">▶️ Jugar</button>
+      <button id="btn-custom-guardar" style="flex:1; background: #2C3E50; border: 2px solid #000; border-radius: 8px; color: #fff; cursor:pointer;">💾 Guardar</button>
+      <button id="btn-back-custom" class="back" style="flex:1;">⬅️ Atrás</button>
+    </div>
+  </div>
 
   <!-- PANTALLA 2: ELEGIR QUÉ VOCABULARIO APRENDER (Oculta por defecto) -->
   <div id="view-vocabulary" class="menu-view hidden">
     <p>ELIGE EL VOCABULARIO DE LA PARTIDA</p>
-    <button class="hiragana" data-mode="hiragana">HIRAGANA</button>
-    <button class="katakana" data-mode="katakana">KATAKANA</button>
-    <button class="noken5" data-mode="KANJI_NOKEN_5">KANJI NOKEN 5</button>
-    <button class="noken2" data-mode="KANJI_SEMANA_2">NOKEN 2.1</button>
-    <button class="noken2" data-mode="KANJI_SEMANA_3">NOKEN 2.2</button>
-    <button class="noken2" data-mode="KANJI_SEMANA_4">NOKEN 2.3</button>
-    <button class="noken2" data-mode="KANJI_SEMANA_5">NOKEN 2.4</button>
-    <button class="noken2" data-mode="KANJI_SEMANA_6">NOKEN 2.5</button>
-    <button class="noken2" data-mode="KANJI_SEMANA_7">NOKEN 2.6</button>
+    <div class="vocab-grid-container">
+      <button class="hiragana" data-mode="hiragana">HIRAGANA</button>
+      <button class="katakana" data-mode="katakana">KATAKANA</button>
+      <button class="noken5" data-mode="KANJI_NOKEN_5">KANJI NOKEN 5</button>
+      <button class="noken2" data-mode="KANJI_SEMANA_2">NOKEN 2.1</button>
+      <button class="noken2" data-mode="KANJI_SEMANA_3">NOKEN 2.2</button>
+      <button class="noken2" data-mode="KANJI_SEMANA_4">NOKEN 2.3</button>
+      <button class="noken2" data-mode="KANJI_SEMANA_5">NOKEN 2.4</button>
+      <button class="noken2" data-mode="KANJI_SEMANA_6">NOKEN 2.5</button>
+      <button class="noken2" data-mode="KANJI_SEMANA_7">NOKEN 2.6</button>
+      <button class="propio hidden" id="btn-jugar-propio" data-mode="custom">⭐ MI VOCABULARIO</button>
+    </div>
+    <button class="ajustes" id="btn-vocab-propio">✏️ Crear / editar mi vocabulario</button>
     <button class="back" id="btn-back-structure">⬅️ Cambiar Modo de Juego</button>
   </div>
 </div>

@@ -82,18 +82,18 @@ export const HIRAGANA_RAW = `
 いや|IYA|NO GUSTAR
 
 BOSS_FRAS|わたしのくるまはあかいです|WATASHINOKURUMAHAAKAIDESU|Mi coche es rojo
-BOSS_FRAS|このほんはおもしろいです|KONOHONHAOMOSHIROIIDESU|Este libro es interesante
-BOSS_FRAS|あさごはんはとてもおいしいです|ASAGOHANHATOMOTOOISHIIDESU|El desayuno es muy rico
+BOSS_FRAS|このほんはおもしろいです|KONOHONHAOMOSHIROIDESU|Este libro es interesante
+BOSS_FRAS|あさごはんはとてもおいしいです|ASAGOHANHATOTEMOOISHIIDESU|El desayuno es muy rico
 BOSS_FRAS|きょうのてんきはあたたかいです|KYOUNOTENKIHAATATAKAIDESU|El tiempo de hoy está templado
 BOSS_FRAS|わたしのへやはひろいです|WATASHINOHEYAHAHIROIDESU|Mi habitación es amplia
 BOSS_FRAS|このえいがはとてもたのしいです|KONOEIGAHATOMOTOTANOSHIIDESU|Esta película es muy divertida
 BOSS_FRAS|にほんごはむずかしいです|NIHON GOHAMUZUKASHIIDESU|El japonés es difícil
 BOSS_FRAS|あのやまはとてもたかいです|ANOYAMAHATOMOTOTAKAIDESU|Aquella montaña es muy alta
 BOSS_FRAS|このかばんはやすいです|KONOKABANHAYASUIDESU|Este maletín es barato
-BOSS_FRAS|わたしはすずしいひがすきです|WATASHIHASUZUSHIIHIGASUKIIDESU|Me gustan los días frescos
-BOSS_FRAS|わたしはがくせいです|WATASHIWAGAKUSEIDESU|Yo soy estudiante.
-BOSS_FRAS|おなまえはなんですか|ONAMAEWANANDESUKA|¿Cuál es tu nombre?
-BOSS_FRAS|これはなんですか|KOREWANANDESUKA|¿Qué es esto?
+BOSS_FRAS|わたしはすずしいひがすきです|WATASHIHASUZUSHIIHIGASUKIDESU|Me gustan los días frescos
+BOSS_FRAS|わたしはがくせいです|WATASHIHAAGAKUSEIDESU|Yo soy estudiante.
+BOSS_FRAS|おなまえはなんですか|ONAMAEHANANDESUKA|¿Cuál es tu nombre?
+BOSS_FRAS|これはなんですか|KOREHANANDESUKA|¿Qué es esto?
 BOSS_FRAS|どこへいきますか|DOKOEIKIMASUKA|¿A dónde vas?
 BOSS_FRAS|おげんきですか|OGENKIDESUKA|¿Cómo estás?
 BOSS_FRAS|あさごはんをたべます|ASAGOHANWOTABEMASU|Desayuno (como el desayuno).

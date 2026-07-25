@@ -3,14 +3,18 @@
 // ========================================================
 import { state } from './config.js';
 import { sistemaLector } from './sistemaFases.js';
+import { obtenerAjuste } from './ajustes.js';
+import { MUSIC, mp3 } from '../juego.js';
 
 export const controladorModoArcade = {
   jefeCadaKills: 40,
   proximoHitoJefe: 40,
 
   init() {
+    // Hito del guardián configurable desde Ajustes (se fija al empezar la partida)
+    this.jefeCadaKills = obtenerAjuste('arcadeKillsGuardian');
     this.proximoHitoJefe = this.jefeCadaKills;
-    
+
     // Forzamos el reinicio de las variables del lector general de jefes
     sistemaLector.bossMode = false;
     sistemaLector.activeBoss = null;
@@ -18,7 +22,8 @@ export const controladorModoArcade = {
     sistemaLector.miniJefesDerrotados = 0;
   },
 
-  update(spawnEnemyFn) {
+  // dtFactor: 1.0 a 60fps; escala los timers para que el ritmo no dependa del refresco
+  update(spawnEnemyFn, dtFactor = 1) {
     // Si llegamos a los 40 aciertos (o múltiplos) y no estamos ya en modo jefe, lo activamos
     if (!sistemaLector.bossMode && state.kills >= this.proximoHitoJefe) {
       state.enemies = []; // Limpiamos la pantalla para el duelo
@@ -26,14 +31,14 @@ export const controladorModoArcade = {
     }
 
     if (!sistemaLector.bossMode) {
-      state.spawnTimer++;
+      state.spawnTimer += dtFactor;
       if (state.spawnTimer >= state.spawnInterval) {
         state.spawnTimer = 0;
         spawnEnemyFn();
         if (state.spawnInterval > 80) state.spawnInterval -= 2;
       }
     } else {
-      if (sistemaLector.activeBoss) sistemaLector.bossTimerAyuda++;
+      if (sistemaLector.activeBoss) sistemaLector.bossTimerAyuda += dtFactor;
     }
   },
 
@@ -82,9 +87,12 @@ export const controladorModoArcade = {
       jp: poolExamen[0].jp, romaji: poolExamen[0].romaji, es: poolExamen[0].es,
       isBoss: true
     };
-
     state.enemies.push(sistemaLector.activeBoss);
     // Establecemos el próximo hito (ej: 80 kills) para cuando derrote a este jefe
     this.proximoHitoJefe += this.jefeCadaKills;
+      mp3.pause();
+      mp3.cargar(MUSIC.Guardian);
+      mp3.setRepeat(true);
+      mp3.play();
   }
 };

@@ -1,8 +1,9 @@
+import { obtenerUmbralAyuda } from "./ajustes.js";
+
 const spriteGranJefe = new Image();
 spriteGranJefe.src = "personajes/Guardian_Hacha3.png"; // Tu ruta de imagen
 
 export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, sistemaLector) {
-  
   // === INICIALIZACIÓN DE ESTADO ALEATORIO EN EL ENEMIGO ===
   // Si el enemigo no tiene estas propiedades guardadas, las creamos la primera vez
   if (e.ultimaVelocidadAnimacion === undefined) {
@@ -28,13 +29,14 @@ export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, 
     minMs: 550, // Lo más rápido (aprox 10 frames por segundo)
     maxMs: 1000, // Lo más lento (aprox 3.5 frames por segundo)
     
-    renderWidth: e.radius * 8,  
-    renderHeight: e.radius * 8,
+    renderWidth: (e.radius * 8) ,  
+    renderHeight: (e.radius * 8),
     
     offsetX: 0, 
     offsetY: 200  
   };
 
+  
   // ========================================================
   // 2. RENDERIZADO DEL CUERPO CON ANIMACIÓN AUTOMÁTICA
   // ========================================================
@@ -74,8 +76,51 @@ export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, 
   ctx.lineWidth = 5; 
   ctx.stroke();
   }
+
+  // Función de salto automático de línea compatible con espacios y caracteres continuos
+  const drawWrappedText = (context, text, x, y, maxWidth, lineHeight, isCustomDraw = null) => {
+    const stringText = text ? text.toString() : "";
+    let lines = [];
+    let currentLine = "";
+
+    const chunks = stringText.includes(' ') ? stringText.split(' ') : stringText.split('');
+
+    for (let i = 0; i < chunks.length; i++) {
+      const charOrWord = chunks[i];
+      const spacer = stringText.includes(' ') ? ' ' : '';
+      const testLine = currentLine + (currentLine.length > 0 ? spacer : '') + charOrWord;
+      const metrics = context.measureText(testLine);
+
+      if (metrics.width > maxWidth && currentLine.length > 0) {
+        lines.push(currentLine);
+        currentLine = charOrWord;
+      } else {
+        currentLine = testLine;
+      }
+    }
+    if (currentLine.length > 0) {
+      lines.push(currentLine);
+    }
+
+    let currentY = y;
+    lines.forEach((l, index) => {
+      const trimmedLine = l.trim();
+      if (isCustomDraw) {
+        isCustomDraw(trimmedLine, x, currentY, index);
+      } else {
+        context.strokeText(trimmedLine, x, currentY);
+        context.fillText(trimmedLine, x, currentY);
+      }
+      currentY += lineHeight;
+    });
+
+    return lines.length;
+  };
+
+  // Ancho máximo permitido basado en la pantalla con un margen de seguridad
+  const anchoMaximoDinamico = Math.min(window.innerWidth - 40, 800);
   // A. TÍTULO DEL GRAN JEFE (Violeta Vibrante + Estilo Épico)
-  const titleY = e.y - e.radius - 40; // Un poco más arriba para destacar
+  const titleY = e.y - e.radius - (40); // Un poco más arriba para destacar
   
   ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
@@ -91,8 +136,7 @@ export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, 
   ctx.fillText(`👑 🔥 ${e.name} 🔥 👑`, e.x, titleY);
 
   // B. BARRA DE VIDA (Con marco estilo interfaz)
-  const barWidth = 150;
-  const barHeight = 12;
+  const barWidth = 150 ;  const barHeight = 12;
   const barX = e.x - (barWidth / 2);
   const barY = e.y - e.radius - 22;
 
@@ -109,51 +153,79 @@ export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, 
   ctx.fillStyle = "#f32408"; 
   ctx.fillRect(barX, barY, barWidth * vidaRestante, barHeight);
 
-  // C. DIBUJAR KANJI (Contorno estándar 4px)
+  // B. DIBUJAR KANJI CON WRAPTEXT AUTOMÁTICO
   ctx.textBaseline = "middle"; 
-  ctx.font = `bold ${baseFontJp * 1.8}px sans-serif`; // Más grande por ser jefe
+  ctx.font = `bold ${baseFontJp * 1.4}px sans-serif`;  
   ctx.strokeStyle = "#000000";
-  ctx.lineWidth = 4;
-  ctx.strokeText(e.jp, e.x, e.y);
-  ctx.fillStyle = "#fbf8ff";
-  ctx.fillText(e.jp, e.x, e.y);
-  
-  // D. ROMAJI DE AYUDA (Estilo Ártico: Cian Eléctrico con borde)
-if (sistemaLector.bossTimerAyuda >= 600) {
-    // Definimos la base debajo del Kanji tal como en el Guardián
-    const textoBaseY = e.y + 60; 
-    // Calculamos la Y final (añadiendo espacio si mostraras traducción, 
-    // ajusta el '+ 0' si decides agregar la traducción también)
-    const romajiY = textoBaseY + 0; 
+  ctx.lineWidth = 6;
+  ctx.fillStyle = "#ffffff"; 
+  ctx.textAlign = "center";
+
+  const kanjiLineHeight = baseFontJp * 2;
+  const lineasKanji = drawWrappedText(ctx, e.jp, e.x, e.y, anchoMaximoDinamico, kanjiLineHeight);
+  const alturaTotalKanji = lineasKanji * kanjiLineHeight;
+
+  // Acumulador dinámico vertical para los siguientes bloques de texto
+  let desplazamientoY = (alturaTotalKanji) + 10;
+
+  // C. TRADUCCIÓN (Con soporte multilínea dinámico)
+  if (state.mostrarTraduccion && e.es) {
+    const tradY = e.y + desplazamientoY;
+    ctx.font = `bold ${18}px sans-serif`;
+    ctx.strokeStyle = "rgba(0,0,0,0.6)";
+    ctx.lineWidth = 4;
+    ctx.fillStyle = "#ffffff";
+
+    const textoTrad = `(${e.es})`;
+    const tradLineHeight = 22 ;
+    const lineasTrad = drawWrappedText(ctx, textoTrad, e.x, tradY, anchoMaximoDinamico, tradLineHeight);
     
-    ctx.font = `bold ${baseFontR * 1.5}px monospace`;
+    // Incrementamos el desplazamiento según lo que ocupó la traducción
+    desplazamientoY += (lineasTrad * tradLineHeight) + 10;
+  }
+
+  // D. ROMAJI DE AYUDA (Con soporte de colores isLocked y wraptext)
+  if (sistemaLector.bossTimerAyuda >= obtenerUmbralAyuda()) {
+    const romajiY = e.y + desplazamientoY + 10;
+
+    ctx.font = `bold ${baseFontR * 1.5 }px monospace`;
     ctx.lineJoin = "round";
 
     const romajiMayus = e.romaji.toUpperCase();
-    const fullW = ctx.measureText(romajiMayus).width;
-    const startX = e.x - fullW / 2;
-
-    // Configuración de bordes para que coincida con el estilo del guardián
     ctx.strokeStyle = "rgba(0,0,0,0.6)";
     ctx.lineWidth = 4;
 
-    if (isLocked) {
-      const typed = romajiMayus.slice(0, state.typedLen);
-      const rest = romajiMayus.slice(state.typedLen);
-      const typedWidth = ctx.measureText(typed).width;
+    const romajiLineHeight = 35;
 
-      ctx.textAlign = "left"; 
-      ctx.strokeText(typed, startX, romajiY);
-      ctx.fillStyle = "#ffeb3b"; 
-      ctx.fillText(typed, startX, romajiY);
-      
-      ctx.strokeText(rest, startX + typedWidth, romajiY);
-      ctx.fillStyle = "#6cffeb"; 
-      ctx.fillText(rest, startX + typedWidth, romajiY);
+    if (isLocked) {
+      let globalCharCount = 0;
+
+      drawWrappedText(ctx, romajiMayus, e.x, romajiY, anchoMaximoDinamico, romajiLineHeight, (lineText, lx, ly) => {
+        const fullLineWidth = ctx.measureText(lineText).width;
+        let currentX = lx - fullLineWidth / 2;
+
+        for (let i = 0; i < lineText.length; i++) {
+          const char = lineText[i];
+          const charWidth = ctx.measureText(char).width;
+          
+          const isTypedChar = globalCharCount < state.typedLen;
+          globalCharCount++;
+
+          ctx.textAlign = "left";
+          ctx.strokeText(char, currentX, ly);
+          ctx.fillStyle = isTypedChar ? "#ffeb3b" : "#6cffeb"; 
+          ctx.fillText(char, currentX, ly);
+
+          currentX += charWidth;
+        }
+      });
     } else {
-      ctx.textAlign = "center"; 
-      ctx.strokeText(romajiMayus, e.x, romajiY);
-      ctx.fillStyle = "#6cffeb"; 
-      ctx.fillText(romajiMayus, e.x, romajiY);
+      ctx.textAlign = "center";
+      drawWrappedText(ctx, romajiMayus, e.x, romajiY, anchoMaximoDinamico, romajiLineHeight, (lineText, lx, ly) => {
+        ctx.strokeText(lineText, lx, ly);
+        ctx.fillStyle = "#6cffeb";
+        ctx.fillText(lineText, lx, ly);
+      });
     }
-  }}
+  }
+}

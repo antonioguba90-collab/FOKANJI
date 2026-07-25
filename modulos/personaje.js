@@ -18,7 +18,7 @@ const animConfig = {
   disparar: { frames: 3, velocidad: 0.12, anchoFrame: 116.25, altoFrame: 126 }, // Asegúrate de poner estos valores
   backflip: { frames: 6, velocidad: 0.05, anchoFrame: 112.33, altoFrame: 110 }
 };
-export function dibujarPersonaje(ctx, player) {
+export function dibujarPersonaje(ctx, player, dtFactor = 1) {
   if (!player) return;
 
   const fx = player.x;
@@ -38,8 +38,8 @@ export function dibujarPersonaje(ctx, player) {
     configActual = animConfig.disparar;
   }
 
-  player.frameAnim += configActual.velocidad;
-  
+  player.frameAnim += configActual.velocidad * dtFactor;
+
   if (player.frameAnim >= configActual.frames) {
     if (player.estadoAnim === 'disparar') {
       player.estadoAnim = 'saludar';
@@ -79,7 +79,4 @@ export function dibujarPersonaje(ctx, player) {
     ctx.arc(fx, fy - 10, 5, 0, Math.PI * 2);
     ctx.fill();
   }
-// Dentro de dibujarPersonaje en personaje.js, abajo de donde sumas la velocidad:
-if (player.estadoAnim === 'disparar') {
-  console.log("¡La foca está en estado DISPARAR!, Frame actual:", Math.floor(player.frameAnim));
-}}
+}

@@ -1,12 +1,16 @@
 // ==========================================
 // ORQUESTADOR DE RENDERIZADO (DRAW LOOP)
 // ==========================================
-import { ctx, state, hud } from './config.js';
+import { ctx, state, hud, formatearNombreModo } from './config.js';
 import { sistemaLector } from './sistemaFases.js';
+import { obtenerAjuste } from './ajustes.js';
 import { dibujarPersonaje } from './personaje.js';
 import { dibujarEnemigoComun } from './enemigos.js';
 import { dibujarGuardian } from './guardianes.js';
 import { dibujarGranJefe } from './granJefe.js';
+
+// Última cadena pintada en el HUD: solo tocamos el DOM si cambia (evita reflows por frame)
+let hudPrevio = "";
 
 /**
  * Dibuja texto multilínea centrado.
@@ -40,25 +44,25 @@ function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
   }
 }
 
-export function ejecutarDrawLoop() {
+// dtSeg: delta real en segundos (lo pasa el loop principal); clamp por si la pestaña estuvo en segundo plano
+export function ejecutarDrawLoop(dtSeg = 1 / 60) {
   ctx.clearRect(0, 0, state.W, state.H);
   if (!state.started) {
-    requestAnimationFrame(ejecutarDrawLoop);
-    return; // No ejecutamos el resto del renderizado
+    return; // En el menú no hay nada que renderizar (el loop principal sigue vivo)
   }
  // ==========================================
 // ==========================================
 // 1. FONDO: Azul océano ártico profundo
 // ==========================================
 const gradienteFondo = ctx.createLinearGradient(0, 0, 0, state.H);
-gradienteFondo.addColorStop(0, "#001f3f"); 
-gradienteFondo.addColorStop(0.6, "#0074D9"); 
-gradienteFondo.addColorStop(1, "#7FDBFF"); 
+gradienteFondo.addColorStop(0, "#001f3f");
+gradienteFondo.addColorStop(0.6, "#0074D9");
+gradienteFondo.addColorStop(1, "#7FDBFF");
 ctx.fillStyle = gradienteFondo;
 ctx.fillRect(0, 0, state.W, state.H);
 
 const time = performance.now() / 1000;
-const dt = 1 / 60; 
+const dt = Math.min(dtSeg, 0.1);
 
 // ==========================================
 // 2. ICEBERGS CON ESCALADO POR PROFUNDIDAD
@@ -190,18 +194,18 @@ state.snowflakes.forEach((flake) => {
   ctx.fill();
 });
 
-  // 1. Dibujar Personaje (Nave Foca)
-  dibujarPersonaje(ctx, state.player);
+  // 1. Dibujar Personaje (Nave Foca) — salvo durante la animación de game over (ha explotado)
+  if (!state.gameOverAnim) dibujarPersonaje(ctx, state.player, dt * 60);
 
   const baseFontJp = Math.min(state.W, state.H) * 0.04 + 14;
   const baseFontR = Math.min(state.W, state.H) * 0.025 + 10;
-  ctx.textAlign = "center"; 
-  ctx.textBaseline = "middle"; 
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
 
   // 2. Dibujar Enemigos delegando según su Tipo (Minion, Guardián o Gran Jefe)
+  // (el timerAyuda avanza en el update del juego, no aquí)
   for (const e of state.enemies) {
     const isLocked = e.id === state.lockedId;
-    if (!e.isBoss) e.timerAyuda++;
 
     if (e.isBoss) {
       if (e.id === 9999) {
@@ -280,36 +284,141 @@ ctx.textBaseline = "alphabetic";
 
   ctx.globalAlpha = 1;
 
-  // ========================================================
-// 5. Actualización del HUD del Texto Superior
-const progresoFase = Math.max(0, sistemaLector.TOTAL_PALABRAS_FASE - sistemaLector.palabrasUnicasCompletadasSet.size);
-  
-const totalSet = sistemaLector.CANTIDAD_NUEVAS + sistemaLector.CANTIDAD_REPASO;
-const completadas = sistemaLector.palabrasUnicasCompletadasSet.size;
+// ========================================================
+// 4b. ANIMACIÓN DE GAME OVER "CONGELACIÓN ÁRTICA"
+// Fases: golpe de ventisca (flash) → la noche polar cae y la escarcha
+// cierra los bordes mientras cruza una ráfaga de nieve → rótulo de hielo
+// ========================================================
+if (state.gameOverAnim) {
+  const anim = state.gameOverAnim;
+  const t = anim.t;
 
-// Preparamos el nombre del modo para que sea legible (ej: KANJI_NOKEN_5 -> Kanji Noken 5)
-const nombresPersonalizados = {
-  hiragana: "HIRAGANA",
-  katakana: "KATAKANA",
-  KANJI_NOKEN_5: "NIVEL NOKEN 5",
-  KANJI_SEMANA_2: "NOKEN 2 - 1",
-  KANJI_SEMANA_3: "NOKEN 2 - 2",
-  KANJI_SEMANA_4: "NOKEN 2 - 3",
-  KANJI_SEMANA_5: "NOKEN 2 - 4",
-  KANJI_SEMANA_6: "NOKEN 2 - 5",
-  KANJI_SEMANA_7: "NOKEN 2 - 6"
-};
+  // 1. Noche polar: tinte azul profundo progresivo
+  ctx.fillStyle = `rgba(2, 14, 34, ${Math.min(0.72, t / 80)})`;
+  ctx.fillRect(0, 0, state.W, state.H);
 
-const modoFormateado = state.currentMode 
-  ? (nombresPersonalizados[state.currentMode] || state.currentMode.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()))
-  : "Desconocido";
+  // 2. Escarcha cerrándose desde los bordes (viñeta helada)
+  const escarcha = Math.min(1, t / 110);
+  const radioMax = Math.hypot(state.W, state.H) / 2;
+  const gradEscarcha = ctx.createRadialGradient(
+    state.W / 2, state.H / 2, radioMax * 0.3,
+    state.W / 2, state.H / 2, radioMax
+  );
+  gradEscarcha.addColorStop(0, "rgba(200, 235, 255, 0)");
+  gradEscarcha.addColorStop(0.65, `rgba(190, 228, 255, ${0.06 * escarcha})`);
+  gradEscarcha.addColorStop(1, `rgba(235, 248, 255, ${0.55 * escarcha})`);
+  ctx.fillStyle = gradEscarcha;
+  ctx.fillRect(0, 0, state.W, state.H);
 
-let textoHud = `Modo: ${modoFormateado} | Puntos: ${state.score} | Fase: ${sistemaLector.miniJefesDerrotados + 1} | Progreso: ${sistemaLector.bossMode ? "¡JEFE!" : `${completadas}/${totalSet}`}`;
-  
-// Mantener tu lógica de progreso de nivel si aplica
-if (state.totalPalabrasNivel !== undefined && state.gameStructure !== "arcade") {
-  textoHud += `  (Restan del Nivel: ${state.totalPalabrasNivel})`;
+  // 3. Ráfaga de ventisca lateral (partículas propias de la animación)
+  if (!anim.copos) {
+    anim.copos = [];
+    for (let i = 0; i < 85; i++) {
+      anim.copos.push({
+        x: Math.random() * state.W,
+        y: Math.random() * state.H,
+        vx: -(380 + Math.random() * 420),      // viento fuerte hacia la izquierda
+        vy: 40 + Math.random() * 90,
+        size: 0.8 + Math.random() * 2.2,
+        alpha: 0.35 + Math.random() * 0.5,
+      });
+    }
+  }
+  const fuerzaVentisca = Math.min(1, t / 25) * (t > 120 ? Math.max(0.35, 1 - (t - 120) / 60) : 1);
+  for (const copo of anim.copos) {
+    copo.x += copo.vx * dt * fuerzaVentisca;
+    copo.y += copo.vy * dt * fuerzaVentisca;
+    if (copo.x < -20) { copo.x = state.W + 20; copo.y = Math.random() * state.H; }
+    if (copo.y > state.H + 10) copo.y = -10;
+
+    // Trazo alargado en la dirección del viento: sensación de ráfaga
+    ctx.strokeStyle = `rgba(240, 250, 255, ${copo.alpha * fuerzaVentisca})`;
+    ctx.lineWidth = copo.size;
+    ctx.beginPath();
+    ctx.moveTo(copo.x, copo.y);
+    ctx.lineTo(copo.x - copo.vx * 0.035, copo.y - copo.vy * 0.035);
+    ctx.stroke();
+  }
+
+  // 4. Golpe inicial: flash blanco-azulado de ventisca
+  if (t < 14) {
+    ctx.fillStyle = `rgba(225, 242, 255, ${(1 - t / 14) * 0.85})`;
+    ctx.fillRect(0, 0, state.W, state.H);
+  }
+
+  // 5. Rótulo GAME OVER de hielo: entra encogiéndose con sacudida que se calma
+  if (t > 25) {
+    const alpha = Math.min(1, (t - 25) / 30);
+    const escala = 1.18 - 0.18 * alpha;
+    const fuerzaShake = Math.max(0, 60 - t);
+    const offsetX = Math.sin(t * 1.3) * fuerzaShake * 0.16;
+    const offsetY = Math.cos(t * 1.1) * fuerzaShake * 0.11;
+    const tamano = Math.min(state.W, state.H) * 0.11 + 22;
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(state.W / 2 + offsetX, state.H * 0.42 + offsetY);
+    ctx.scale(escala, escala);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = `bold ${tamano}px 'Arial Black', sans-serif`;
+    ctx.lineJoin = "round";
+
+    // Halo helado + contorno azul noche
+    ctx.shadowColor = "#6cffeb";
+    ctx.shadowBlur = 26 * alpha;
+    ctx.strokeStyle = "#06263f";
+    ctx.lineWidth = tamano * 0.16;
+    ctx.strokeText("GAME OVER", 0, 0);
+    ctx.shadowBlur = 0;
+
+    // Relleno de hielo: blanco → azul glaciar
+    const gradHielo = ctx.createLinearGradient(0, -tamano * 0.55, 0, tamano * 0.55);
+    gradHielo.addColorStop(0, "#ffffff");
+    gradHielo.addColorStop(0.55, "#cdeeff");
+    gradHielo.addColorStop(1, "#7fdbff");
+    ctx.fillStyle = gradHielo;
+    ctx.fillText("GAME OVER", 0, 0);
+    ctx.restore();
+  }
 }
 
-hud.textContent = textoHud;
+  // ========================================================
+// 5. Actualización del HUD (4 líneas, esquina inferior izquierda)
+const modoFormateado = formatearNombreModo(state.currentMode);
+let lineasHud;
+
+// 🕹️ HUD EXCLUSIVO PARA MODO ARCADE
+if (state.gameStructure === "arcade") {
+  const killsPorGuardian = Math.max(1, obtenerAjuste('arcadeKillsGuardian'));
+  const guardianesDerrotadosArcade = Math.floor(state.kills / killsPorGuardian);
+  lineasHud = [
+    `Modo: ${modoFormateado} (Arcade)`,
+    `Puntos: ${state.score}`,
+    `Eliminados: ${state.kills}`,
+    `Guardianes: ${guardianesDerrotadosArcade}`,
+  ];
+}
+// 🗺️ HUD EXCLUSIVO PARA MODO FASES
+else {
+  const totalSet = sistemaLector.palabrasFaseActual.length > 0
+    ? sistemaLector.palabrasFaseActual.length
+    : sistemaLector.CANTIDAD_NUEVAS;
+
+  const completadas = sistemaLector.palabrasUnicasCompletadasSet.size;
+  const fase = sistemaLector.miniJefesDerrotados + 1;
+
+  lineasHud = [
+    `Modo: ${modoFormateado}`,
+    `Puntos: ${state.score}`,
+    sistemaLector.bossMode ? `Fase ${fase}: ¡JEFE!` : `Fase ${fase}: ${completadas}/${totalSet}`,
+    `Restan del nivel: ${state.totalPalabrasNivel !== undefined ? state.totalPalabrasNivel : "-"}`,
+  ];
+}
+
+const textoHud = lineasHud.join("\n");
+if (textoHud !== hudPrevio) {
+  hud.textContent = textoHud; // el CSS (white-space: pre-line) pinta cada línea
+  hudPrevio = textoHud;
+}
 }

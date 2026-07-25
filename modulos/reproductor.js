@@ -1,10 +1,12 @@
+import { obtenerAjuste, alCambiarAjuste } from './ajustes.js';
 
-const volumeaudio = 0.75
 export class ReproductorMP3 {
     constructor() {
         this.audio = null;
         this.urlActual = '';
-        this.volume = volumeaudio; // Establecido al 75%
+        this.volume = obtenerAjuste('volumenMusica'); // Volumen inicial desde Ajustes
+        // El slider de Ajustes actualiza el volumen en vivo
+        alCambiarAjuste('volumenMusica', (v) => this.setVolume(v));
     }
     // Carga el archivo MP3 sin reproducirlo inmediatamente
     cargar(url) {

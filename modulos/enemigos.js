@@ -1,4 +1,7 @@
 import { sistemaLector } from "./sistemaFases.js";
+import { obtenerUmbralAyuda } from "./ajustes.js";
+const esMovil = window.innerWidth < 768;
+const factorEscalaMovil = esMovil ? 0.7 : 1.0;
 // 1. PRECARGA DE TODOS LOS PERSONAJES
 let ultimaVelocidad = 150; // Velocidad inicial por defecto
 let ultimoCiclo = -1;      // Nos ayuda a saber cuándo la animación dio una vuelta completa
@@ -50,13 +53,12 @@ export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
   // CONFIGURACIÓN DE TAMAÑOS (PERSPECTIVA DINÁMICA)
   // ==========================================
   // Factor de profundidad: 0.2 (arriba/lejos) a 1.0 (abajo/cerca)
-  const factorProfundidad = Math.min(2, Math.max(0.2, e.y / state.H));
+  const factorProfundidad = Math.min(1.0, Math.max(0.2, e.y / state.H));
   
   // Escala base multiplicada por el factor de profundidad
-  const escalaSprite = 1.0 + (factorProfundidad * 4.5); // Escala de 0.5 a 2.5
-  const escalaKanji = 0.9 * factorProfundidad;          // El texto también escala
-  const escalaRomaji = 0.7 * factorProfundidad;         // El texto también escala 
-  
+  const escalaSprite = (1.0 + (factorProfundidad * 4.5)) * factorEscalaMovil; 
+  const escalaKanji = (0.9 * factorProfundidad) * factorEscalaMovil;
+  const escalaRomaji = (0.7 * factorProfundidad) * factorEscalaMovil;
 
 if (isLocked) {
     // 🌟 REGLA DIRECTA: ¿La palabra actual está en el pool de repaso acumulado?
@@ -111,8 +113,8 @@ const frameActual = Math.floor(Date.now() / e.velocidadAnimacion) % totalFrames;
   const sourceY = 0;
 
   // 5. Dimensiones y centrado dinámico basados en la nueva escala
-  const destinoWidth = e.radius * escalaSprite;
-  const destinoHeight = e.radius * escalaSprite;
+ const destinoWidth = (e.radius * escalaSprite);
+  const destinoHeight = (e.radius * escalaSprite);
   
   const destinoX = e.x - (destinoWidth / 2);
   const destinoY = e.y - (destinoHeight / 2);
@@ -143,8 +145,8 @@ const textoX = e.x + (destinoWidth / 2) + 15;
 const kanjiY = e.y + 10; // Centrado verticalmente con el sprite
 
 // 1. Tamaño mínimo garantizado
-const fontSizeBase = e.radius * escalaKanji;
-const fontSize = Math.max(30, fontSizeBase); 
+const fontSizeBase = Math.max(30 * factorEscalaMovil, e.radius * escalaKanji);
+const fontSize = Math.max(30 * factorEscalaMovil, fontSizeBase); 
 
 ctx.font = `bold ${fontSize}px sans-serif`;
 ctx.lineJoin = "round";
@@ -177,7 +179,7 @@ ctx.textAlign = "center"; // Centramos respecto a la posición X del enemigo
 const posInferiorX = e.x; // Punto de anclaje centrado en el sprite
 const bloqueInferiorY = e.y + (destinoHeight / 2) + 15; // Debajo del sprite
 
-const fontSizeSecundario = Math.max(16, baseFontR * escalaRomaji * 1.5); 
+const fontSizeSecundario = Math.max(16 * factorEscalaMovil, baseFontR * escalaRomaji * 1.5); 
 
 if (state.mostrarTraduccion && e.es) {
     ctx.save();
@@ -192,7 +194,7 @@ if (state.mostrarTraduccion && e.es) {
     ctx.restore();
 }
 
-if (e.timerAyuda >= 600) {
+if (e.timerAyuda >= obtenerUmbralAyuda()) {
     const offsetTraduccion = (state.mostrarTraduccion && e.es) ? (fontSizeSecundario * 1.2) : 0;
     const romajiY = bloqueInferiorY + offsetTraduccion;
 

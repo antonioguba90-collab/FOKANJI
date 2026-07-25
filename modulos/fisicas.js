@@ -4,8 +4,10 @@
 /**
  * Gestiona el movimiento de los enemigos, las repulsiones entre ellos
  * y comprueba si alguno ha colisionado con la nave foca del jugador.
+ * dtFactor: 1.0 a 60fps; escala el movimiento para igualar la velocidad
+ * en cualquier tasa de refresco (120/144 Hz...).
  */
-export function actualizarFisicasYColisiones(state, endGame) {
+export function actualizarFisicasYColisiones(state, endGame, dtFactor = 1) {
   const minions = state.enemies.filter(e => !e.isBoss);
 
   // 1. Repulsión horizontal entre enemigos (considerando el texto a la derecha)
@@ -51,14 +53,14 @@ export function actualizarFisicasYColisiones(state, endGame) {
   // 2. Movimiento hacia el jugador
   for (const e of state.enemies) {
     if (e.isBoss) {
-      if (e.y < e.targetY) e.y += 1.5;
+      if (e.y < e.targetY) e.y += 1.5 * dtFactor;
     } else {
-      const dx = state.player.x - e.x; 
+      const dx = state.player.x - e.x;
       const dy = state.player.y - e.y;
       const d = Math.hypot(dx, dy) || 1;
-      
-      e.x += (dx / d) * e.speed; 
-      e.y += (dy / d) * e.speed;
+
+      e.x += (dx / d) * e.speed * dtFactor;
+      e.y += (dy / d) * e.speed * dtFactor;
     }
 
     // 3. Colisión con el jugador
@@ -66,7 +68,7 @@ export function actualizarFisicasYColisiones(state, endGame) {
     const radioDeColision = state.player.size + e.radius;
 
     if (distanciaAlJugador < radioDeColision) {
-      endGame(); 
+      endGame(e); // Pasamos el enemigo letal (para registrar el fallo de su palabra)
       return;
     }
   }

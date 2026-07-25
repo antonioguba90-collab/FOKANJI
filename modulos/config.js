@@ -8,6 +8,25 @@ export const msg = document.getElementById("msg");
 export const mobileInput = document.getElementById("mobile-input");
 export const menuEl = document.getElementById("menu");
 
+// Nombres legibles de cada modo de vocabulario (única fuente para HUD y mensajes)
+export const NOMBRES_MODOS = {
+  hiragana: "HIRAGANA",
+  katakana: "KATAKANA",
+  KANJI_NOKEN_5: "NIVEL NOKEN 5",
+  KANJI_SEMANA_2: "NOKEN 2 - 1",
+  KANJI_SEMANA_3: "NOKEN 2 - 2",
+  KANJI_SEMANA_4: "NOKEN 2 - 3",
+  KANJI_SEMANA_5: "NOKEN 2 - 4",
+  KANJI_SEMANA_6: "NOKEN 2 - 5",
+  KANJI_SEMANA_7: "NOKEN 2 - 6",
+  custom: "MI VOCABULARIO",
+};
+
+export function formatearNombreModo(modo) {
+  if (!modo) return "Desconocido";
+  return NOMBRES_MODOS[modo] || modo.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+}
+
 export const state = {
   W: window.innerWidth,
   H: window.innerHeight,
@@ -30,7 +49,7 @@ export const state = {
   currentMode: "hiragana",
   ALL_WORDS_POOL: [],
   BOSS_POOL: [],
-  music:null
+  music:null,
 };
 
 // Inyección de botones del DOM
@@ -38,7 +57,10 @@ export let btnPausa = document.getElementById("btn-pausa") || (() => {
   const btn = document.createElement("button");
   btn.id = "btn-pausa";
   btn.innerHTML = "⏸️ Pausa";
-  btn.style = "position:fixed; top:15px; right:15px; z-index:100; padding:6px 12px; font-size:14px; background:rgb(34, 157, 170); color:rgb(255, 255, 255); border:2px solid #000000; border-radius:6px; cursor:pointer;";
+  btn.className = "control-btn2"; // Usamos la clase CSS
+  btn.style.top = "15px";
+  btn.style.background = "rgba(34, 156, 170, 0.5)";
+  btn.style.color = "#ffffff";
   document.body.appendChild(btn);
   return btn;
 })();
@@ -47,7 +69,11 @@ export let btnCheatBoss = document.getElementById("btn-cheat-boss") || (() => {
   const btn = document.createElement("button");
   btn.id = "btn-cheat-boss";
   btn.innerHTML = "⚡ Skip to Boss";
-  btn.style = "position:fixed; top:55px; right:15px; z-index:100; padding:6px 12px; font-size:14px; background: #4a148c; color: #ffffff; border:2px solid #000000; border-radius:6px; cursor:pointer; display:none;";
+  btn.className = "control-btn1"; // Usamos la clase CSS
+  btn.style.top = "15px";
+  btn.style.background = "rgba(74, 20, 140, 0.5)";
+  btn.style.color = "#ffffff";
+  btn.style.display = "none";
   document.body.appendChild(btn);
   return btn;
 })();

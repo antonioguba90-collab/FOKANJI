@@ -99,47 +99,80 @@ function init() {
 function spawnEnemy() {
   if (state.enemies.length >= state.MAX_ENEMIES || sistemaLector.bossMode || state.paused) return;
 
-  const w = (state.gameStructure === "arcade") 
-    ? controladorModoArcade.obtenerPalabraParaSpawn() 
-    : controladorModoFases.obtenerPalabraParaSpawn();
+  let w = null;
+  let esClon = false;
+  let datosClon = null;
+
+  // 1. PRIORIDAD: Si hay clones pendientes en la cola, sacamos el primero
+  if (state.colaClonesPendientes && state.colaClonesPendientes.length > 0) {
+    const pendiente = state.colaClonesPendientes.shift(); // Saca el primero de la fila
+    datosClon = pendiente.datosOriginales;
+    esClon = true;
+    w = {
+      id: datosClon.wordId || datosClon.id,
+      jp: datosClon.jp,
+      romaji: datosClon.romaji,
+      es: datosClon.es,
+      kana: datosClon.kana
+    };
+  } else {
+    // 2. Si no hay clones, cogemos una palabra normal del modo juego
+    w = (state.gameStructure === "arcade") 
+      ? controladorModoArcade.obtenerPalabraParaSpawn() 
+      : controladorModoFases.obtenerPalabraParaSpawn();
+  }
 
   if (!w) return;
+
+  // Lógica común de carriles y alternancia estricta
+  const carrilCentralIzquierdo = state.W * 0.32;
+  const carrilCentralDerecho = state.W * 0.68;
   
-  let x = 60 + Math.random() * (state.W - 120);
+  let x = 0;
+  let esLadoIzquierdo = false;
+
+  if (state.ultimoCarrilUsado === "izquierdo") {
+    x = carrilCentralDerecho + (Math.random() * 20 - 10);
+    state.ultimoCarrilUsado = "derecho";
+    esLadoIzquierdo = false;
+  } else {
+    x = carrilCentralIzquierdo + (Math.random() * 20 - 10);
+    state.ultimoCarrilUsado = "izquierdo";
+    esLadoIzquierdo = true;
+  }
+
+  const carrilIzquierdoFlanco = state.W * 0.35; 
+  const carrilDerechoFlanco = state.W * 0.55;  
+  const objetivoX = esLadoIzquierdo ? carrilIzquierdoFlanco : carrilDerechoFlanco;
+
   const longLetras = w.romaji.length;
   const radius = (Math.min(state.W, state.H) * 0.024 + 20);
   
-  for (let intento = 0; intento < 10; intento++) {
-    const solapa = state.enemies.some(e => e.y < state.H * 0.3 && Math.abs(e.x - x) < (radius * 2.5));
-    if (!solapa) break;
-    x = 60 + Math.random() * (state.W - 120);
-  }
-
-  let baseSpeed = 0;
-  let speedAdaptada = 0;
-
-  if (state.gameStructure === "arcade") {
-    const factorDificultad = state.kills * 0.005; 
-    baseSpeed = 0.30 + Math.random() * 0.25 + factorDificultad;
-    speedAdaptada = Math.max(0.20, baseSpeed - (longLetras * 0.012)); 
-  } else {
-    baseSpeed = 0.25 + Math.random() * 0.25;
-    speedAdaptada = Math.max(0.12, baseSpeed - (longLetras * 0.015));
-  }
+  let speedAdaptada = (state.gameStructure === "arcade") ? 0.35 : 0.28;
   const finalSpeed = speedAdaptada * factorEscalaMovil;
 
   const paleta = ["#ff5252", "#34ace0", "#33d9b2", "#ffb142", "#ff793f"]; 
   const coloresUsados = new Set(state.enemies.map(e => e.color));
   const colorLibre = paleta.find(c => !coloresUsados.has(c)) || "#ffffff";
+  
   state.enemies.push({
-    id: state.nextId++, 
-    wordId: w.id, 
+    id: esClon ? (Date.now() + Math.random()) : state.nextId++, 
+    wordId: w.id || w.wordId, 
     jp: w.jp, romaji: w.romaji, es: w.es, kana: w.kana || w.jp,
-    x: x, y: alturaHorizonte, speed: finalSpeed, speedAdaptada, radius: radius, isBoss: false,
-    timerAyuda: 0, color: colorLibre,
-    vecesAcertada: 0 
+    x: x, 
+    x0: x,                          
+    y: alturaHorizonte,             
+    targetX: objetivoX,             
+    targetY: state.player.y,        
+    speed: finalSpeed, 
+    speedAdaptada, 
+    radius: radius, 
+    isBoss: false,
+    timerAyuda: 0, 
+    color: esClon ? datosClon.color : colorLibre,
+    vecesAcertada: esClon ? (datosClon.vecesAcertada + 1) : 0 
   });
-}  
+}
 
 function spawnExplosion(x, y, grande = false) {
   const n = grande ? 80 : 30;
@@ -303,7 +336,19 @@ function destroyLocked() {
 
   if (target.vecesAcertada < 2) {
     state.enemies = state.enemies.filter(e => e.id !== target.id);
-    spawnClonEnemigo(target, 1);
+    
+    // ==========================================
+    // CAMBIO: En lugar de clonar instantáneamente,
+    // lo metemos en la cola de espera de clones
+    // ==========================================
+    if (!state.colaClonesPendientes) {
+      state.colaClonesPendientes = [];
+    }
+    state.colaClonesPendientes.push({
+      datosOriginales: target,
+      contadorAciertos: 1
+    });
+
     state.lockedId = null; 
     state.typedLen = 0;
   } else {
@@ -326,24 +371,6 @@ function destroyLocked() {
   }
 }
 
-function spawnClonEnemigo(datosOriginales, contadorAciertos) {
-
-  state.enemies.push({
-        id: Date.now() + Math.random(), 
-        jp: datosOriginales.jp,
-        romaji: datosOriginales.romaji,
-        es: datosOriginales.es,
-        kana: datosOriginales.kana,
-        x: 60 + Math.random() * (state.W - 120),
-        y: alturaHorizonte, 
-        speed: datosOriginales.speed,
-        radius: datosOriginales.radius,
-        isBoss: false,
-        timerAyuda: 0,
-        color: datosOriginales.color,
-        vecesAcertada: contadorAciertos
-    });
-}
 
 function avanzarFaseJefe(target) {
   spawnExplosion(target.x, target.y, false); playExplosion();

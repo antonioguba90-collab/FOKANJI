@@ -14,8 +14,8 @@ spriteDisparar.src = './personajes/Foca_Disparando2.png'; // Asegúrate de que l
 //spritebackflip.src = './personajes/Foca_backflip.png';
 // 2. Configuración de fotogramas y velocidad de la animación
 const animConfig = {
-  saludar:  { frames: 4, velocidad: 0.12, anchoFrame: 116.25, altoFrame: 110 },
-  disparar: { frames: 3, velocidad: 0.12, anchoFrame: 116.25, altoFrame: 126 }, // Asegúrate de poner estos valores
+  saludar:  { frames: 4, velocidad: 0.12, anchoFrame: 1316/4, altoFrame: 472 },
+  disparar: { frames: 3, velocidad: 0.12, anchoFrame: 939/3, altoFrame: 456 }, // Asegúrate de poner estos valores
   backflip: { frames: 6, velocidad: 0.05, anchoFrame: 112.33, altoFrame: 110 }
 };
 export function dibujarPersonaje(ctx, player, dtFactor = 1) {
@@ -25,7 +25,7 @@ export function dibujarPersonaje(ctx, player, dtFactor = 1) {
   const fy = player.y + 10;
   
   const anchoRender = player.size * 3;
-  const altoRender = player.size * 3;
+  const altoRender = player.size * 4;
 
   if (player.frameAnim === undefined) player.frameAnim = 0;
   if (player.estadoAnim === undefined) player.estadoAnim = 'saludar'; 

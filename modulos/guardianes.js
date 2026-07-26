@@ -41,7 +41,7 @@ export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, 
     renderHeight: (e.radius * 8),
     
     offsetX: 0, 
-    offsetY: 200  
+    offsetY: 100  
   };
 
   // ========================================================

@@ -8,6 +8,9 @@ import { dibujarPersonaje } from './personaje.js';
 import { dibujarEnemigoComun } from './enemigos.js';
 import { dibujarGuardian } from './guardianes.js';
 import { dibujarGranJefe } from './granJefe.js';
+export const alturaHorizonte = state.H * 0.10; // El cielo ocupa el 35% superior de la pantalla
+
+
 
 // Última cadena pintada en el HUD: solo tocamos el DOM si cambia (evita reflows por frame)
 let hudPrevio = "";
@@ -52,87 +55,140 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
   }
  // ==========================================
 // ==========================================
-// 1. FONDO: Azul océano ártico profundo
+// 1. FONDO: CIELO ÁRTICO Y OCÉANO
 // ==========================================
-const gradienteFondo = ctx.createLinearGradient(0, 0, 0, state.H);
-gradienteFondo.addColorStop(0, "#001f3f");
-gradienteFondo.addColorStop(0.6, "#0074D9");
-gradienteFondo.addColorStop(1, "#7FDBFF");
-ctx.fillStyle = gradienteFondo;
-ctx.fillRect(0, 0, state.W, state.H);
+
+// A. Dibujar el Cielo (Degradado superior claro/polar)
+const gradienteCielo = ctx.createLinearGradient(0, 0, 0, alturaHorizonte);
+gradienteCielo.addColorStop(0, "#87CEEB"); // Azul cielo ártico claro
+gradienteCielo.addColorStop(1, "#E0F7FA"); // Blanquecino cerca del horizonte
+ctx.fillStyle = gradienteCielo;
+ctx.fillRect(0, 0, state.W, alturaHorizonte);
+
+// B. Dibujar el Océano (Del horizonte hacia abajo)
+const gradienteOceano = ctx.createLinearGradient(0, alturaHorizonte, 0, state.H);
+gradienteOceano.addColorStop(0, "#004080"); // Azul profundo en el horizonte
+gradienteOceano.addColorStop(0.5, "#0074D9");
+gradienteOceano.addColorStop(1, "#7FDBFF");
+ctx.fillStyle = gradienteOceano;
+ctx.fillRect(0, alturaHorizonte, state.W, state.H - alturaHorizonte);
+
+// Opcional: Una línea sutil de horizonte
+ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+ctx.lineWidth = 2;
+ctx.beginPath();
+ctx.moveTo(0, alturaHorizonte);
+ctx.lineTo(state.W, alturaHorizonte);
+ctx.stroke();
 
 const time = performance.now() / 1000;
 const dt = Math.min(dtSeg, 0.1);
 
+
+
 // ==========================================
 // 2. ICEBERGS CON ESCALADO POR PROFUNDIDAD
 // ==========================================
+// ==========================================
+// PRECARGA DE IMÁGENES DE ICEBERG
+// ==========================================
+const imagenesIceberg = [];
+// Reemplaza estos nombres con las rutas reales de tus archivos PNG
+const rutasIceberg = [
+  './personajes/iceberg1.png', 
+  './personajes/iceberg2.png', 
+  //'./personajes/iceberg3.png',
+  //'./personajes/iceberg4.png', 
+  './personajes/iceberg5.png', 
+  //'./personajes/iceberg6.png', 
+  './personajes/iceberg7.png', 
+  //'./personajes/iceberg8.png', 
+];
 
-function crearNuevoIceberg(yInicial) {
-  // El factor de escala va de 0.2 (arriba/lejos) a 1.0 (abajo/cerca)
-  const factorEscala = Math.min(1.0, Math.max(0.2, yInicial / state.H));
-  
-  // Tamaño base que se multiplica por el factor de perspectiva
-  const bW = (state.W * 0.3) * factorEscala;
-  const bH = (state.H * 0.2) * factorEscala;
-  
-  return {
-    x: Math.random() * (state.W - bW),
-    y: yInicial,
-    bW: bW,
-    bH: bH,
-    velocidad: 30 + (factorEscala * 60), // Más rápido cuanto más cerca
-    factor: factorEscala // Guardamos el factor para usarlo en el dibujo
-  };
-}
-
-// Inicialización
-if (!state.icebergs) state.icebergs = [];
-if (state.icebergs.length < 5) {
-  state.icebergs.push(crearNuevoIceberg(Math.random() * state.H));
-}
-
-// Actualización y movimiento
-state.icebergs.forEach((berg) => {
-  berg.y += berg.velocidad * dt;
-  // Actualizar escala dinámicamente según la nueva posición Y
-  berg.factor = Math.min(1.0, Math.max(0.2, berg.y / state.H));
-  // Re-ajustar dimensiones basadas en la nueva escala
-  berg.bW = (state.W * 0.3) * berg.factor;
-  berg.bH = (state.H * 0.2) * berg.factor;
+rutasIceberg.forEach(ruta => {
+  const img = new Image();
+  img.src = ruta;
+  imagenesIceberg.push(img);
 });
 
-// Filtrado (se destruyen al salir por abajo)
-state.icebergs = state.icebergs.filter(berg => berg.y < state.H + 100);
-
-// Nacimiento arriba
-if (state.icebergs.length < 5) {
-  state.icebergs.push(crearNuevoIceberg(-50));
+// Variable para alternar la trayectoria de los carriles
+if (window.siguienteCarrilIceberg === undefined) {
+  window.siguienteCarrilIceberg = 0;
 }
 
-// RENDERIZADO
+// Función para reiniciar o crear el iceberg en el horizonte
+function reiniciarIceberg(berg, yInicial = 0) {
+  // Ahora el factor de escala parte desde arriba (horizonte = escala muy pequeña)
+  const factorEscala = Math.min(1.0, Math.max(0.1, yInicial / state.H));
+  const velocidadConstanteIceberg = 30;
+  berg.y = yInicial;
+  berg.factor = factorEscala;
+  berg.bW = (state.W * 0.25) * factorEscala;
+  berg.bH = (state.H * 0.18) * factorEscala;
+  berg.velocidad = velocidadConstanteIceberg;
+  berg.img = imagenesIceberg[Math.floor(Math.random() * imagenesIceberg.length)];
+
+  // Asignar carril lateral fijo (izquierdo o derecho) para evitar el centro/jugador
+  if (window.siguienteCarrilIceberg === 0) {
+    berg.x = state.W * 0.05 + (Math.random() * (state.W * 0.15));
+  } else {
+    berg.x = state.W * 0.65 + (Math.random() * (state.W * 0.15));
+  }
+  window.siguienteCarrilIceberg = 1 - window.siguienteCarrilIceberg;
+}
+
+// ==========================================
+// 2. ICEBERGS (Nacen en el horizonte y crecen)
+// ==========================================
+
+if (!state.icebergs) state.icebergs = [];
+const MAX_ICEBERGS = 3; 
+
+while (state.icebergs.length < MAX_ICEBERGS) {
+  const nuevoBerg = {};
+  // Si es la primera carga, los distribuimos verticalmente debajo del horizonte
+  const yInicialAleatoria = state.icebergs.length === 0 
+    ? alturaHorizonte + Math.random() * (state.H - alturaHorizonte) 
+    : alturaHorizonte;
+  
+  reiniciarIceberg(nuevoBerg, yInicialAleatoria);
+  state.icebergs.push(nuevoBerg);
+}
+
+// Actualización, movimiento y separación entre icebergs
+state.icebergs.forEach((berg, index) => {
+  berg.y += berg.velocidad * dt;
+  
+  // 1. Evitar que se solapen con otros icebergs en pantalla
+  for (let j = index + 1; j < state.icebergs.length; j++) {
+    const otroBerg = state.icebergs[j];
+    
+    const dx = otroBerg.x - berg.x;
+    const dy = otroBerg.y - berg.y;
+    const distancia = Math.hypot(dx, dy);
+    
+    // Distancia mínima basada en el ancho del iceberg
+    const distanciaMinima = berg.bW * 0.9;
+    
+  }
+
+  // El factor escala evoluciona desde el horizonte hasta la parte inferior
+  berg.factor = Math.min(1.0, Math.max(0.15, berg.y / state.H));
+  berg.bW = (state.W * 0.28) * berg.factor;
+  berg.bH = (state.H * 0.2) * berg.factor;
+
+  // Si el iceberg sale por abajo, reaparece arriba justo en la línea del horizonte
+  if (berg.y > state.H + 50) {
+    reiniciarIceberg(berg, alturaHorizonte);
+  }
+});
+
+// RENDERIZADO (IMÁGENES PNG)
 state.icebergs.forEach((berg) => {
-  const { x, y, bW, bH } = berg;
-
-  // --- Cara en sombra (Izquierda) ---
-  ctx.fillStyle = "rgba(130, 148, 168, 0.6)";
-  ctx.beginPath();
-  ctx.moveTo(x, y + bH * 0.5);
-  ctx.lineTo(x + bW * 0.4, y); 
-  ctx.lineTo(x + bW * 0.45, y + bH);
-  ctx.lineTo(x - bW * 0.1, y + bH * 0.8);
-  ctx.closePath();
-  ctx.fill();
-
-  // --- Cara iluminada (Derecha) ---
-  ctx.fillStyle = "rgba(220, 240, 255, 0.9)";
-  ctx.beginPath();
-  ctx.moveTo(x + bW * 0.4, y); 
-  ctx.lineTo(x + bW, y + bH * 0.4);
-  ctx.lineTo(x + bW * 0.8, y + bH);
-  ctx.lineTo(x + bW * 0.45, y + bH);
-  ctx.closePath();
-  ctx.fill();
+  const { x, y, bW, bH, img } = berg;
+  if (img && img.complete) {
+    ctx.drawImage(img, x, y, bW, bH);
+  }
 });
 // ==========================================
 // 4. TORMENTA DE NIEVE ALEATORIA (Paralaje Cercano)

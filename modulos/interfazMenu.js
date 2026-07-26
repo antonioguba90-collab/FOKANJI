@@ -122,6 +122,12 @@ function initBorrarProgreso() {
 }
 
 function ajustarElementosSegunPausa(enPausa) {
+  // Controlar la visibilidad del botón de pausa externo (reemplaza 'btn-pausa' por el ID de tu botón)
+  const btnPausa = document.getElementById('btn-pausa');
+  if (btnPausa) {
+    btnPausa.classList.toggle('hidden', enPausa);
+  }
+
   IDS_AJUSTES_PARTIDA.forEach(idSlider => {
     const slider = document.getElementById(idSlider);
     if (!slider) return;
@@ -153,7 +159,7 @@ function initNavegacionAjustes() {
       menuEl.style.display = 'none';
       const volver = alVolverDePausa;
       alVolverDePausa = null;
-      ajustarElementosSegunPausa(false);
+      ajustarElementosSegunPausa(false); // Al volver de la pausa, se restaura el botón de pausa
       volver();
     } else {
       mostrarVista('view-structure');
@@ -165,7 +171,7 @@ export function abrirAjustesDesdePausa(alVolver) {
   alVolverDePausa = alVolver;
   menuEl.classList.remove('hidden');
   menuEl.style.display = 'flex';
-  ajustarElementosSegunPausa(true);
+  ajustarElementosSegunPausa(true); // Oculta el botón de pausa y bloquea los ajustes de partida
   mostrarVista('view-settings');
   refrescarDatoDominadas();
 }

@@ -30,7 +30,7 @@ export function formatearNombreModo(modo) {
 export const state = {
   W: window.innerWidth,
   H: window.innerHeight,
-  MAX_ENEMIES: 5,
+  MAX_ENEMIES: 6,
   player: null,
   enemies: [],
   bullets: [],
@@ -50,6 +50,8 @@ export const state = {
   ALL_WORDS_POOL: [],
   BOSS_POOL: [],
   music:null,
+  ultimoCarrilUsado: "derecho",
+  colaClonesPendientes: [],
 };
 
 // Inyección de botones del DOM

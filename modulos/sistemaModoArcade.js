@@ -35,8 +35,7 @@ export const controladorModoArcade = {
       if (state.spawnTimer >= state.spawnInterval) {
         state.spawnTimer = 0;
         spawnEnemyFn();
-        if (state.spawnInterval > 80) state.spawnInterval -= 2;
-      }
+        state.spawnInterval = Math.max(110, state.spawnInterval);      }
     } else {
       if (sistemaLector.activeBoss) sistemaLector.bossTimerAyuda += dtFactor;
     }

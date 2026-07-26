@@ -62,12 +62,18 @@ export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
     const esRepaso = sistemaLector.palabrasSuperadasFase.some(p => p.romaji === e.romaji);
     let colorRelleno, colorBorde;
 
-    if (e.vecesAcertada === 1) {
-      colorRelleno = "rgba(73, 17, 226, 0.2)";
-      colorBorde   = "rgba(14, 17, 218, 0.6)";
-    } else {
-      colorRelleno = "rgba(98, 255, 59, 0.2)";
+    if (e.vecesAcertada === 0) {
+      // Primera vez que se ve (Enemigo normal recién salido)
+      colorRelleno = "rgba(98, 255, 59, 0.2)"; // Verde suave
       colorBorde   = "rgba(59, 255, 118, 0.6)";
+      } else if (e.vecesAcertada === 1) {
+      // Ya fue acertado 1 vez (Es un clon que viene de camino)
+      colorRelleno = "rgba(255, 152, 0, 0.2)"; // Naranja suave para distinguirlo
+      colorBorde   = "rgba(255, 140, 0, 0.6)";
+    } else {
+      // Por seguridad o fases avanzadas si hubiera más divisiones
+      colorRelleno = "rgba(73, 17, 226, 0.2)"; // Azul / Violeta suave
+      colorBorde   = "rgba(14, 17, 218, 0.6)";
     }
 
     ctx.fillStyle = colorRelleno; 

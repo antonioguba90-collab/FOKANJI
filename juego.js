@@ -2,7 +2,7 @@ import { state, canvas, ctx, hud, msg, mobileInput, menuEl, btnPausa, btnCheatBo
 import { parsearLista } from './modulos/parser.js';
 import { getAudio, playShoot, playExplosion } from './modulos/audio.js';
 import { sistemaLector, cargarNuevaFase, triggerJefeFinalBattle } from './modulos/sistemaFases.js';
-import { ejecutarDrawLoop } from './modulos/draw.js';
+import { ejecutarDrawLoop, alturaHorizonte } from './modulos/draw.js';
 import { actualizarFisicasYColisiones } from './modulos/fisicas.js';
 import { claveDePalabra, registrarAciertoPalabra, registrarFalloPalabra, registrarPuntuacion } from './modulos/persistencia.js';
 import { initInterfazMenu, refrescarProgresoVocabulario, abrirAjustesDesdePausa } from './modulos/interfazMenu.js';
@@ -68,17 +68,17 @@ const MENU_THEME = "./audios/menu_theme.mp3";
 state.gameStructure = "fases"; 
 
 btnPausa.addEventListener("click", togglePause);
-btnCheatBoss.addEventListener("click", cheatSaltarAlJefe);
+//btnCheatBoss.addEventListener("click", cheatSaltarAlJefe);
 
 function init() {
   document.addEventListener("DOMContentLoaded", () => {
     btnPausa.style.display = "none";
-    btnCheatBoss.style.display = "none";
+    //btnCheatBoss.style.display = "none";
     mostrarSoloVistaMenu("view-structure");
   });
 
   const alturaVisible = window.visualViewport ? window.visualViewport.height : state.H;
-  state.player = { x: state.W / 2, y: alturaVisible - 80, size: Math.min(state.W, state.H) * 0.04 + 10 };
+  state.player = { x: state.W / 2, y: alturaVisible - 50, size: Math.min(state.W, state.H) * 0.04 + 10 };
   state.enemies = []; state.bullets = []; state.particles = []; state.popups = [];
   state.lockedId = null; state.typedLen = 0; state.score = 0; state.kills = 0;
   state.gameOver = false; state.paused = false; state.spawnTimer = 0;
@@ -87,7 +87,7 @@ function init() {
   
   msg.style.display = "none";
   btnPausa.style.display = "none";
-  btnCheatBoss.style.display = "none";
+  //btnCheatBoss.style.display = "none";
 
   if (state.gameStructure === "arcade") {
     controladorModoArcade.init();
@@ -131,12 +131,11 @@ function spawnEnemy() {
   const paleta = ["#ff5252", "#34ace0", "#33d9b2", "#ffb142", "#ff793f"]; 
   const coloresUsados = new Set(state.enemies.map(e => e.color));
   const colorLibre = paleta.find(c => !coloresUsados.has(c)) || "#ffffff";
-
   state.enemies.push({
     id: state.nextId++, 
     wordId: w.id, 
     jp: w.jp, romaji: w.romaji, es: w.es, kana: w.kana || w.jp,
-    x: x, y: -30, speed: finalSpeed, speedAdaptada, radius: radius, isBoss: false,
+    x: x, y: alturaHorizonte, speed: finalSpeed, speedAdaptada, radius: radius, isBoss: false,
     timerAyuda: 0, color: colorLibre,
     vecesAcertada: 0 
   });
@@ -328,14 +327,15 @@ function destroyLocked() {
 }
 
 function spawnClonEnemigo(datosOriginales, contadorAciertos) {
-    state.enemies.push({
+
+  state.enemies.push({
         id: Date.now() + Math.random(), 
         jp: datosOriginales.jp,
         romaji: datosOriginales.romaji,
         es: datosOriginales.es,
         kana: datosOriginales.kana,
         x: 60 + Math.random() * (state.W - 120),
-        y: -30, 
+        y: alturaHorizonte, 
         speed: datosOriginales.speed,
         radius: datosOriginales.radius,
         isBoss: false,
@@ -507,7 +507,7 @@ function winGame() {
   mp3.setRepeat(false);
   mp3.play();
   btnPausa.style.display = "none";
-  btnCheatBoss.style.display = "none";
+  //btnCheatBoss.style.display = "none";
 
   spawnExplosion(state.player.x, state.player.y, true);
   playExplosion();
@@ -584,7 +584,7 @@ function startGame(mode) {
     msg.style.display = "none";
     btnPausa.style.display = "block"; 
     btnPausa.innerHTML = "⏸️ Pausa";
-    btnCheatBoss.style.display = "block"; 
+    //btnCheatBoss.style.display = "block"; 
     mobileInput.style.pointerEvents = "auto";
     getAudio(); 
     mobileInput.focus();

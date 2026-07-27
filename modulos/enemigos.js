@@ -7,8 +7,8 @@ import { alturaHorizonte } from "./draw.js";
 let ultimaVelocidad = 150; // Velocidad inicial por defecto
 let ultimoCiclo = -1;      // Nos ayuda a saber cuándo la animación dio una vuelta completa
 const sprites = {
-  Tiburon:   { img: new Image(), frames: 4,  src: './personajes/Tiburon1.png' },
-  Delfin:   { img: new Image(), frames: 4,  src: './personajes/Delfin5.png' },
+  Tiburon:   { img: new Image(), frames: 4,  src: './personajes/tiburon4.png' },
+  Gloton:   { img: new Image(), frames: 5,  src: './personajes/gloton7.png' },
   Tiburoncito:   { img: new Image(), frames: 4,  src: './personajes/Tiburoncito.png' },
   OsoPolar:   { img: new Image(), frames: 4,  src: './personajes/OsoPolar.png' },
   PinguinoBurla:   { img: new Image(), frames: 4, src: './personajes/PinguinoBurla.png' },

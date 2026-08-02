@@ -28,7 +28,7 @@ export const KANJI_SEMANA_5_RAW = `
 昼寝|ひるね|HIRUNE|SIESTA
 熱|ねつ|NETSU|CALOR / FIEBRE
 熱心(な)|ねっしん(な)|NESSHIN|ENTUSIASTA / ZELOSO
-熱中|ねっちゅう|NETCHUU|MANÍA / PASIÓN / ENTUSIASMO
+熱中|ねっちゅう|NECCHUU|MANÍA / PASIÓN / ENTUSIASMO
 熱い|あつい|ATSUI|CALIENTE (AL TACTO)
 燃焼|ねんしょう|NENSHOU|COMBUSTIÓN
 焼く|やく|YAKU|ASAR / PARRILLA
@@ -262,27 +262,27 @@ export const KANJI_SEMANA_5_RAW = `
 軟らかい|やわらかい|YAWARAKAI|SUAVE
 // --- Frases del repertorio del Jefe (Se elegirán 2 al azar cada 1000 puntos) ---
 //BOSS_FRAS|frase japonesa|Frase en Romaji|Traducción al español
-BOSS_FRAS|正面玄関は閉まっていますから、裏口から入ってください。|SHOUMENGENKANWASHIMATTEIMASUKARAURAGUCHIKARAHATTEKUDASAI|La entrada principal está cerrada, así que, por favor, entre por la puerta trasera.
-BOSS_FRAS|合格した人は入学手続きをしてください。|GOUKAKUSHITAHITOWANYUUGAKUTETSUZUKIOSHITEKUDASAI|Las personas que aprobaron, por favor, realicen los trámites de ingreso.
+BOSS_FRAS|正面玄関は閉まっていますから、裏口から入ってください。|SHOUMENGENKANHASHIMATTEIMASUKARAURAGUCHIKARAHATTEKUDASAI|La entrada principal está cerrada, así que, por favor, entre por la puerta trasera.
+BOSS_FRAS|合格した人は入学手続きをしてください。|GOUKAKUSHITAHITOHANYUUGAKUTETSUZUKIOSHITEKUDASAI|Las personas que aprobaron, por favor, realicen los trámites de ingreso.
 BOSS_FRAS|新製品を買いたい人の列が店の前から交差点まで続いている。|SHINSEIHINOKAITAIHITONORETSUGAMISENOMAEKARAKOUSATENMADETSUZUITEIRU|La fila de personas que quieren comprar el nuevo producto se extiende desde el frente de la tienda hasta el cruce.
-BOSS_FRAS|私は課長に辞表を出した。|WATASHIWAKACHOUNIJIHYOUODASHITA|Presenté mi carta de renuncia al jefe de sección.
+BOSS_FRAS|私は課長に辞表を出した。|WATASHIHAKACHOUNIJIHYOUODASHITA|Presenté mi carta de renuncia al jefe de sección.
 BOSS_FRAS|試験に出される問題の傾向を調べて受験勉強をする。|SHIKENNIDASARERUMONDAINOKEIKOUOSHIRABETEJUUKENBENKYOUSHURU|Estudio para el examen investigando las tendencias de las preguntas que van a aparecer.
-BOSS_FRAS|「恐れ入りますが、荷物はそちらに置いてください。」|OSOREIRIMASUGANIMOTSUWASOCHIRANIOITEKUDASAI.|"Disculpe, por favor coloque su equipaje allí."
+BOSS_FRAS|「恐れ入りますが、荷物はそちらに置いてください。」|OSOREIRIMASUGANIMOTSUHASOCHIRANIOITEKUDASAI.|"Disculpe, por favor coloque su equipaje allí."
 BOSS_FRAS|アフリカ原産のお茶を飲む。|AFURIKAGENSANNOOCHAONOMU|Bebo té de origen africano.
-BOSS_FRAS|この車にはABSという安全装置がついています。|KONOKURUMANIWAABSTOIUANZENSOUTCHIGATSUITEIMASU|Este coche cuenta con un dispositivo de seguridad llamado ABS.
+BOSS_FRAS|この車にはABSという安全装置がついています。|KONOKURUMANIWHAABSTOIUANZENSOUTCHIGATSUITEIMASU|Este coche cuenta con un dispositivo de seguridad llamado ABS.
 BOSS_FRAS|医師に相談したら的確な助言をしてくれた。|ISHINISOUDANSHITARATEKIKAKUNAJOGYONOSHITEKURETA|Consulté con el médico y me dio un consejo preciso.
 BOSS_FRAS|指を折って数を数える。|YUBIOOTTEKAZUOKAZOERU.|Cuento los números doblando los dedos.
-BOSS_FRAS|この洗濯機には乾燥機能も付いています。|KONOSENTAKUKINIWAKANSOUKINOUMOTSUITEIMASU|Esta lavadora también tiene función de secado.
-BOSS_FRAS|～酒造というのは酒を製造している会社です。|SHUZOUTOIUNOWASAKEOSEIZOUSHITEIRUKAISHADESU|"~Shuzou" es una empresa que fabrica sake.
-BOSS_FRAS|この試合の賞金の額は1位と2位とでは全然違う。|KONOSHIAINOSHOUKINNOGAKUWAICHIITONIITODEWAZENZENCHIGAU|El monto del premio en dinero de este torneo es totalmente diferente entre el primer y el segundo lugar.
+BOSS_FRAS|この洗濯機には乾燥機能も付いています。|KONOSENTAKUKINIHAKANSOUKINOUMOTSUITEIMASU|Esta lavadora también tiene función de secado.
+BOSS_FRAS|～酒造というのは酒を製造している会社です。|SHUZOUTOIUNOHASAKEOSEIZOUSHITEIRUKAISHADESU|"~Shuzou" es una empresa que fabrica sake.
+BOSS_FRAS|この試合の賞金の額は1位と2位とでは全然違う。|KONOSHIAINOSHOUKINNOGAKUHAICHIITONIITODEHAZENZENCHIGAU|El monto del premio en dinero de este torneo es totalmente diferente entre el primer y el segundo lugar.
 BOSS_FRAS|「身長と体重をここに記入してください。」|SHINCHOUTOTAIJUUOKOKONIKINYUUSHITEKUDASAI|"Por favor, escriba aquí su estatura y su peso."
-BOSS_FRAS|この電車は車庫に入りますので、ご乗車になれません。|KONODENSHAWASHAKONIHAIRIMASUNODEGOJOUSHANINAREMASEN|Este tren entra al garaje, por lo que no puede subir a él.
-BOSS_FRAS|「開封後はなるべく早くお召し上がりください。」|KAIHOUGOWANARUBEKUHAYAKUOMESHIAGARIKUDASAI|"Después de abrirlo, por favor consúmalo lo antes posible."
+BOSS_FRAS|この電車は車庫に入りますので、ご乗車になれません。|KONODENSHAHASHAKONIHAIRIMASUNODEGOJOUSHANINAREMASEN|Este tren entra al garaje, por lo que no puede subir a él.
+BOSS_FRAS|「開封後はなるべく早くお召し上がりください。」|KAIHOUGOHANARUBEKUHAYAKUOMESHIAGARIKUDASAI|"Después de abrirlo, por favor consúmalo lo antes posible."
 BOSS_FRAS|「この町の発展と繁栄を願って、乾杯！」|KONOMACHINOHATTENTOHANEIONEGATTEKANPAI|¡Por el desarrollo y la prosperidad de esta ciudad, salud!
-BOSS_FRAS|「年末年始は休業とさせていただきます。」|NENMATSUNENSHIWAKYUUGYOUTOSASETEITADAKIMASU|"Estaremos cerrados durante las fiestas de fin de año y año nuevo."
-BOSS_FRAS|明日は花粉が多くなりそうです。ご注意ください。|ASHITAWAKAFUNGAOOKUNARISOUDESUGOCHUUIKUDASAI|Parece que mañana habrá mucho polen. Por favor, tenga cuidado.
+BOSS_FRAS|「年末年始は休業とさせていただきます。」|NENMATSUNENSHIHAKYUUGYOUTOSASETEITADAKIMASU|"Estaremos cerrados durante las fiestas de fin de año y año nuevo."
+BOSS_FRAS|明日は花粉が多くなりそうです。ご注意ください。|ASHITAHAKAFUNGAOOKUNARISOUDESUGOCHUUIKUDASAI|Parece que mañana habrá mucho polen. Por favor, tenga cuidado.
 BOSS_FRAS|訪問販売の人が何度も訪ねてきてチャイムを鳴らす。|HOUMONHANBAINOHITOGANANDOMOTAZUNETEKITECHAIMUONARASU|El vendedor a domicilio viene de visita muchas veces y toca el timbre.
 BOSS_FRAS|台風が近づいて雨や風が強くなり、注意報が警報に変わった。|TAIFUUGACHIKAZUITEAMEYAKAZETSUYOKUNARICHUUIHOUGAKEIHOUNIKAWATTA|El tifón se acerca, la lluvia y el viento se han vuelto fuertes, y el aviso pasó a ser una alarma.
-BOSS_FRAS|あの人の言動には裏表があって、信用できない。|ANOHITONOGENDOUNIWAURAOMOTEGAATTESHINYOUDEKINAI|Las palabras y acciones de esa persona son hipócritas (tienen doble cara), no se puede confiar en ella.
+BOSS_FRAS|あの人の言動には裏表があって、信用できない。|ANOHITONOGENDOUNIHAURAOMOTEGAATTESHINYOUDEKINAI|Las palabras y acciones de esa persona son hipócritas (tienen doble cara), no se puede confiar en ella.
 BOSS_FRAS|お客様にお呼び出しを申し上げます。|OKYAKUSAMANIOYOBIDASHIOMOUSHIAGEMASU|Hacemos un llamado a nuestros clientes.
 `.trim();

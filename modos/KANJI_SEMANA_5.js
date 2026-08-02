@@ -257,7 +257,7 @@ export const KANJI_SEMANA_5_RAW = `
 無香料|むこうりょう|MUKOURYOU|SIN FRAGANCIA
 香辛料|こうしんりょう|KOUSHINRYOU|ESPECIAS
 香り|かおり|KAORI|AROMA / OLOR
-軟弱(な)|なんじゃく(な)|NANNJAKU|DÉBIL
+軟弱(な)|なんじゃく(な)|NANJAKU|DÉBIL
 柔軟体操|じゅうなんたいそう|JUUANTAISOU|EJERCICIOS DE CALENTAMIENTO
 軟らかい|やわらかい|YAWARAKAI|SUAVE
 // --- Frases del repertorio del Jefe (Se elegirán 2 al azar cada 1000 puntos) ---

@@ -98,9 +98,8 @@ export function resize() {
   msg.style.top = (top + state.H / 2) + "px";
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-if (state.player) {
-    const alturaVisible = window.visualViewport ? window.visualViewport.height : state.H;
-    state.player.y = alturaVisible - 25;
+ if (state.player) {
+    state.player.y = state.H - 80;
     state.player.x = state.W / 2;
   }
 }

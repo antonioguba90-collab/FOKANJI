@@ -32,45 +32,25 @@ let hudPrevio = "";
  * @param {number} maxWidth - Ancho máximo antes de saltar de línea.
  * @param {number} lineHeight - Espaciado entre líneas.
  */
-function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
-  const words = text.split(' ');
-  let line = '';
-  let lines = [];
-
-  for (let n = 0; n < words.length; n++) {
-    let testLine = line + words[n] + ' ';
-    let metrics = ctx.measureText(testLine);
-    if (metrics.width > maxWidth && n > 0) {
-      lines.push(line);
-      line = words[n] + ' ';
-    } else {
-      line = testLine;
-    }
-  }
-  lines.push(line);
-
-  // Dibujar cada línea
-  for (let i = 0; i < lines.length; i++) {
-    ctx.fillText(lines[i].trim(), x, y + (i * lineHeight));
-  }
-}
-
 // dtSeg: delta real en segundos (lo pasa el loop principal); clamp por si la pestaña estuvo en segundo plano
 export function ejecutarDrawLoop(dtSeg = 1 / 60) {
   ctx.clearRect(0, 0, state.W, state.H);
   if (!state.started) {
-    return; // En el menú no hay nada que renderizar (el loop principal sigue vivo)
+    return; // En el menú no hay nada que renderizar
   }
 
+  // 1. Declaramos el tiempo y el dt al principio de todo el dibujado
+  const time = performance.now() / 1000;
+  const dt = Math.min(dtSeg, 0.1);
+
   // ==========================================
-  // 1. FONDO: CAPAS EN PIXEL ART (CIELO Y OCÉANO)
+  // 2. FONDO: CAPAS EN PIXEL ART (CIELO Y OCÉANO)
   // ==========================================
 
-  // A. Dibujar el Cielo y Montañas (Parte superior hasta el horizonte)
+  // A. Dibujar el Cielo y Montañas
   if (imgCielo.complete) {
     ctx.drawImage(imgCielo, 0, 0, state.W, alturaHorizonte);
   } else {
-    // Fallback de seguridad por si tarda en cargar la imagen
     const gradienteCielo = ctx.createLinearGradient(0, 0, 0, alturaHorizonte);
     gradienteCielo.addColorStop(0, "#87CEEB");
     gradienteCielo.addColorStop(1, "#E0F7FA");
@@ -78,11 +58,28 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
     ctx.fillRect(0, 0, state.W, alturaHorizonte);
   }
 
-  // B. Dibujar el Océano Ártico (Del horizonte hacia abajo cubriendo toda la pantalla restante)
+  // B. DIBUJAR EL OCÉANO CON ONDULACIÓN POR TIRAS (OPCIÓN 2)
   if (imgOceano.complete) {
-    ctx.drawImage(imgOceano, 0, alturaHorizonte, state.W, state.H - alturaHorizonte);
+    const oceanoH = state.H - alturaHorizonte;
+    const numTiras = 16; // Número de franjas horizontales
+    const altoTiraCanvas = oceanoH / numTiras;
+    const altoTiraImg = imgOceano.height / numTiras;
+
+    for (let i = 0; i < numTiras; i++) {
+      const ySrc = i * altoTiraImg;
+      const yDest = alturaHorizonte + (i * altoTiraCanvas);
+
+      // Pulso desfasado usando 'time'
+      const desfaseOndulacion = Math.sin(time * 3 + i * 0.5) * (1.5 + i * 0.2);
+
+      ctx.drawImage(
+        imgOceano,
+        0, ySrc, imgOceano.width, altoTiraImg,
+        desfaseOndulacion - 4, yDest, state.W + 8, altoTiraCanvas + 0.5
+      );
+    }
   } else {
-    // Fallback de seguridad por si tarda en cargar la imagen
+    // Fallback por si la imagen tarda en cargar
     const gradienteOceano = ctx.createLinearGradient(0, alturaHorizonte, 0, state.H);
     gradienteOceano.addColorStop(0, "#004080");
     gradienteOceano.addColorStop(0.5, "#0074D9");
@@ -91,16 +88,13 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
     ctx.fillRect(0, alturaHorizonte, state.W, state.H - alturaHorizonte);
   }
 
-  // Opcional: Una línea sutil de horizonte para fusionar las imágenes perfectamente
+  // Línea sutil de horizonte
   ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(0, alturaHorizonte);
   ctx.lineTo(state.W, alturaHorizonte);
   ctx.stroke();
-
-  const time = performance.now() / 1000;
-  const dt = Math.min(dtSeg, 0.1);
 
   // ==========================================
  // ==========================================

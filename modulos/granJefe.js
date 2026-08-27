@@ -1,7 +1,7 @@
 import { obtenerUmbralAyuda } from "./ajustes.js";
 
 const spriteGranJefe = new Image();
-spriteGranJefe.src = "personajes/Guardian_Hacha3.png"; // Tu ruta de imagen
+spriteGranJefe.src = "personajes/mamut7.png"; // Tu ruta de imagen
 
 export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, sistemaLector) {
   // === INICIALIZACIÓN DE ESTADO ALEATORIO EN EL ENEMIGO ===
@@ -17,10 +17,10 @@ export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, 
   const configSprite = {
     img: spriteGranJefe, 
     
-    frameWidth: 1028/4,   
-    frameHeight: 243,  
+    frameWidth: 985/3,   
+    frameHeight: 253,  
     
-    totalFrames: 4,   
+    totalFrames: 3,   
     
     // Usamos la velocidad que tiene guardada este enemigo específico
     msPerFrame: e.ultimaVelocidadAnimacion, 

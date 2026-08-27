@@ -1,3 +1,4 @@
+import { state } from './config.js';
 // ==========================================
 // MÓDULO DEL PERSONAJE (NAVE FOCA ANIMADA)
 // ==========================================
@@ -31,7 +32,7 @@ export function dibujarPersonaje(ctx, player, dtFactor = 1) {
   const pulso = Math.sin(Date.now() / 200) * 0.04 + 1; 
 
   // Ampliamos significativamente el radio horizontal (radioX) para cubrir los flancos
-  const radioX = player.size * 9 * pulso; 
+  const radioX = Math.min(player.size * 9 * pulso, player.x, state.W - player.x); 
   const radioY = player.size * 0.7 * pulso; 
 
   ctx.beginPath();

@@ -74,16 +74,16 @@ export function actualizarFisicasYColisiones(state, endGame, dtFactor = 1) {
 const deltaXPlayer = Math.abs(state.player.x - e.x);
 const deltaYPlayer = state.player.y - e.y;
 
-// ÁREA AMPLIADA: Incrementamos los multiplicadores para cubrir de sobra los flancos
-const radioColisionX = state.player.size * 9; // Más ancho hacia los laterales
-const radioColisionY = state.player.size * 0.7; // Más amplio hacia el frente/arriba
+// Calculamos el radio de colisión horizontal idéntico al que se dibuja
+const radioColisionX = Math.min(state.player.size * 9, state.player.x, state.W - state.player.x);
+const radioColisionY = state.player.size * 0.7; //[cite: 3]
 
-// Ecuación de la elipse ampliada
+// Ecuación de la elipse ampliada y acotada a la pantalla[cite: 3]
 const colisionOvalo = (Math.pow(deltaXPlayer, 2) / Math.pow(radioColisionX, 2)) + 
-                      (Math.pow(deltaYPlayer, 2) / Math.pow(radioColisionY, 2)) <= 1;
+                      (Math.pow(deltaYPlayer, 2) / Math.pow(radioColisionY, 2)) <= 1; //[cite: 3]
 
-const distanciaAlJugador = Math.hypot(state.player.x - e.x, state.player.y - e.y);
-const radioDeColision = state.player.size + e.radius;
+const distanciaAlJugador = Math.hypot(state.player.x - e.x, state.player.y - e.y); //[cite: 3]
+const radioDeColision = state.player.size + e.radius; //[cite: 3]
 
 if (distanciaAlJugador < radioDeColision || colisionOvalo) {
   endGame(e); 

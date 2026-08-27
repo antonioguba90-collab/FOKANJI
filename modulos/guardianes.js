@@ -24,8 +24,8 @@ export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, 
   const configSprite = {
     img: spriteGuardianGlobal, 
     
-    frameWidth: 1028/3,   
-    frameHeight: 243,  
+    frameWidth: 986/3,   
+    frameHeight: 253,  
     
     totalFrames: 3,   
     
@@ -37,8 +37,8 @@ export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, 
     minMs: 550, // Lo más rápido (aprox 10 frames por segundo)
     maxMs: 1000, // Lo más lento (aprox 3.5 frames por segundo)
     
-    renderWidth: (e.radius * 8) ,  
-    renderHeight: (e.radius * 8),
+    renderWidth: (e.radius * 5) ,  
+    renderHeight: (e.radius * 5),
     
     offsetX: 0, 
     offsetY: 100  

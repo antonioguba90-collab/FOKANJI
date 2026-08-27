@@ -180,7 +180,7 @@ body::before {
 
   .grid-ajustes-container {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
     width: 100%;
     box-sizing: border-box;
@@ -296,7 +296,7 @@ body::before {
         padding: 8px 12px;
     }
     .grid-ajustes-container {
-        grid-template-columns: repeat(2, 1fr); /* dos columna si la pantalla es muy estrechas si es necesario*/
+        grid-template-columns: 1fr; /* dos columna si la pantalla es muy estrechas si es necesario*/
         gap: 5px;
     }
     .vocab-grid-container {

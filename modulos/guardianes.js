@@ -5,7 +5,7 @@ import { obtenerUmbralAyuda } from "./ajustes.js";
 
 const spriteGuardianGlobal = new Image();
 
-spriteGuardianGlobal.src = "personajes/DientesSable1.png"; // Tu ruta de imagen
+spriteGuardianGlobal.src = "personajes/DientesSable.png"; // Tu ruta de imagen
 
 export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, sistemaLector) {
 
@@ -24,8 +24,8 @@ export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, 
   const configSprite = {
     img: spriteGuardianGlobal, 
     
-    frameWidth: 986/3,   
-    frameHeight: 253,  
+    frameWidth: 981/3,   
+    frameHeight: 224,  
     
     totalFrames: 3,   
     

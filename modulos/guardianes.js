@@ -5,7 +5,7 @@ import { obtenerUmbralAyuda } from "./ajustes.js";
 
 const spriteGuardianGlobal = new Image();
 
-spriteGuardianGlobal.src = "personajes/Guardian_Kawaii.png"; // Tu ruta de imagen
+spriteGuardianGlobal.src = "personajes/DientesSable1.png"; // Tu ruta de imagen
 
 export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, sistemaLector) {
 

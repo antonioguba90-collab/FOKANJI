@@ -78,7 +78,7 @@ function init() {
   });
 
   const alturaVisible = window.visualViewport ? window.visualViewport.height : state.H;
-  state.player = { x: state.W / 2, y: alturaVisible - 50, size: Math.min(state.W, state.H) * 0.04 + 10 };
+  state.player = { x: state.W / 2, y: alturaVisible - 25, size: Math.min(state.W, state.H) * 0.04 + 10 };
   state.enemies = []; state.bullets = []; state.particles = []; state.popups = [];
   state.lockedId = null; state.typedLen = 0; state.score = 0; state.kills = 0;
   state.gameOver = false; state.paused = false; state.spawnTimer = 0;

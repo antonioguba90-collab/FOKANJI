@@ -36,7 +36,7 @@ export function playShoot() {
     osc.frequency.setValueAtTime(400, ac.currentTime);
     osc.frequency.exponentialRampToValueAtTime(800, ac.currentTime + 0.1);
 
-    gainOsc.gain.setValueAtTime(0.25, ac.currentTime);
+    gainOsc.gain.setValueAtTime(0.4, ac.currentTime);
     gainOsc.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.15);
     
     // 2. Ruido blanco para el "fricción" de la nieve
@@ -56,7 +56,7 @@ export function playShoot() {
     filter.type = 'lowpass';
     filter.frequency.value = 1000;
     
-    gainNoise.gain.setValueAtTime(0.12, ac.currentTime);
+    gainNoise.gain.setValueAtTime(0.2, ac.currentTime);
     gainNoise.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 0.15);
     
     // Conexiones

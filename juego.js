@@ -124,32 +124,35 @@ function spawnEnemy() {
 
   if (!w) return;
 
-  // Lógica común de carriles y alternancia estricta
-  const carrilCentralIzquierdo = state.W * 0.32;
-  const carrilCentralDerecho = state.W * 0.68;
   
+  // Lógica de carriles estrictos para evitar cualquier solapamiento con los icebergs
   let x = 0;
   let esLadoIzquierdo = false;
 
   if (state.ultimoCarrilUsado === "izquierdo") {
-    x = carrilCentralDerecho + (Math.random() * 20 - 10);
+    // Carril central derecho: 55% al 80% del ancho de la pantalla
+    const anchoSeccion = state.W * 0.13;
+    x = (state.W * 0.62) + (Math.random() * anchoSeccion);
     state.ultimoCarrilUsado = "derecho";
     esLadoIzquierdo = false;
   } else {
-    x = carrilCentralIzquierdo + (Math.random() * 20 - 10);
+    // Carril central izquierdo: 20% al 45% del ancho de la pantalla
+    const anchoSeccion = state.W * 0.13;
+    x = (state.W * 0.25) + (Math.random() * anchoSeccion);
     state.ultimoCarrilUsado = "izquierdo";
     esLadoIzquierdo = true;
   }
 
-  const carrilIzquierdoFlanco = state.W * 0.35; 
-  const carrilDerechoFlanco = state.W * 0.55;  
+  const carrilIzquierdoFlanco = state.W * 0.32; 
+  const carrilDerechoFlanco = state.W * 0.68;  
   const objetivoX = esLadoIzquierdo ? carrilIzquierdoFlanco : carrilDerechoFlanco;
-
+  
   const longLetras = w.romaji.length;
   const radius = (Math.min(state.W, state.H) * 0.024 + 20);
   
   let speedAdaptada = (state.gameStructure === "arcade") ? 0.35 : 0.28;
   const finalSpeed = speedAdaptada * factorEscalaMovil;
+
 
   const paleta = ["#ff5252", "#34ace0", "#33d9b2", "#ffb142", "#ff793f"]; 
   const coloresUsados = new Set(state.enemies.map(e => e.color));

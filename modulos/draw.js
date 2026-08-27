@@ -104,7 +104,8 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
 
   // ==========================================
  // ==========================================
-  // 2. ICEBERGS CON ESCALADO POR PROFUNDIDAD Y CARRIL PROTEGIDO
+ // ==========================================
+  // 2. ICEBERGS CON ESCALADO ESTABLE Y TAMAÑO FIJO INICIAL
   // ==========================================
   const imagenesIceberg = [];
   const rutasIceberg = [
@@ -128,14 +129,19 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
     window.siguienteCarrilIceberg = 0;
   }
 
-  // Función para reiniciar o crear el iceberg en su carril original del horizonte (IDÉNTICA A LA TUYA)
+  // Función para reiniciar o crear el iceberg en su carril original del horizonte
   function reiniciarIceberg(berg, yInicial = alturaHorizonte) {
     const factorEscala = Math.min(2.0, Math.max(0.1, yInicial / state.H));
     const velocidadConstanteIceberg = 30;
     berg.y = yInicial;
     berg.factor = factorEscala;
-    berg.bW = (state.W * 0.25) * factorEscala;
-    berg.bH = (state.H * 0.18) * factorEscala;
+    
+    // FIJAMOS SU TAMAÑO BASE AL NACER (evitando que fluctúe si cambia el tamaño de la pantalla)
+    berg.baseW = state.W * 0.25;
+    berg.baseH = state.H * 0.18;
+    
+    berg.bW = berg.baseW * factorEscala;
+    berg.bH = berg.baseH * factorEscala;
     berg.velocidad = velocidadConstanteIceberg;
     berg.img = imagenesIceberg[Math.floor(Math.random() * imagenesIceberg.length)];
 
@@ -167,29 +173,19 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
 
   // Actualización, movimiento y RESTRICCIÓN DE CARRIL
   state.icebergs.forEach((berg, index) => {
-    // Definimos la velocidad base que tenía tu código original
-    let velocidadMovimiento = berg.velocidad;
-
-    // CONTROL DE DISTANCIA: Si hay otro iceberg delante en el mismo carril muy cerca, 
-    // adaptamos la velocidad para evitar que se junten o solapen.
-    state.icebergs.forEach(otro => {
-      if (otro !== berg && otro.carrilTipo === berg.carrilTipo) {
-        if (otro.y > berg.y && (otro.y - berg.y) < 130) {
-          velocidadMovimiento = Math.min(velocidadMovimiento, otro.velocidad * 0.8);
-        }
-      }
-    });
-
-    berg.y += velocidadMovimiento * dt;
+    berg.y += berg.velocidad * dt;
     
     // El factor escala evoluciona desde el horizonte hasta la parte inferior
     berg.factor = Math.min(0.5, Math.max(0.15, berg.y / state.H));
-    berg.bW = (state.W * 0.28) * berg.factor;
-    berg.bH = (state.H * 0.2) * berg.factor;
+    
+    // USAMOS EL TAMAÑO BASE FIJO para que no se recalculen de forma extraña al abrir/cerrar el teclado
+    if (!berg.baseW) berg.baseW = state.W * 0.25;
+    if (!berg.baseH) berg.baseH = state.H * 0.18;
+
+    berg.bW = berg.baseW * (state.W * 0.28 / (state.W * 0.25)) * berg.factor;
+    berg.bH = berg.baseH * (state.H * 0.2 / (state.H * 0.18)) * berg.factor;
 
     // RESTRICCIÓN HORIZONTAL ESTRICTA EN MOVIMIENTO:
-    // Forzamos a que, conforme crecen y bajan, su coordenada X se mantenga 
-    // blindada dentro de su carril asignado, impidiendo que invadan el centro.
     if (berg.carrilTipo === 0) {
       // Carril Izquierdo: Tope máximo para que su lado derecho no rebase el 20%
       berg.x = Math.min(berg.x, state.W * 0.20 - berg.bW);

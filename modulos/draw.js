@@ -135,28 +135,44 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
     window.siguienteCarrilIceberg = 0;
   }
 
-  // Variable para alternar la trayectoria de los carriles
+   // Variable para alternar la trayectoria de los carriles
   if (window.siguienteCarrilIceberg === undefined) {
     window.siguienteCarrilIceberg = 0;
   }
 
-  // Función para reiniciar o crear el iceberg con una posición Y controlada
-  function reiniciarIceberg(berg, yInicial = alturaHorizonte) {
+// Variable para alternar la trayectoria de los carriles
+  if (window.siguienteCarrilIceberg === undefined) {
+    window.siguienteCarrilIceberg = 0;
+  }
+
+  // Función para reiniciar o crear el iceberg asegurando que pasen por los lados
+  function reiniciarIceberg(berg, yInicial = 0) {
     const factorEscala = Math.min(2.0, Math.max(0.1, yInicial / state.H));
     const velocidadConstanteIceberg = 30;
     berg.y = yInicial;
     berg.factor = factorEscala;
-    berg.bW = (state.W * 0.25) * factorEscala;
+    
+    // Ancho y alto proporcionales adaptados al tamaño de la pantalla
+    berg.bW = (state.W * 0.22) * factorEscala;
     berg.bH = (state.H * 0.18) * factorEscala;
     berg.velocidad = velocidadConstanteIceberg;
     berg.img = imagenesIceberg[Math.floor(Math.random() * imagenesIceberg.length)];
 
-    // Asignar carril lateral fijo (izquierdo o derecho) para evitar el centro/jugador
+    // ZONAS LATERALES SEGURAS: Forzamos carriles totalmente a la izquierda o a la derecha
+    // Esto evita por completo el centro de la pantalla donde se ubica el player.
+    const margenSeguroAncho = berg.bW;
+    
     if (window.siguienteCarrilIceberg === 0) {
-      berg.x = state.W * 0.00 + (Math.random() * (state.W * 0.10));
+      // Carril Izquierdo (desde el borde 0 hasta antes del centro)
+      berg.x = Math.random() * (state.W * 0.30 - margenSeguroAncho);
     } else {
-      berg.x = state.W * 0.80 + (Math.random() * (state.W * 0.10));
+      // Carril Derecho (desde la zona derecha hacia el borde exterior)
+      berg.x = (state.W * 0.70) + Math.random() * (state.W * 0.30 - margenSeguroAncho);
     }
+    
+    // Asegurarnos de que nunca rebasen los límites absolutos del canvas
+    berg.x = Math.max(5, Math.min(state.W - berg.bW - 5, berg.x));
+    
     window.siguienteCarrilIceberg = 1 - window.siguienteCarrilIceberg;
   }
 

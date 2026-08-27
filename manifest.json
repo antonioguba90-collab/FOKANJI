@@ -1,0 +1,10 @@
+{
+  "name": "Fokanji",
+  "short_name": "Fokanji",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#000000",
+  "theme_color": "#000000"
+}

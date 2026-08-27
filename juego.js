@@ -77,12 +77,11 @@ function init() {
     mostrarSoloVistaMenu("view-structure");
   });
 
-  const alturaVisible = window.visualViewport ? window.visualViewport.height : state.H;
-  const alturaTeclado = mobileInput ? mobileInput.offsetHeight : 0;
+ const alturaTeclado = mobileInput ? mobileInput.offsetHeight : 0;
   state.player = { 
-    x: state.W / 2, 
-    y: alturaVisible - alturaTeclado - 40, 
-    size: Math.min(state.W, state.H) * 0.04 + 10 
+  x: state.W / 2, 
+  y: state.H - alturaTeclado - 40, 
+  size: Math.min(state.W, state.H) * 0.04 + 10 
   };
   state.enemies = []; state.bullets = []; state.particles = []; state.popups = [];
   state.lockedId = null; state.typedLen = 0; state.score = 0; state.kills = 0;

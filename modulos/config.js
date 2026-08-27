@@ -100,7 +100,7 @@ export function resize() {
 
  if (state.player) {
     const alturaTeclado = mobileInput ? mobileInput.offsetHeight : 0;
-    state.player.y = state.H - alturaTeclado - 40;
+    state.player.y = state.H - alturaTeclado - 25;
     state.player.x = state.W / 2;}
 }
 

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head><link rel="icon" type="image/png" href="./favicon.png">
+<link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
 <title>FOKANJI</title>
@@ -347,8 +348,8 @@ style="
     
 </div>
 <canvas id="game" class="hidden" ></canvas>
-<div id="hud" class="hidden">Puntos: 0 | Destruidos: 0</div><input id="mobile-input" type="text" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
-
+<div id="hud" class="hidden">Puntos: 0 | Destruidos: 0</div>
+<input id="mobile-input" type="search" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
 <div id="menu" class="hidden">
   <div id="view-structure" class="menu-view">
     <p>ELIGE ESTRUCTURA DE JUEGO</p>
@@ -494,5 +495,17 @@ style="
 
 <script type="module" src="juego.js"></script>
 <script type="module" src="modulos/reproductor.js"></script>
+<script>
+    document.getElementById("btn-start").addEventListener("click", () => {
+        let elem = document.documentElement;
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) { /* Safari / iOS */
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { /* IE11 */
+            elem.msRequestFullscreen();
+        }
+    });
+</script>
 </body>
 </html>

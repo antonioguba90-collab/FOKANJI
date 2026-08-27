@@ -127,13 +127,14 @@ body::before {
     display: flex; 
     flex-direction: column; 
     width: 100%; 
-    max-width: 900px;
-    height: 100%;
+    max-width: 450px;
+    height: 100vh;
     max-height: 92vh;
     justify-content: center;
     align-items: center;     /* Evita que los hijos flote a la izquierda */
-    margin: auto;            /* Fuerza el centrado automático en contenedores flexibles */
+    margin: 0 auto;            /* Fuerza el centrado automático en contenedores flexibles */
     gap: 8px; 
+    overflow: hidden;
   }
   .hidden { display: none !important; }
 
@@ -183,6 +184,8 @@ body::before {
     gap: 8px;
     width: 100%;
     box-sizing: border-box;
+    margin: 0 auto;         /* <-- Centra la cuadrícula */
+    overflow-x: hidden;     /* <-- Evita que se mueva hacia los lados */
   }
 
   /* --- Manual e instrucciones de vocabulario --- */

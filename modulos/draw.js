@@ -104,7 +104,7 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
 
   // ==========================================
  // ==========================================
-  // 2. ICEBERGS CON ESCALADO POR PROFUNDIDAD Y CARRIL PROTEGIDO
+  // 2. ICEBERGS CON ESCALADO, CARRIL PROTEGIDO Y DISTANCIA MÍNIMA
   // ==========================================
   const imagenesIceberg = [];
   const rutasIceberg = [
@@ -128,7 +128,7 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
     window.siguienteCarrilIceberg = 0;
   }
 
-  // Función para reiniciar o crear el iceberg en su carril original del horizonte
+  // Función para reiniciar o crear el iceberg asegurando distancia mínima respecto a los demás del mismo carril
   function reiniciarIceberg(berg, yInicial = alturaHorizonte) {
     const factorEscala = Math.min(2.0, Math.max(0.1, yInicial / state.H));
     const velocidadConstanteIceberg = 30;
@@ -148,6 +148,19 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
     } else {
       berg.x = state.W * 0.80 + (Math.random() * (state.W * 0.05)); // Rango inicial der
     }
+
+    // DISTANCIA MÍNIMA AL NACER/REAPARECER:
+    // Si hay otro iceberg en el mismo carril muy cerca verticalmente, lo subimos más arriba
+    if (state.icebergs && state.icebergs.length > 0) {
+      state.icebergs.forEach(otro => {
+        if (otro !== berg && otro.carrilTipo === berg.carrilTipo) {
+          // Si la distancia en el eje Y es menor a 160 píxeles, empujamos este más arriba
+          if (Math.abs(berg.y - otro.y) < 160) {
+            berg.y = otro.y - 180;
+          }
+        }
+      });
+    }
     
     window.siguienteCarrilIceberg = 1 - window.siguienteCarrilIceberg;
   }
@@ -165,9 +178,28 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
     state.icebergs.push(nuevoBerg);
   }
 
-  // Actualización, movimiento y RESTRICCIÓN DE CARRIL para que no invadan a los enemigos al avanzar
+  // Actualización, movimiento, RESTRICCIÓN DE CARRIL y DISTANCIA DE SEGURIDAD EN MOVIMIENTO
   state.icebergs.forEach((berg, index) => {
-    berg.y += berg.velocidad * dt;
+    let velocidadActual = berg.velocidad;
+
+    // CONTROL DE DISTANCIA MÍNIMA EN TIEMPO REAL:
+    // Si este iceberg tiene otro por delante en su mismo carril y está demasiado cerca,
+    // frena su velocidad para mantener la distancia obligatoria y evitar el solapamiento.
+    state.icebergs.forEach(otro => {
+      if (otro !== berg && otro.carrilTipo === berg.carrilTipo) {
+        if (otro.y > berg.y) { // El otro está más abajo (más cerca del jugador)
+          const distanciaVertical = otro.y - berg.y;
+          const distanciaMinimaSeguridad = 150; // Distancia mínima fija que deben guardar
+          
+          if (distanciaVertical < distanciaMinimaSeguridad) {
+            // Iguala o reduce la velocidad para no pegarse al de adelante
+            velocidadActual = Math.min(velocidadActual, otro.velocidad * 0.8);
+          }
+        }
+      }
+    });
+
+    berg.y += velocidadActual * dt;
     
     // El factor escala evoluciona desde el horizonte hasta la parte inferior
     berg.factor = Math.min(0.5, Math.max(0.15, berg.y / state.H));
@@ -175,8 +207,6 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
     berg.bH = (state.H * 0.2) * berg.factor;
 
     // RESTRICCIÓN HORIZONTAL ESTRICTA EN MOVIMIENTO:
-    // Forzamos a que, conforme crecen y bajan, su coordenada X se mantenga 
-    // blindada dentro de su carril asignado, impidiendo que invadan el centro.
     if (berg.carrilTipo === 0) {
       // Carril Izquierdo: Tope máximo para que su lado derecho no rebase el 20%
       berg.x = Math.min(berg.x, state.W * 0.20 - berg.bW);
@@ -187,9 +217,15 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
       berg.x = Math.min(state.W - berg.bW, berg.x); // Evita que se salga por la derecha
     }
 
-    // Si el iceberg sale por abajo, reaparece arriba justo en la línea del horizonte
+    // Si el iceberg sale por abajo, reaparece arriba asegurando la distancia mínima respecto al resto
     if (berg.y > state.H + 50) {
-      reiniciarIceberg(berg, alturaHorizonte);
+      let minYEnCarril = alturaHorizonte;
+      state.icebergs.forEach(b => {
+        if (b !== berg && b.carrilTipo === berg.carrilTipo && b.y < minYEnCarril) {
+          minYEnCarril = b.y;
+        }
+      });
+      reiniciarIceberg(berg, Math.min(alturaHorizonte, minYEnCarril - 180));
     }
   });
 

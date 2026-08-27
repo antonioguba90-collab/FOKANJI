@@ -104,8 +104,7 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
 
   // ==========================================
  // ==========================================
-// ==========================================
-  // 2. ICEBERGS CON ESCALADO POR PROFUNDIDAD Y CARRIL PROTEGIDO
+// 2. ICEBERGS CON ESCALADO POR PROFUNDIDAD Y CARRIL PROTEGIDO (ORIGINAL INTACTO)
   // ==========================================
   const imagenesIceberg = [];
   const rutasIceberg = [
@@ -129,19 +128,14 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
     window.siguienteCarrilIceberg = 0;
   }
 
-  // Función para reiniciar o crear el iceberg en su carril original del horizonte
+  // Función para reiniciar o crear el iceberg en su carril original del horizonte (EXACTAMENTE TUYA)
   function reiniciarIceberg(berg, yInicial = alturaHorizonte) {
     const factorEscala = Math.min(2.0, Math.max(0.1, yInicial / state.H));
     const velocidadConstanteIceberg = 30;
     berg.y = yInicial;
     berg.factor = factorEscala;
-    
-    // Guardamos dimensiones de referencia iniciales estables (evita deformaciones por el teclado del móvil)
-    if (!berg.refW) berg.refW = state.W;
-    if (!berg.refH) berg.refH = state.H;
-
-    berg.bW = (berg.refW * 0.25) * factorEscala;
-    berg.bH = (berg.refH * 0.18) * factorEscala;
+    berg.bW = (state.W * 0.25) * factorEscala;
+    berg.bH = (state.H * 0.18) * factorEscala;
     berg.velocidad = velocidadConstanteIceberg;
     berg.img = imagenesIceberg[Math.floor(Math.random() * imagenesIceberg.length)];
 
@@ -155,6 +149,10 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
       berg.x = state.W * 0.80 + (Math.random() * (state.W * 0.05)); // Rango inicial der
     }
     
+    // CONGELAMOS LA PANTALLA BASE AL NACER (Esto evita que el teclado del móvil deforme el iceberg en marcha)
+    berg.baseH = state.H;
+    berg.baseW = state.W;
+
     window.siguienteCarrilIceberg = 1 - window.siguienteCarrilIceberg;
   }
 
@@ -188,15 +186,14 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
 
     berg.y += velocidadMovimiento * dt;
     
-    // El factor escala evoluciona desde el horizonte hasta la parte inferior
-    berg.factor = Math.min(0.5, Math.max(0.15, berg.y / state.H));
-    
-    // Mantenemos el tamaño estable usando su referencia fija de pantalla inicial
-    if (!berg.refW) berg.refW = state.W;
-    if (!berg.refH) berg.refH = state.H;
+    // Si por lo que sea el iceberg es antiguo y no tiene base registrada, la coge ahora
+    if (!berg.baseH) berg.baseH = state.H;
+    if (!berg.baseW) berg.baseW = state.W;
 
-    berg.bW = (berg.refW * 0.28) * berg.factor;
-    berg.bH = (berg.refH * 0.2) * berg.factor;
+    // El factor escala evoluciona desde el horizonte usando su base fija (así el teclado del móvil no lo rompe)
+    berg.factor = Math.min(0.5, Math.max(0.15, berg.y / berg.baseH));
+    berg.bW = (berg.baseW * 0.28) * berg.factor;
+    berg.bH = (berg.baseH * 0.2) * berg.factor;
 
     // RESTRICCIÓN HORIZONTAL ESTRICTA EN MOVIMIENTO:
     if (berg.carrilTipo === 0) {

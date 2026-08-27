@@ -29,8 +29,8 @@ export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, 
     minMs: 550, // Lo más rápido (aprox 10 frames por segundo)
     maxMs: 1000, // Lo más lento (aprox 3.5 frames por segundo)
     
-    renderWidth: (e.radius * 8) ,  
-    renderHeight: (e.radius * 8),
+    renderWidth: (e.radius * 6) ,  
+    renderHeight: (e.radius * 6),
     
     offsetX: 0, 
     offsetY: 100  

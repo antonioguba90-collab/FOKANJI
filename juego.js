@@ -80,7 +80,7 @@ function init() {
  const alturaTeclado = mobileInput ? mobileInput.offsetHeight : 0;
   state.player = { 
   x: state.W / 2, 
-  y: state.H - alturaTeclado - 40, 
+  y: state.H - alturaTeclado - 25, 
   size: Math.min(state.W, state.H) * 0.04 + 10 
   };
   state.enemies = []; state.bullets = []; state.particles = []; state.popups = [];

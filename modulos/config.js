@@ -98,10 +98,10 @@ export function resize() {
   msg.style.top = (top + state.H / 2) + "px";
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  if (state.player) {
-    state.player.y = state.H - 80;
+ if (state.player) {
+    const alturaTeclado = mobileInput ? mobileInput.offsetHeight : 0;
+    state.player.y = state.H - alturaTeclado - 40;
     state.player.x = state.W / 2;
-  }
 }
 
 window.addEventListener("resize", resize);

@@ -135,8 +135,13 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
     window.siguienteCarrilIceberg = 0;
   }
 
-  // Función para reiniciar o crear el iceberg en el horizonte
-  function reiniciarIceberg(berg, yInicial = 0) {
+  // Variable para alternar la trayectoria de los carriles
+  if (window.siguienteCarrilIceberg === undefined) {
+    window.siguienteCarrilIceberg = 0;
+  }
+
+  // Función para reiniciar o crear el iceberg con una posición Y controlada
+  function reiniciarIceberg(berg, yInicial = alturaHorizonte) {
     const factorEscala = Math.min(2.0, Math.max(0.1, yInicial / state.H));
     const velocidadConstanteIceberg = 30;
     berg.y = yInicial;
@@ -156,39 +161,45 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
   }
 
   if (!state.icebergs) state.icebergs = [];
-const MAX_ICEBERGS = 5; // Aumentamos la cantidad
+  const MAX_ICEBERGS = 5; // Cantidad simultánea en pantalla
 
-while (state.icebergs.length < MAX_ICEBERGS) {
-  const nuevoBerg = {};
-  
-  // Distribuir el spawn inicial de forma proporcional entre el horizonte y el fondo
-  const rangoY = state.H - alturaHorizonte;
-  const espacioEntreIcebergs = rangoY / MAX_ICEBERGS;
-  const yInicialEscalonada = alturaHorizonte + (state.icebergs.length * espacioEntreIcebergs) + (Math.random() * 20);
-  
-  reiniciarIceberg(nuevoBerg, yInicialEscalonada);
-  state.icebergs.push(nuevoBerg);
-}
+  // Inicialización con espacios equidistantes desde el principio para evitar amontonamiento
+  if (state.icebergs.length < MAX_ICEBERGS) {
+    state.icebergs = []; // Reiniciamos para distribuir perfectamente
+    const rangoY = (state.H + 50) - alturaHorizonte;
+    const espacioEntreIcebergs = rangoY / MAX_ICEBERGS;
 
-  // Actualización, movimiento y separación entre icebergs
-  state.icebergs.forEach((berg, index) => {
-    berg.y += berg.velocidad * dt;
-    
-    for (let j = index + 1; j < state.icebergs.length; j++) {
-      const otroBerg = state.icebergs[j];
-      const dx = otroBerg.x - berg.x;
-      const dy = otroBerg.y - berg.y;
-      const distanciaMinima = berg.bW * 0.9;
+    for (let i = 0; i < MAX_ICEBERGS; i++) {
+      const nuevoBerg = {};
+      // Distribuimos cada iceberg escalonadamente a lo largo del alto del canvas
+      const yInicialEscalonada = alturaHorizonte + (i * espacioEntreIcebergs);
+      reiniciarIceberg(nuevoBerg, yInicialEscalonada);
+      state.icebergs.push(nuevoBerg);
     }
+  }
+
+  // Actualización y movimiento fluido de los icebergs
+  state.icebergs.forEach((berg) => {
+    berg.y += berg.velocidad * dt;
 
     // El factor escala evoluciona desde el horizonte hasta la parte inferior
     berg.factor = Math.min(0.5, Math.max(0.15, berg.y / state.H));
     berg.bW = (state.W * 0.28) * berg.factor;
     berg.bH = (state.H * 0.2) * berg.factor;
 
-    // Si el iceberg sale por abajo, reaparece arriba justo en la línea del horizonte
+    // Si el iceberg sale por abajo, lo mandamos arriba del todo asegurando 
+    // que guarde una distancia respecto al último iceberg más alto para que nunca se encimen.
     if (berg.y > state.H + 50) {
-      reiniciarIceberg(berg, alturaHorizonte);
+      // Buscamos la posición Y del iceberg que esté más arriba en ese momentoencanaan:
+      let minY = alturaHorizonte;
+      state.icebergs.forEach(b => {
+        if (b !== berg && b.y < minY) {
+          minY = b.y;
+        }
+      });
+      
+      // Lo colocamos bastante más arriba del que va más adelantado (creando un loop fluido)
+      reiniciarIceberg(berg, Math.min(alturaHorizonte, minY - ((state.H - alturaHorizonte) / MAX_ICEBERGS)));
     }
   });
 

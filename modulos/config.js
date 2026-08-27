@@ -99,7 +99,7 @@ export function resize() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
  if (state.player) {
-    state.player.y = state.H - 80;
+    state.player.y = state.H - 25;
     state.player.x = state.W / 2;
   }
 }

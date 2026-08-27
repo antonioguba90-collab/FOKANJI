@@ -498,12 +498,20 @@ style="
 <script>
     document.getElementById("btn-start").addEventListener("click", () => {
         let elem = document.documentElement;
+// 1. Activar Pantalla Completa (Requisito obligatorio de los navegadores móviles)
         if (elem.requestFullscreen) {
             elem.requestFullscreen();
         } else if (elem.webkitRequestFullscreen) { /* Safari / iOS */
             elem.webkitRequestFullscreen();
         } else if (elem.msRequestFullscreen) { /* IE11 */
             elem.msRequestFullscreen();
+        }
+
+        // 2. Bloquear la orientación en modo vertical (Portrait)
+        if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock("portrait").catch((err) => {
+                console.log("El bloqueo de orientación no es compatible o requiere interacción previa:", err);
+            });
         }
     });
 </script>

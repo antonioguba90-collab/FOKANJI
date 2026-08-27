@@ -310,6 +310,24 @@ body::before {
         padding: 8px 12px;
         font-size: 9px;  
     }
+    .menu-view {
+    max-width: 100%;       /* Ocupa el 100% de la pantalla sin forzar un ancho fijo de 450px */
+    padding: 0 10px;       /* Un pequeño respiro lateral para que no pegue con los bordes del móvil */
+    box-sizing: border-box;
+  }
+
+  .ajuste-fila {
+    padding: 4px 6px;      /* Reducimos ligeramente el padding interno para ganar espacio */
+  }
+
+  .ajuste-fila label {
+    font-size: 11px;       /* Reducimos un pelín el texto de la izquierda para que no empuje */
+  }
+
+  .ajuste-fila .valor {
+    width: 26px;           /* Ajustamos el espacio del número para que entre holgado */
+    font-size: 11px;
+  }
 }
 </style>
 </head>

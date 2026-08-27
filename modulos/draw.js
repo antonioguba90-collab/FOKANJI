@@ -33,6 +33,30 @@ let hudPrevio = "";
  * @param {number} lineHeight - Espaciado entre líneas.
  */
 // dtSeg: delta real en segundos (lo pasa el loop principal); clamp por si la pestaña estuvo en segundo plano
+function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = text.split(' ');
+  let line = '';
+  let lines = [];
+
+  for (let n = 0; n < words.length; n++) {
+    let testLine = line + words[n] + ' ';
+    let metrics = ctx.measureText(testLine);
+    if (metrics.width > maxWidth && n > 0) {
+      lines.push(line);
+      line = words[n] + ' ';
+    } else {
+      line = testLine;
+    }
+  }
+  lines.push(line);
+
+  // Dibujar cada línea
+  for (let i = 0; i < lines.length; i++) {
+    ctx.fillText(lines[i].trim(), x, y + (i * lineHeight));
+  }
+}
+
+// dtSeg: delta real en segundos (lo pasa el loop principal); clamp por si la pestaña estuvo en segundo plano
 export function ejecutarDrawLoop(dtSeg = 1 / 60) {
   ctx.clearRect(0, 0, state.W, state.H);
   if (!state.started) {

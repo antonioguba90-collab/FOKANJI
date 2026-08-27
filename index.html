@@ -566,6 +566,19 @@ style="
             });
         }
     });
+  // Tu código existente de inicialización del juego...
+  
+  // Añadimos el control para re-bloquear la orientación al volver de una pausa
+  document.addEventListener("visibilitychange", function() {
+      if (!document.hidden) {
+          if (screen.orientation && screen.orientation.lock) {
+              screen.orientation.lock("portrait").catch(function(error) {
+                  // Captura silenciosa por si el navegador requiere interacción táctil previa
+                  console.log("No se pudo re-bloquear la orientación automáticamente:", error);
+              });
+          }
+      }
+  });
 </script>
 </body>
 </html>

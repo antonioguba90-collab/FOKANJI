@@ -103,22 +103,15 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
   const dt = Math.min(dtSeg, 0.1);
 
   // ==========================================
-  // 2. ICEBERGS CON ESCALADO POR PROFUNDIDAD
-  // ==========================================
-  // ==========================================
-  // PRECARGA DE IMÁGENES DE ICEBERG
+ // ==========================================
+  // 2. ICEBERGS CON ESCALADO POR PROFUNDIDAD Y CARRIL PROTEGIDO
   // ==========================================
   const imagenesIceberg = [];
   const rutasIceberg = [
-   // './personajes/iceberg1.png', 
-   // './personajes/iceberg2.png', 
-   // './personajes/iceberg5.png', 
-   // './personajes/iceberg7.png', 
     './personajes/iceberg9.png',
     './personajes/iceberg10.png',
     './personajes/iceberg11.png',
     './personajes/iceberg12.png',
-    //'./personajes/iceberg13.png',
     './personajes/iceberg14.png',
     './personajes/iceberg15.png',
     './personajes/iceberg16.png',
@@ -135,87 +128,68 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
     window.siguienteCarrilIceberg = 0;
   }
 
-   // Variable para alternar la trayectoria de los carriles
-  if (window.siguienteCarrilIceberg === undefined) {
-    window.siguienteCarrilIceberg = 0;
-  }
-
-// Variable para alternar la trayectoria de los carriles
-  if (window.siguienteCarrilIceberg === undefined) {
-    window.siguienteCarrilIceberg = 0;
-  }
-
-  // Función para reiniciar o crear el iceberg asegurando que pasen por los lados
-  function reiniciarIceberg(berg, yInicial = 0) {
+  // Función para reiniciar o crear el iceberg en su carril original del horizonte
+  function reiniciarIceberg(berg, yInicial = alturaHorizonte) {
     const factorEscala = Math.min(2.0, Math.max(0.1, yInicial / state.H));
     const velocidadConstanteIceberg = 30;
     berg.y = yInicial;
     berg.factor = factorEscala;
-    
-    // Ancho y alto proporcionales adaptados al tamaño de la pantalla
-    berg.bW = (state.W * 0.22) * factorEscala;
+    berg.bW = (state.W * 0.25) * factorEscala;
     berg.bH = (state.H * 0.18) * factorEscala;
     berg.velocidad = velocidadConstanteIceberg;
     berg.img = imagenesIceberg[Math.floor(Math.random() * imagenesIceberg.length)];
 
-    // ZONAS LATERALES SEGURAS: Forzamos carriles totalmente a la izquierda o a la derecha
-    // Esto evita por completo el centro de la pantalla donde se ubica el player.
-    const margenSeguroAncho = berg.bW;
-    
-    if (window.siguienteCarrilIceberg === 0) {
-      // Carril Izquierdo (desde el borde 0 hasta antes del centro)
-      berg.x = Math.random() * (state.W * 0.30 - margenSeguroAncho);
+    // Guardamos qué carril le tocó (0 = Izquierdo, 1 = Derecho) para respetarlo siempre
+    berg.carrilTipo = window.siguienteCarrilIceberg;
+
+    // Nacen exactamente en sus carriles originales seguros
+    if (berg.carrilTipo === 0) {
+      berg.x = state.W * 0.10 + (Math.random() * (state.W * 0.05)); // Rango inicial izq
     } else {
-      // Carril Derecho (desde la zona derecha hacia el borde exterior)
-      berg.x = (state.W * 0.70) + Math.random() * (state.W * 0.30 - margenSeguroAncho);
+      berg.x = state.W * 0.80 + (Math.random() * (state.W * 0.05)); // Rango inicial der
     }
-    
-    // Asegurarnos de que nunca rebasen los límites absolutos del canvas
-    berg.x = Math.max(5, Math.min(state.W - berg.bW - 5, berg.x));
     
     window.siguienteCarrilIceberg = 1 - window.siguienteCarrilIceberg;
   }
 
   if (!state.icebergs) state.icebergs = [];
-  const MAX_ICEBERGS = 5; // Cantidad simultánea en pantalla
+  const MAX_ICEBERGS = 5; 
 
-  // Inicialización con espacios equidistantes desde el principio para evitar amontonamiento
-  if (state.icebergs.length < MAX_ICEBERGS) {
-    state.icebergs = []; // Reiniciamos para distribuir perfectamente
-    const rangoY = (state.H + 50) - alturaHorizonte;
+  while (state.icebergs.length < MAX_ICEBERGS) {
+    const nuevoBerg = {};
+    const rangoY = state.H - alturaHorizonte;
     const espacioEntreIcebergs = rangoY / MAX_ICEBERGS;
-
-    for (let i = 0; i < MAX_ICEBERGS; i++) {
-      const nuevoBerg = {};
-      // Distribuimos cada iceberg escalonadamente a lo largo del alto del canvas
-      const yInicialEscalonada = alturaHorizonte + (i * espacioEntreIcebergs);
-      reiniciarIceberg(nuevoBerg, yInicialEscalonada);
-      state.icebergs.push(nuevoBerg);
-    }
+    const yInicialEscalonada = alturaHorizonte + (state.icebergs.length * espacioEntreIcebergs) + (Math.random() * 20);
+    
+    reiniciarIceberg(nuevoBerg, yInicialEscalonada);
+    state.icebergs.push(nuevoBerg);
   }
 
-  // Actualización y movimiento fluido de los icebergs
-  state.icebergs.forEach((berg) => {
+  // Actualización, movimiento y RESTRICCIÓN DE CARRIL para que no invadan a los enemigos al avanzar
+  state.icebergs.forEach((berg, index) => {
     berg.y += berg.velocidad * dt;
-
+    
     // El factor escala evoluciona desde el horizonte hasta la parte inferior
     berg.factor = Math.min(0.5, Math.max(0.15, berg.y / state.H));
     berg.bW = (state.W * 0.28) * berg.factor;
     berg.bH = (state.H * 0.2) * berg.factor;
 
-    // Si el iceberg sale por abajo, lo mandamos arriba del todo asegurando 
-    // que guarde una distancia respecto al último iceberg más alto para que nunca se encimen.
+    // RESTRICCIÓN HORIZONTAL ESTRICTA EN MOVIMIENTO:
+    // Forzamos a que, conforme crecen y bajan, su coordenada X se mantenga 
+    // blindada dentro de su carril asignado, impidiendo que invadan el centro.
+    if (berg.carrilTipo === 0) {
+      // Carril Izquierdo: Tope máximo para que su lado derecho no rebase el 20%
+      berg.x = Math.min(berg.x, state.W * 0.20 - berg.bW);
+      berg.x = Math.max(0, berg.x); // Evita que se salga por la izquierda
+    } else {
+      // Carril Derecho: Tope mínimo para que su lado izquierdo no baje del 80%
+      berg.x = Math.max(berg.x, state.W * 0.80);
+      berg.x = Math.min(state.W - berg.bW, berg.x); // Evita que se salga por la derecha
+    }
+
+    // Si el iceberg sale por abajo, reaparece arriba justo en la línea del horizonte
     if (berg.y > state.H + 50) {
-      // Buscamos la posición Y del iceberg que esté más arriba en ese momentoencanaan:
-      let minY = alturaHorizonte;
-      state.icebergs.forEach(b => {
-        if (b !== berg && b.y < minY) {
-          minY = b.y;
-        }
-      });
-      
-      // Lo colocamos bastante más arriba del que va más adelantado (creando un loop fluido)
-      reiniciarIceberg(berg, Math.min(alturaHorizonte, minY - ((state.H - alturaHorizonte) / MAX_ICEBERGS)));
+      reiniciarIceberg(berg, alturaHorizonte);
     }
   });
 

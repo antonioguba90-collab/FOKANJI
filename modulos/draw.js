@@ -149,7 +149,7 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
   // Función para reiniciar o crear el iceberg en su carril original del horizonte (EXACTAMENTE TUYA)
   function reiniciarIceberg(berg, yInicial = alturaHorizonte) {
     const factorEscala = Math.min(2.0, Math.max(0.1, yInicial / state.H));
-    const velocidadConstanteIceberg = 30;
+    const velocidadConstanteIceberg = 10;
     berg.y = yInicial;
     berg.factor = factorEscala;
     berg.bW = (state.W * 0.25) * factorEscala;
@@ -230,11 +230,28 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
     }
   });
 
-  // RENDERIZADO (IMÁGENES PNG)
+// RENDERIZADO (IMÁGENES PNG SINCRONIZADAS CON LAS OLAAS)
   state.icebergs.forEach((berg) => {
     const { x, y, bW, bH, img } = berg;
     if (img && img.complete) {
-      ctx.drawImage(img, x, y, bW, bH);
+      
+      // 1. Calculamos a qué franja (tira) del océano corresponde la posición 'y' del iceberg
+      const oceanoH = state.H - alturaHorizonte;
+      const numTiras = 16;
+      const altoTiraCanvas = oceanoH / numTiras;
+      
+      // Averiguamos el índice de la tira (de 0 a 15) basado en la altura del iceberg
+      let indiceTira = Math.floor((y - alturaHorizonte) / altoTiraCanvas);
+      indiceTira = Math.max(0, Math.min(numTiras - 1, indiceTira)); // Asegurarnos de que no se salga de rango
+
+      // 2. Aplicamos exactamente el mismo pulso desfasado que usa el agua para esa tira
+      const desfaseOndulacion = Math.sin(time * 3 + indiceTira * 0.5) * (1.5 + indiceTira * 0.2);
+
+      // 3. Dibujamos el iceberg aplicando el desplazamiento de la onda en su eje X y un ligero sutil vaivén en Y
+      const xOndeada = x + desfaseOndulacion - 4;
+      const yOndeada = y + (desfaseOndulacion * 0.3); // Un pequeño balanceo vertical extra para redondear el efecto
+
+      ctx.drawImage(img, xOndeada, yOndeada, bW, bH);
     }
   });
   // ==========================================

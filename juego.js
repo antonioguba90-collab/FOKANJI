@@ -99,13 +99,14 @@ function init() {
 function spawnEnemy() {
   if (state.enemies.length >= state.MAX_ENEMIES || sistemaLector.bossMode || state.paused) return;
 
-  let w = null;
+  const ahora = Date.now();
   let esClon = false;
   let datosClon = null;
+  let w = null;
 
-  // 1. PRIORIDAD: Si hay clones pendientes en la cola, sacamos el primero
+  // 1. PRIORIDAD ABSOLUTA: Si hay clones pendientes, saltan la regla de distancia del carril
   if (state.colaClonesPendientes && state.colaClonesPendientes.length > 0) {
-    const pendiente = state.colaClonesPendientes.shift(); // Saca el primero de la fila
+    const pendiente = state.colaClonesPendientes.shift(); 
     datosClon = pendiente.datosOriginales;
     esClon = true;
     w = {
@@ -116,7 +117,24 @@ function spawnEnemy() {
       kana: datosClon.kana
     };
   } else {
-    // 2. Si no hay clones, cogemos una palabra normal del modo juego
+    // 2. PALABRAS NORMALES: Comprobamos el carril antes de soltarlas
+    // Decidimos qué carril tocaría según el último usado
+    const proximoLadoIzquierdo = (state.ultimoCarrilUsado !== "izquierdo");
+    
+    // Umbral de seguridad: el enemigo anterior de este carril debe haber bajado al menos un 30%
+    const umbralSeguridadY = alturaHorizonte + (state.H - alturaHorizonte) * 0.18;
+    
+    const carrilOcupado = state.enemies.some(e => {
+      const esDelLadoIzquierdo = e.targetX < state.W * 0.5;
+      return (esDelLadoIzquierdo === proximoLadoIzquierdo) && (e.y < umbralSeguridadY);
+    });
+
+    // Si el carril está bloqueado por otro enemigo arriba, cancelamos este spawn temporalmente
+    if (carrilOcupado) return;
+
+    // Tampoco queremos ráfagas espamendose en milisegundos (mínimo 1 segundo entre spawns normales)
+    if (state.ultimoSpawn && (ahora - state.ultimoSpawn < 500)) return;
+
     w = (state.gameStructure === "arcade") 
       ? controladorModoArcade.obtenerPalabraParaSpawn() 
       : controladorModoFases.obtenerPalabraParaSpawn();
@@ -124,7 +142,8 @@ function spawnEnemy() {
 
   if (!w) return;
 
-  
+  state.ultimoSpawn = ahora;
+
   // Lógica de carriles estrictos para evitar cualquier solapamiento con los icebergs
   let x = 0;
   let esLadoIzquierdo = false;
@@ -150,9 +169,8 @@ function spawnEnemy() {
   const longLetras = w.romaji.length;
   const radius = (Math.min(state.W, state.H) * 0.024 + 20);
   
-  let speedAdaptada = (state.gameStructure === "arcade") ? 0.35 : 0.28;
+  let speedAdaptada = (state.gameStructure === "arcade") ? 0.20 : 0.15;
   const finalSpeed = speedAdaptada * factorEscalaMovil;
-
 
   const paleta = ["#ff5252", "#34ace0", "#33d9b2", "#ffb142", "#ff793f"]; 
   const coloresUsados = new Set(state.enemies.map(e => e.color));
@@ -163,7 +181,7 @@ function spawnEnemy() {
     wordId: w.id || w.wordId, 
     jp: w.jp, romaji: w.romaji, es: w.es, kana: w.kana || w.jp,
     x: x, 
-    x0: x,                          
+    x0: x,                             
     y: alturaHorizonte,             
     targetX: objetivoX,             
     targetY: state.player.y,        
@@ -176,7 +194,6 @@ function spawnEnemy() {
     vecesAcertada: esClon ? (datosClon.vecesAcertada + 1) : 0 
   });
 }
-
 function spawnExplosion(x, y, grande = false) {
   const n = grande ? 80 : 30;
   for (let i = 0; i < n; i++) {

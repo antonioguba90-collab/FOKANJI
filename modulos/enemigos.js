@@ -46,11 +46,10 @@ export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
   const totalFrames = datosEnemigo.frames;
 
   // ==========================================
-  // CONFIGURACIÓN DE TAMAÑOS (PERSPECTIVA DESDE EL HORIZONTE)
+  // CONFIGURACIÓN DE TAMAÑOS Y ONDULACIÓN DE LAS OLAS
   // ==========================================
   
   // Factor de profundidad adaptado al horizonte: 
-  // Arriba en el horizonte (y = alturaHorizonte) la escala es mínima (0.15), abajo del todo es 1.0
   const factorProfundidad = Math.min(2.0, Math.max(0.15, (e.y - alturaHorizonte) / (state.H - alturaHorizonte) || 0.25));
   
   // Escala base ajustada para que empiece muy pequeño en el horizonte
@@ -58,20 +57,38 @@ export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
   const escalaKanji = (0.9 * factorProfundidad) * factorEscalaMovil;
   const escalaRomaji = (0.7 * factorProfundidad) * factorEscalaMovil;
 
+  // --- CÁLCULO DE LA ONDULACIÓN DEL OCÉANO (USANDO TIEMPO REAL) ---
+  const oceanoH = state.H - alturaHorizonte;
+  const numTiras = 16;
+  const altoTiraCanvas = oceanoH / numTiras;
+  
+  let indiceTira = Math.floor((e.y - alturaHorizonte) / altoTiraCanvas);
+  indiceTira = Math.max(0, Math.min(numTiras - 1, indiceTira));
+
+// Usamos el mismo patrón de tiempo y fórmula exacta que el océano
+  // (Asumiendo que 'time' viene en el state o podemos calcular el equivalente exacto)
+  const tiempoRelativo = Date.now() / 1000; // O la variable de tiempo global que use tu bucle principal
+  const desfaseOndulacion = Math.sin(tiempoRelativo * 3 + indiceTira * 0.5) * (1.5 + indiceTira * 0.2);
+  
+  // Como la tira del océano ya se desplaza con esta medida, aplicamos lo mismo al enemigo
+  const ondaX = desfaseOndulacion - 4;
+  const ondaY = desfaseOndulacion * 0.3; // Un pequeño balanceo vertical muy sutil
+
+  // POSICIÓN REAL CON LA OLA APLICADA PARA TODO EL RENDERIZADO
+  const posicionRealX = e.x + ondaX;
+  const posicionRealY = e.y + ondaY;
+
   if (isLocked) {
     const esRepaso = sistemaLector.palabrasSuperadasFase.some(p => p.romaji === e.romaji);
     let colorRelleno, colorBorde;
 
     if (e.vecesAcertada === 0) {
-      // Primera vez que se ve (Enemigo normal recién salido)
       colorRelleno = "rgba(98, 255, 59, 0.2)"; // Verde suave
       colorBorde   = "rgba(59, 255, 118, 0.6)";
       } else if (e.vecesAcertada === 1) {
-      // Ya fue acertado 1 vez (Es un clon que viene de camino)
-      colorRelleno = "rgba(255, 152, 0, 0.2)"; // Naranja suave para distinguirlo
+      colorRelleno = "rgba(255, 152, 0, 0.2)"; // Naranja suave
       colorBorde   = "rgba(255, 140, 0, 0.6)";
     } else {
-      // Por seguridad o fases avanzadas si hubiera más divisiones
       colorRelleno = "rgba(73, 17, 226, 0.2)"; // Azul / Violeta suave
       colorBorde   = "rgba(14, 17, 218, 0.6)";
     }
@@ -81,7 +98,7 @@ export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
     ctx.lineWidth = 3;
 
     ctx.beginPath(); 
-    ctx.arc(e.x, e.y, e.radius * (escalaSprite * 0.65), 0, Math.PI * 2); 
+    ctx.arc(posicionRealX, posicionRealY, e.radius * (escalaSprite * 0.65), 0, Math.PI * 2); 
     ctx.fill();
     ctx.stroke();
 
@@ -104,11 +121,11 @@ export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
   const sourceX = frameActual * spriteWidth;
   const sourceY = 0;
 
-  // Dimensiones y centrado dinámico basados en la escala de profundidad
+  // Dimensiones y centrado dinámico basados en la posición real con onda
   const destinoWidth = (e.radius * escalaSprite);
   const destinoHeight = (e.radius * escalaSprite);
-  const destinoX = e.x - (destinoWidth / 2);
-  const destinoY = e.y - (destinoHeight / 2);
+  const destinoX = posicionRealX - (destinoWidth / 2);
+  const destinoY = posicionRealY - (destinoHeight / 2);
 
   // Dibujar el cuadro del sprite en el Canvas
   if (spriteActual.complete && spriteActual.width > 0) { 
@@ -120,7 +137,7 @@ export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
   } else {
     ctx.fillStyle = e.color || "#e0f7fa";
     ctx.beginPath();
-    ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
+    ctx.arc(posicionRealX, posicionRealY, e.radius, 0, Math.PI * 2);
     ctx.fill();
   }
 
@@ -130,8 +147,8 @@ export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
   ctx.textAlign = "left"; 
   ctx.textBaseline = "middle"; 
 
-  const textoX = e.x + (destinoWidth / 2) + 15;
-  const kanjiY = e.y + 10; 
+  const textoX = posicionRealX + (destinoWidth / 2) + 15;
+  const kanjiY = posicionRealY + 10; 
 
   const fontSizeBase = Math.max(20 * factorEscalaMovil, e.radius * escalaKanji);
   const fontSize = Math.max(20 * factorEscalaMovil, fontSizeBase); 
@@ -161,8 +178,8 @@ export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
   // TEXTOS INFERIORES: Traducción (es) y Romaji
   // ========================================================
   ctx.textAlign = "center"; 
-  const posInferiorX = e.x; 
-  const bloqueInferiorY = e.y + (destinoHeight / 2) + 15; 
+  const posInferiorX = posicionRealX; 
+  const bloqueInferiorY = posicionRealY + (destinoHeight / 2) + 15; 
 
   const fontSizeSecundario = Math.max(12 * factorEscalaMovil, baseFontR * escalaRomaji * 1.5); 
 

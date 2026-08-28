@@ -14,43 +14,60 @@ const animConfig = {
   disparar: { frames: 3, velocidad: 0.12, anchoFrame: 939/3, altoFrame: 456 }, 
   backflip: { frames: 6, velocidad: 0.05, anchoFrame: 112.33, altoFrame: 110 }
 };
+import { alturaHorizonte } from "./draw.js"; // Asegúrate de importar esto si no lo tenías ya
 
-export function dibujarPersonaje(ctx, player, dtFactor = 1) {
+export function dibujarPersonaje(ctx, player, dtFactor = 1, state = {}) {
   if (!player) return;
 
-  const fx = player.x;
-  const fy = player.y + 10;
+  // --- CÁLCULO DE LA ONDULACIÓN DEL OCÉANO PARA LA FOCA ---
+  // Si state.H o state no están disponibles por parámetro, usamos window.innerHeight como recurso de seguridad
+  const alturaH = state.H || window.innerHeight;
+  const oceanoH = alturaH - alturaHorizonte;
+  const numTiras = 16;
+  const altoTiraCanvas = oceanoH / numTiras;
+  
+  let indiceTira = Math.floor((player.y - alturaHorizonte) / altoTiraCanvas);
+  indiceTira = Math.max(0, Math.min(numTiras - 1, indiceTira));
+
+  const tiempoRelativo = Date.now() / 1000;
+  const desfaseOndulacion = Math.sin(tiempoRelativo * 3 + indiceTira * 0.5) * (1.5 + indiceTira * 0.2);
+  
+  const ondaX = desfaseOndulacion - 4;
+  const ondaY = desfaseOndulacion * 0.3;
+
+  // Posiciones reales con la ola aplicada
+  const renderX = player.x + ondaX;
+  const renderY = player.y + ondaY;
+
+  const fx = renderX;
+  const fy = renderY + 10;
   
   const anchoRender = player.size * 3;
   const altoRender = player.size * 4;
 
   // ==========================================
-  // 1. DIBUJAR EL ÁREA DE COLISIÓN (OVALO ENVOLVENTE PARA FLANCOS)
+  // 1. DIBUJAR EL ÁREA DE COLISIÓN (OVALO ENVOLVENTE)
   // ==========================================
   ctx.save();
   
   const pulso = Math.sin(Date.now() / 200) * 0.04 + 1; 
 
-  // Ampliamos significativamente el radio horizontal (radioX) para cubrir los flancos
-  const radioX = Math.min(player.size * 9 * pulso, player.x, state.W - player.x); 
-  const radioY = player.size * 0.7 * pulso; 
+  const radioX = Math.min(player.size * 9 * pulso, renderX, (state.W || window.innerWidth) - renderX); 
+  const radioY = player.size * 0.7 * pulso;
 
   ctx.beginPath();
   
-  // Dibujamos una elipse completa (de 0 a 2 * Math.PI) centrada en la posición del jugador
-  // Esto genera un óvalo horizontal que abarca tanto el cuerpo central como los costados (flancos).
   ctx.ellipse(
-    player.x, 
-    player.y, 
+    renderX, 
+    renderY, 
     radioX, 
     radioY, 
-    0,                  
-    0,            
+    0,                     
+    0,             
     2 * Math.PI,        
-    false               
+    false              
   );
 
-  // Estilo visual de zona de peligro/colisión
   ctx.fillStyle = "rgba(241, 246, 248, 0.6)"; 
   ctx.fill();
 
@@ -94,7 +111,7 @@ export function dibujarPersonaje(ctx, player, dtFactor = 1) {
     ctx.drawImage(
       spriteActual,
       frameIndex * anchoFrame, 0, 
-      anchoFrame, altoFrame,      
+      anchoFrame, altoFrame,       
       fx - anchoRender / 2, fy - altoRender / 2, 
       anchoRender, altoRender     
     );

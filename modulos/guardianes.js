@@ -8,6 +8,7 @@ const spriteGuardianGlobal = new Image();
 spriteGuardianGlobal.src = "personajes/DientesSable.png"; // Tu ruta de imagen
 
 export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, sistemaLector) {
+const factorEscalaMovil = Math.max(Math.min(window.innerWidth / 1200, 1), 0.6);
 
 
   // === INICIALIZACIÓN DE ESTADO ALEATORIO EN EL ENEMIGO ===
@@ -41,7 +42,7 @@ export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, 
     renderHeight: (e.radius * 5),
     
     offsetX: 0, 
-    offsetY: 100  
+    offsetY: 140  
   };
 
   // ========================================================
@@ -128,7 +129,7 @@ export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, 
   const anchoMaximoDinamico = Math.min(window.innerWidth - 40, 600);
 
   // A. TÍTULO DEL GUARDIÁN Y BARRA
-  const titleY = e.y - e.radius - (35 );
+  const titleY = e.y - e.radius - (80 );
 
   ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
@@ -145,7 +146,7 @@ export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, 
   const barWidth = 100;
   const barHeight = 12;
   const barX = e.x - (barWidth / 2);
-  const barY = e.y - e.radius - 22;
+  const barY = e.y - e.radius - 67;
 
   ctx.fillStyle = "#000000"; 
   ctx.fillRect(barX - 2, barY - 2, barWidth + 4, barHeight + 4);
@@ -159,77 +160,81 @@ export function dibujarGuardian(ctx, e, isLocked, state, baseFontJp, baseFontR, 
 
   // B. DIBUJAR KANJI CON WRAPTEXT AUTOMÁTICO
   ctx.textBaseline = "middle"; 
-  ctx.font = `bold ${baseFontJp * 1.5}px sans-serif`;  
+  const fontSizeJpDinamico = Math.min(Math.max(baseFontJp * 1.2, 24), 55);
+  ctx.font = `bold ${fontSizeJpDinamico}px sans-serif`;
   ctx.strokeStyle = "#000000";
   ctx.lineWidth = 6;
   ctx.fillStyle = "#ffffff"; 
   ctx.textAlign = "center";
 
   const kanjiLineHeight = baseFontJp * 2;
-  const lineasKanji = drawWrappedText(ctx, e.jp, e.x, e.y, anchoMaximoDinamico, kanjiLineHeight);
-  const alturaTotalKanji = lineasKanji * kanjiLineHeight;
+  const offsetYKanji = -60; // Sube el kanji por encima del centro del sprite
+  const lineasKanji = drawWrappedText(ctx, e.jp, e.x, e.y + offsetYKanji, anchoMaximoDinamico, kanjiLineHeight);  const alturaTotalKanji = lineasKanji * kanjiLineHeight;
 
-  // Acumulador dinámico vertical para los siguientes bloques de texto
-  let desplazamientoY = (alturaTotalKanji) + 10;
+ // D. TEXTOS INFERIORES (Traducción y Romaji debajo del Sprite)
+  // ========================================================
+  // Calculamos exactamente dónde termina el sprite hacia abajo
+  const spriteBottomY = e.y + (configSprite.renderHeight / 2) + configSprite.offsetY;
+  let textY = spriteBottomY + 5; // Margen de separación debajo del sprite
 
-  // C. TRADUCCIÓN (Con soporte multilínea dinámico)
+  // 1. TRADUCCIÓN
   if (state.mostrarTraduccion && e.es) {
-    const tradY = e.y + desplazamientoY;
-    ctx.font = `bold ${18}px sans-serif`;
-    ctx.strokeStyle = "rgba(0,0,0,0.6)";
-    ctx.lineWidth = 4;
-    ctx.fillStyle = "#ffffff";
+  // Nunca menor de 12px en móviles ni mayor de 22px en PC
+  const fontSizeTradDinamico = Math.min(Math.max(16 * factorEscalaMovil, 12), 22);
+  const tradLineHeight = fontSizeTradDinamico * 1.25; // El interlineado se adapta solo
 
-    const textoTrad = `(${e.es})`;
-    const tradLineHeight = 22;
-    const lineasTrad = drawWrappedText(ctx, textoTrad, e.x, tradY, anchoMaximoDinamico, tradLineHeight);
-    
-    // Incrementamos el desplazamiento según lo que ocupó la traducción
-    desplazamientoY += (lineasTrad * tradLineHeight) + 10;
-  }
+  ctx.font = `bold ${fontSizeTradDinamico}px sans-serif`;
+  ctx.strokeStyle = "rgba(0,0,0,0.6)";
+  ctx.lineWidth = 4;
+  ctx.fillStyle = "#ffffff";
 
-  // D. ROMAJI DE AYUDA (Con soporte de colores isLocked y wraptext)
-  if (sistemaLector.bossTimerAyuda >= obtenerUmbralAyuda()) {
-    const romajiY = e.y + desplazamientoY;
-
-    ctx.font = `bold ${baseFontR * 1.5}px monospace`;
-    ctx.lineJoin = "round";
-
-    const romajiMayus = e.romaji.toUpperCase();
-    ctx.strokeStyle = "rgba(0,0,0,0.6)";
-    ctx.lineWidth = 4;
-
-    const romajiLineHeight = 35;
-
-    if (isLocked) {
-      let globalCharCount = 0;
-
-      drawWrappedText(ctx, romajiMayus, e.x, romajiY, anchoMaximoDinamico, romajiLineHeight, (lineText, lx, ly) => {
-        const fullLineWidth = ctx.measureText(lineText).width;
-        let currentX = lx - fullLineWidth / 2;
-
-        for (let i = 0; i < lineText.length; i++) {
-          const char = lineText[i];
-          const charWidth = ctx.measureText(char).width;
-          
-          const isTypedChar = globalCharCount < state.typedLen;
-          globalCharCount++;
-
-          ctx.textAlign = "left";
-          ctx.strokeText(char, currentX, ly);
-          ctx.fillStyle = isTypedChar ? "#ffeb3b" : "#6cffeb"; 
-          ctx.fillText(char, currentX, ly);
-
-          currentX += charWidth;
-        }
-      });
-    } else {
-      ctx.textAlign = "center";
-      drawWrappedText(ctx, romajiMayus, e.x, romajiY, anchoMaximoDinamico, romajiLineHeight, (lineText, lx, ly) => {
-        ctx.strokeText(lineText, lx, ly);
-        ctx.fillStyle = "#6cffeb";
-        ctx.fillText(lineText, lx, ly);
-      });
-    }
-  }
+  const textoTrad = `(${e.es})`;
+  const lineasTrad = drawWrappedText(ctx, textoTrad, e.x, textY, anchoMaximoDinamico, tradLineHeight);
+  
+  textY += (lineasTrad * tradLineHeight) + 4; 
 }
+
+  // 2. ROMAJI DE AYUDA
+  if (sistemaLector.bossTimerAyuda >= obtenerUmbralAyuda()) {
+  // Nunca menor de 14px ni mayor de 28px
+  const fontSizeRomajiDinamico = Math.min(Math.max(baseFontR * 1.5, 14), 28);
+  const romajiLineHeight = fontSizeRomajiDinamico * 1.3;
+
+  ctx.font = `bold ${fontSizeRomajiDinamico}px monospace`;
+  ctx.lineJoin = "round";
+
+  const romajiMayus = e.romaji.toUpperCase();
+  ctx.strokeStyle = "rgba(0,0,0,0.6)";
+  ctx.lineWidth = 4;
+
+  if (isLocked) {
+    let globalCharCount = 0;
+
+    drawWrappedText(ctx, romajiMayus, e.x, textY, anchoMaximoDinamico, romajiLineHeight, (lineText, lx, ly) => {
+      const fullLineWidth = ctx.measureText(lineText).width;
+      let currentX = lx - fullLineWidth / 2;
+
+      for (let i = 0; i < lineText.length; i++) {
+        const char = lineText[i];
+        const charWidth = ctx.measureText(char).width;
+        
+        const isTypedChar = globalCharCount < state.typedLen;
+        globalCharCount++;
+
+        ctx.textAlign = "left";
+        ctx.strokeText(char, currentX, ly);
+        ctx.fillStyle = isTypedChar ? "#ffeb3b" : "#6cffeb"; 
+        ctx.fillText(char, currentX, ly);
+
+        currentX += charWidth;
+      }
+    });
+  } else {
+    ctx.textAlign = "center";
+    drawWrappedText(ctx, romajiMayus, e.x, textY, anchoMaximoDinamico, romajiLineHeight, (lineText, lx, ly) => {
+      ctx.strokeText(lineText, lx, ly);
+      ctx.fillStyle = "#6cffeb";
+      ctx.fillText(lineText, lx, ly);
+    });
+  }
+}}

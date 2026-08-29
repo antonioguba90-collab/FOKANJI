@@ -795,11 +795,12 @@ requestAnimationFrame(loop);
 if (window.visualViewport) {
   window.visualViewport.addEventListener('resize', () => {
     if (state.player && state.started) {
-      const alturaH = window.visualViewport.height;
-      const oceanoH = alturaH - alturaHorizonte;
-      
-      // Recalcula la posición proporcionalmente tanto si la pantalla crece como si encoge
-      state.player.y = alturaHorizonte + (oceanoH * 0.92);
+      // Usamos un pequeño setTimeout para dejar que Chrome termine de renderizar el teclado
+      setTimeout(() => {
+        const alturaH = window.visualViewport.height;
+        const oceanoH = alturaH - alturaHorizonte;
+        state.player.y = alturaHorizonte + (oceanoH * 0.92);
+      }, 50); 
     }
   });
 }

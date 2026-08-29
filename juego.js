@@ -403,7 +403,12 @@ function destroyLocked() {
 
 
 function avanzarFaseJefe(target) {
-  spawnExplosion(target.x, target.y, false); playExplosion();
+  // Factor de escala móvil para calcular el desplazamiento exacto del sprite del jefe/guardián
+  const factorEscalaMovil = Math.max(Math.min(state.W / 1200, 1), 0.6);
+  const offsetYVisual = target.isBoss ? (140 * factorEscalaMovil) : 0;
+  const realY = target.y + offsetYVisual;
+
+  spawnExplosion(target.x, realY, false); playExplosion();
   state.popups.push({ text: target.jp, jp: target.es, romaji: target.romaji, life: 2.0, scale: 0.3 });
   // Refuerzo SRS: la palabra/frase recién superada del jefe también cuenta como acierto
   registrarAciertoPalabra(claveDePalabra(target));
@@ -414,7 +419,7 @@ function avanzarFaseJefe(target) {
     target.jp = proxFrase.jp; target.romaji = proxFrase.romaji; target.es = proxFrase.es;
     sistemaLector.bossTimerAyuda = 0; state.typedLen = 0; 
   } else {
-    spawnExplosion(target.x, target.y, true); 
+    spawnExplosion(target.x, realY, true); 
     state.enemies = state.enemies.filter(e => e.id !== target.id);
     state.score += 500; state.kills++;
     

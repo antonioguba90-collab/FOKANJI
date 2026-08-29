@@ -100,13 +100,33 @@ function spawnEnemy() {
   if (state.enemies.length >= state.MAX_ENEMIES || sistemaLector.bossMode || state.paused) return;
 
   const ahora = Date.now();
+
+  // ==========================================
+  // 1. COMPROBACIÓN DE CARRILES Y TREGUA (PARA TODOS: CLONES Y NORMALES)
+  // ==========================================
+  const proximoLadoIzquierdo = (state.ultimoCarrilUsado !== "izquierdo");
+  const umbralSeguridadY = alturaHorizonte + (state.H - alturaHorizonte) * 0.18;
+  
+  const carrilOcupado = state.enemies.some(e => {
+    const esDelLadoIzquierdo = e.targetX < state.W * 0.5;
+    return (esDelLadoIzquierdo === proximoLadoIzquierdo) && (e.y < umbralSeguridadY);
+  });
+
+  // Si el carril está bloqueado por otro enemigo arriba, cancelamos el spawn temporalmente
+  if (carrilOcupado) return;
+
+  // Respetamos el mínimo de tiempo entre spawns consecutivos (500 ms)
+  if (state.ultimoSpawn && (ahora - state.ultimoSpawn < 500)) return;
+
   let esClon = false;
   let datosClon = null;
   let w = null;
 
-  // 1. PRIORIDAD ABSOLUTA: Si hay clones pendientes, saltan la regla de distancia del carril
+  // ==========================================
+  // 2. SELECCIÓN: CLON PENDIENTE O PALABRA NUEVA
+  // ==========================================
   if (state.colaClonesPendientes && state.colaClonesPendientes.length > 0) {
-    const pendiente = state.colaClonesPendientes.shift(); 
+    const pendiente = state.colaClonesPendientes.shift(); // Ahora sí sale porque el carril está libre
     datosClon = pendiente.datosOriginales;
     esClon = true;
     w = {
@@ -117,24 +137,6 @@ function spawnEnemy() {
       kana: datosClon.kana
     };
   } else {
-    // 2. PALABRAS NORMALES: Comprobamos el carril antes de soltarlas
-    // Decidimos qué carril tocaría según el último usado
-    const proximoLadoIzquierdo = (state.ultimoCarrilUsado !== "izquierdo");
-    
-    // Umbral de seguridad: el enemigo anterior de este carril debe haber bajado al menos un 30%
-    const umbralSeguridadY = alturaHorizonte + (state.H - alturaHorizonte) * 0.18;
-    
-    const carrilOcupado = state.enemies.some(e => {
-      const esDelLadoIzquierdo = e.targetX < state.W * 0.5;
-      return (esDelLadoIzquierdo === proximoLadoIzquierdo) && (e.y < umbralSeguridadY);
-    });
-
-    // Si el carril está bloqueado por otro enemigo arriba, cancelamos este spawn temporalmente
-    if (carrilOcupado) return;
-
-    // Tampoco queremos ráfagas espamendose en milisegundos (mínimo 1 segundo entre spawns normales)
-    if (state.ultimoSpawn && (ahora - state.ultimoSpawn < 500)) return;
-
     w = (state.gameStructure === "arcade") 
       ? controladorModoArcade.obtenerPalabraParaSpawn() 
       : controladorModoFases.obtenerPalabraParaSpawn();
@@ -144,18 +146,16 @@ function spawnEnemy() {
 
   state.ultimoSpawn = ahora;
 
-  // Lógica de carriles estrictos para evitar cualquier solapamiento con los icebergs
+  // Lógica de carriles estrictos para posicionar al enemigo/clon
   let x = 0;
   let esLadoIzquierdo = false;
 
   if (state.ultimoCarrilUsado === "izquierdo") {
-    // Carril central derecho: 55% al 80% del ancho de la pantalla
     const anchoSeccion = state.W * 0.13;
     x = (state.W * 0.62) + (Math.random() * anchoSeccion);
     state.ultimoCarrilUsado = "derecho";
     esLadoIzquierdo = false;
   } else {
-    // Carril central izquierdo: 20% al 45% del ancho de la pantalla
     const anchoSeccion = state.W * 0.13;
     x = (state.W * 0.25) + (Math.random() * anchoSeccion);
     state.ultimoCarrilUsado = "izquierdo";
@@ -166,9 +166,7 @@ function spawnEnemy() {
   const carrilDerechoFlanco = state.W * 0.68;  
   const objetivoX = esLadoIzquierdo ? carrilIzquierdoFlanco : carrilDerechoFlanco;
   
-  const longLetras = w.romaji.length;
   const radius = (Math.min(state.W, state.H) * 0.024 + 20);
-  
   let speedAdaptada = (state.gameStructure === "arcade") ? 0.20 : 0.15;
   const finalSpeed = speedAdaptada * factorEscalaMovil;
 

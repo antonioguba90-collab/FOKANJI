@@ -188,7 +188,7 @@ export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, 
   // 2. ROMAJI DE AYUDA
   if (sistemaLector.bossTimerAyuda >= obtenerUmbralAyuda()) {
   // Nunca menor de 14px ni mayor de 28px
-  const fontSizeRomajiDinamico = Math.min(Math.max(baseFontR * 1.5, 14), 28);
+  const fontSizeRomajiDinamico = Math.min(Math.max(baseFontR * 1.2, 10), 24);
   const romajiLineHeight = fontSizeRomajiDinamico * 1.3;
 
   ctx.font = `bold ${fontSizeRomajiDinamico}px monospace`;
@@ -196,7 +196,7 @@ export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, 
 
   const romajiMayus = e.romaji.toUpperCase();
   ctx.strokeStyle = "rgba(0,0,0,0.6)";
-  ctx.lineWidth = 4;
+  ctx.lineWidth = 3;
 
   if (isLocked) {
     let globalCharCount = 0;

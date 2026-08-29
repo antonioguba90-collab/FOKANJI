@@ -434,8 +434,10 @@ function avanzarFaseJefe(target) {
         mp3.setRepeat(true);
         mp3.play();
     if (state.gameStructure !== "arcade") {
-      if (eraJefeFinal) {
-        winGame();
+       // Retrasamos el mensaje de victoria 1.8 segundos para disfrutar de la explosión
+        setTimeout(() => {
+          winGame();
+        }, 1800);
         return;
       }
 

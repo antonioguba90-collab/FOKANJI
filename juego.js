@@ -254,19 +254,31 @@ function update(dtFactor = 1) {
     if (!e.isBoss) e.timerAyuda += dtFactor;
   }
 
-  for (const b of state.bullets) {
+for (const b of state.bullets) {
     const tgt = state.enemies.find(e => e.id === b.targetId);
     if (!tgt) { b.dead = true; continue; }
-    const dx = tgt.x - b.x; const dy = tgt.y - b.y; const d = Math.hypot(dx, dy);
+
+    // Factor de escala móvil idéntico al de los módulos de jefes/guardianes
+    const factorEscalaMovil = Math.max(Math.min(state.W / 1200, 1), 0.6);
+    
+    // Si el objetivo es un jefe o guardián, aplicamos el mismo offsetY con el que se dibuja el sprite
+    const offsetYVisual = tgt.isBoss ? (140 * factorEscalaMovil) : 0;
+    const targetYReal = tgt.y + offsetYVisual;
+
+    const dx = tgt.x - b.x; 
+    const dy = targetYReal - b.y; 
+    const d = Math.hypot(dx, dy);
+    
     const paso = 16 * dtFactor;
-    // Impacta si está cerca O si el paso de este frame alcanzaría al objetivo (evita sobrepasarlo a FPS bajos)
+    // Impacta si está cerca O si el paso de este frame alcanzaría al objetivo
     if (d < 15 || paso >= d) {
       b.dead = true;
       if (state.typedLen >= tgt.romaji.length && tgt.id === state.lockedId) {
         if (tgt.isBoss) avanzarFaseJefe(tgt); else destroyLocked();
       }
     } else {
-      b.x += (dx / d) * paso; b.y += (dy / d) * paso;
+      b.x += (dx / d) * paso; 
+      b.y += (dy / d) * paso;
     }
   }
   state.bullets = state.bullets.filter(b => !b.dead);

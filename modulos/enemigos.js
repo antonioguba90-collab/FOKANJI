@@ -175,8 +175,7 @@ export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
   ctx.fillText(e.jp, textoX, kanjiY);
 
   // ========================================================
-// ========================================================
-// TEXTOS SECUNDARIOS: Romaji (encima del Kanji) y Traducción (abajo)
+// TEXTOS SECUNDARIOS: Romaji (encima del Kanji) y Traducción (izquierda y bajada)
   // ========================================================
   const fontSizeSecundario = Math.max(10 * factorEscalaMovil, baseFontR * escalaRomaji * 1.2); 
   const lineHeight = fontSizeSecundario * 1.2;
@@ -220,16 +219,13 @@ export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
     ctx.lineWidth = 3.5;
     ctx.strokeStyle = "rgba(0, 0, 0, 0.8)";
 
-    // Calculamos la posición X alineada con el kanji y la Y justo encima de él
     const romajiX = textoX; 
-    let currentRomajiY = kanjiY - fontSize - 6; // Justo arriba del kanji
+    let currentRomajiY = kanjiY - fontSize - 6; 
 
     if (isLocked) {
       let globalCharCount = 0;
 
       lineasRomaji.forEach((linea) => {
-        // Si quieres que el romaji de arriba esté centrado respecto al kanji o alineado a la izquierda como él:
-        // Usamos romajiX como base de inicio
         let currentX = romajiX;
 
         for (let i = 0; i < linea.length; i++) {
@@ -249,7 +245,7 @@ export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
         currentRomajiY += lineHeight; 
       });
     } else {
-      ctx.textAlign = "left"; // Alineado con el bloque del kanji
+      ctx.textAlign = "left"; 
       lineasRomaji.forEach((linea) => {
         ctx.strokeText(linea, romajiX, currentRomajiY);
         ctx.fillStyle = "#4dd0e1";
@@ -259,7 +255,7 @@ export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
     }
   }
 
-  // 2. TRADUCCIÓN EN ESPAÑOL (Ubicada abajo del todo, respetando el tamaño del sprite)
+  // 2. TRADUCCIÓN EN ESPAÑOL (Desde el lateral izquierdo del sprite y un pelín más baja)
   if (state.mostrarTraduccion && e.es) {
     ctx.save();
     ctx.font = `bold ${fontSizeSecundario}px sans-serif`;
@@ -267,18 +263,18 @@ export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
     const textoTraduccion = `(${e.es})`;
     const lineasTrad = obtenerDosLineasTexto(textoTraduccion);
     
-    // Posición inferior centrada respecto al sprite (o puedes usar textoX si prefieres que vaya abajo del kanji)
-    const posInferiorX = e.x; 
-    let tradY = e.y + (destinoHeight / 2) + 12;
+    // Comienza exactamente en el borde izquierdo del sprite y baja un poco más (+18)
+    const tradX = e.x - (destinoWidth / 2);
+    let tradY = e.y + (destinoHeight / 2) + 18;
 
     ctx.strokeStyle = "rgba(0, 0, 0, 0.8)";
     ctx.lineWidth = 3.5;
     ctx.fillStyle = "#ffffff";        
 
     lineasTrad.forEach((linea) => {
-      ctx.textAlign = "center";
-      ctx.strokeText(linea, posInferiorX, tradY);
-      ctx.fillText(linea, posInferiorX, tradY);
+      ctx.textAlign = "left";
+      ctx.strokeText(linea, tradX, tradY);
+      ctx.fillText(linea, tradX, tradY);
       tradY += lineHeight;
     });
 

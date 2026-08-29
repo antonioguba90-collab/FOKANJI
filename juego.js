@@ -511,7 +511,7 @@ let datosGameOver = null; // { lineaRecord } calculado al morir, mostrado tras l
 
 function endGame(enemigoLetal) {
   state.gameOver = true;
-  document.getElementById("hud").classList.add("hidden");
+  document.getElementById("hud-superior").classList.add("hidden");
   btnPausa.style.display = "none"; btnCheatBoss.style.display = "none";
   spawnExplosion(state.player.x, state.player.y, true); playExplosion();
 
@@ -605,7 +605,7 @@ function startGame(mode) {
     document.getElementById('start-screen').classList.add('hidden');
     document.getElementById("game").classList.remove("hidden");
     credits.classList.add('hidden');
-    document.getElementById("hud").classList.remove("hidden");
+    document.getElementById("hud-superior").classList.remove("hidden");
 
     resize();
     state.started = true;
@@ -646,7 +646,7 @@ function showMenu() {
   mp3.play();
 
   document.getElementById("game").classList.add("hidden");
-  document.getElementById("hud").classList.add("hidden");
+  document.getElementById("hud-superior").classList.add("hidden");
   btnPausa.style.display = "none"; 
   btnCheatBoss.style.display = "none";
   

@@ -50,26 +50,23 @@ body::before {
   z-index: 10; /* Superior al fondo del body */
   background: radial-gradient(ellipse at center, #0a0a25 0%, #02020a 100%);
 }
-#hud {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    font-size: 16px;
-    font-family: 'Arial Black', 'Segoe UI', sans-serif; /* Fuente gruesa: más legible en juego */
-    font-weight: 900;
-    color: #ffffff;
-    /* Cada dato en su línea (el texto llega con saltos \n) */
-    white-space: pre-line;
-    line-height: 1.55;
-    text-align: left;
-    /* Sombras múltiples para crear un efecto de "bordes duros" */
-    text-shadow:
-        2px 2px 0px #000,
-        -1px -1px 0px #000,
-        1px -1px 0px #000,
-        -1px 1px 0px #000;
-    pointer-events: none;
-    padding: 12px 18px;
+#hud-superior {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  box-sizing: border-box;
+  font-family: monospace;
+  font-size: 13px;
+  color: #ffffff;
+ background: hwb(261 1% 0% / 0.329); /* Fondo translúcido sutil para que resalte */
+  text-shadow: 1px 1px 2px #000;
+  pointer-events: none;
+  z-index: 1000; /* Asegura que esté por encima del canvas */
 }
   #msg {
     position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -289,12 +286,21 @@ body::before {
     border-radius: 8px;
     cursor: pointer;
 }
-
+.btn-comenzar {
+    padding: 15px 30px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #ffffff;
+    background: #009dff71;
+    border: 2px solid #000000;
+    border-radius: 10px;
+    z-index: 1;
+}
 @media (max-width: 750px) {
-    #hud {
-        font-size: 14px;
-        padding: 8px 12px;
-    }
+    #hud-superior {
+    font-size: 10px;
+    padding: 4px 6px;
+  }
     .grid-ajustes-container {
         grid-template-columns: 1fr; /* Una columna en pantallas muy estrechas si es necesario, o mantenemos grid compacta */
         gap: 4px;
@@ -306,9 +312,13 @@ body::before {
         padding: 6px 10px;
         font-size: 12px;
     }
-    .control-btn1, .control-btn2 {
+    .control-btn1, .control-btn2, .btn-start{
         padding: 8px 12px;
         font-size: 9px;  
+    }
+    .btn-comenzar {
+        padding: 10px 20px;
+        font-size: 1.1rem;
     }
     .menu-view {
     max-width: 100%;       /* Ocupa el 100% de la pantalla sin forzar un ancho fijo de 450px */
@@ -330,6 +340,7 @@ body::before {
     width: 28px;           /* Ajustamos el espacio del número para que entre holgado */
     font-size: 11px;
   }
+  
   @media (max-width: 400px) {
   /* Transforma las filas de ajustes en columna vertical en pantallas < 400px */
   .ajuste-fila {
@@ -354,6 +365,10 @@ body::before {
     font-size: 10px;
     text-align: right;
   }
+  .btn-comenzar {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
 
   /* Reduce un poco más los títulos y márgenes generales para evitar desbordes */
   #menu h1 { font-size: 20px; }
@@ -393,14 +408,22 @@ style="
     background-position: center;
     background-repeat: no-repeat;">
 
-    <div style="position:absolute; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:-1;"></div>
-    <button id="btn-start" style="padding: 15px 30px; font-size: 1.5rem; cursor:pointer; color: #ffffff; background:#009fff; border: 2px solid #000000; border-radius:10px; z-index: 1;">
-        Comenzar Juego
-    </button>
+    <div style="position:absolute; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:-1;">
+      
+    </div>
+  <button id="btn-start" class="btn-comenzar">
+    Comenzar Juego
+</button>
+    
     
 </div>
 <canvas id="game" class="hidden" ></canvas>
-<div id="hud" class="hidden">Puntos: 0 | Destruidos: 0</div>
+<div id="hud-superior" class="hidden">
+  <span id="hud-modo">Modo: --</span>
+  <span id="hud-puntos">Puntos: 0</span>
+  <span id="hud-fase">Fase: 1</span>
+  <span id="hud-restan">Restan: --</span>
+</div>
 <input id="mobile-input" type="search" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
 <div id="menu" class="hidden">
   <div id="view-structure" class="menu-view">

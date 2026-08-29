@@ -41,6 +41,7 @@ export const state = {
   score: 0,
   kills: 0,
   gameOver: false,
+  isWinning: false,
   started: false,
   paused: false,
   spawnTimer: 0,

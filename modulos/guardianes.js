@@ -129,8 +129,7 @@ const factorEscalaMovil = Math.max(Math.min(window.innerWidth / 1200, 1), 0.6);
   const anchoMaximoDinamico = Math.min(window.innerWidth - 40, 600);
 
   // A. TÍTULO DEL GUARDIÁN Y BARRA
-  const titleY = e.y - e.radius - (80 );
-
+const titleY = e.y - e.radius - (50 * factorEscalaMovil);
   ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
   ctx.font = "bold 30px monospace";
@@ -146,8 +145,7 @@ const factorEscalaMovil = Math.max(Math.min(window.innerWidth / 1200, 1), 0.6);
   const barWidth = 100;
   const barHeight = 12;
   const barX = e.x - (barWidth / 2);
-  const barY = e.y - e.radius - 67;
-
+  const barY = e.y - e.radius - (38 * factorEscalaMovil);
   ctx.fillStyle = "#000000"; 
   ctx.fillRect(barX - 2, barY - 2, barWidth + 4, barHeight + 4);
 

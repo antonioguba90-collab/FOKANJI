@@ -9,10 +9,14 @@ spriteSaludar.src = './personajes/Foca_Saludando.png';
 const spriteDisparar = new Image();
 spriteDisparar.src = './personajes/Foca_Disparando2.png'; 
 
+// 1️⃣ Añade la imagen del backflip (asegúrate de que el nombre del archivo coincida con el tuyo)
+const spriteBackflip = new Image();
+spriteBackflip.src = './personajes/backflip8.png';
+
 const animConfig = {
   saludar:  { frames: 4, velocidad: 0.12, anchoFrame: 1316/4, altoFrame: 472 },
   disparar: { frames: 3, velocidad: 0.12, anchoFrame: 939/3, altoFrame: 456 }, 
-  backflip: { frames: 6, velocidad: 0.05, anchoFrame: 112.33, altoFrame: 110 }
+  backflip: { frames: 7, velocidad: 0.05, anchoFrame: 1484/7, altoFrame: 473 }
 };
 import { alturaHorizonte } from "./draw.js"; // Asegúrate de importar esto si no lo tenías ya
 
@@ -89,6 +93,9 @@ export function dibujarPersonaje(ctx, player, dtFactor = 1, state = {}) {
   if (player.estadoAnim === 'disparar') {
     spriteActual = spriteDisparar;
     configActual = animConfig.disparar;
+  }else if (player.estadoAnim === 'backflip') { // 👈 NUEVO
+    spriteActual = spriteBackflip;
+    configActual = animConfig.backflip;
   }
 
   player.frameAnim += configActual.velocidad * dtFactor;

@@ -479,39 +479,63 @@ export function ejecutarDrawLoop(dtSeg = 1 / 60) {
   }
 
   // ========================================================
-  // 5. Actualización del HUD (4 líneas, esquina inferior izquierda)
+// ========================================================
+  // 5. Actualización del HUD Superior (Barra Horizontal)
   // ========================================================
-  const modoFormateado = formatearNombreModo(state.currentMode);
-  let lineasHud;
-
-  if (state.gameStructure === "arcade") {
-    const killsPorGuardian = Math.max(1, obtenerAjuste('arcadeKillsGuardian'));
-    const guardianesDerrotadosArcade = Math.floor(state.kills / killsPorGuardian);
-    lineasHud = [
-      `Modo: ${modoFormateado} (Arcade)`,
-      `Puntos: ${state.score}`,
-      `Eliminados: ${state.kills}`,
-      `Guardianes: ${guardianesDerrotadosArcade}`,
-    ];
+  const elHudSuperior = document.getElementById("hud-superior");
+  
+  if (!state.started) {
+    if (elHudSuperior && !elHudSuperior.classList.contains("hidden")) {
+      elHudSuperior.classList.add("hidden");
+    }
   } else {
-    const totalSet = sistemaLector.palabrasFaseActual.length > 0
-      ? sistemaLector.palabrasFaseActual.length
-      : sistemaLector.CANTIDAD_NUEVAS;
+    if (elHudSuperior && elHudSuperior.classList.contains("hidden")) {
+      elHudSuperior.classList.remove("hidden");
+    }
 
-    const completadas = sistemaLector.palabrasUnicasCompletadasSet.size;
-    const fase = sistemaLector.miniJefesDerrotados + 1;
+    const modoFormateado = formatearNombreModo(state.currentMode);
+    let textoModo, textoPuntos, textoFase, textoRestan;
 
-    lineasHud = [
-      `Modo: ${modoFormateado}`,
-      `Puntos: ${state.score}`,
-      sistemaLector.bossMode ? `Fase ${fase}: ¡JEFE!` : `Fase ${fase}: ${completadas}/${totalSet}`,
-      `Restan del nivel: ${state.totalPalabrasNivel !== undefined ? state.totalPalabrasNivel : "-"}`,
-    ];
-  }
+    if (state.gameStructure === "arcade") {
+      const killsPorGuardian = Math.max(1, obtenerAjuste('arcadeKillsGuardian'));
+      const guardianesDerrotadosArcade = Math.floor(state.kills / killsPorGuardian);
+      
+      textoModo = `Modo: ${modoFormateado} (Arcade)`;
+      textoPuntos = `Puntos: ${state.score}`;
+      textoFase = `Eliminados: ${state.kills}`;
+      textoRestan = `Guardianes: ${guardianesDerrotadosArcade}`;
+    } else {
+      const totalSet = sistemaLector.palabrasFaseActual.length > 0
+        ? sistemaLector.palabrasFaseActual.length
+        : sistemaLector.CANTIDAD_NUEVAS;
 
-  const textoHud = lineasHud.join("\n");
-  if (textoHud !== hudPrevio) {
-    hud.textContent = textoHud;
-    hudPrevio = textoHud;
-  }
-}
+      const completadas = sistemaLector.palabrasUnicasCompletadasSet.size;
+      const fase = sistemaLector.miniJefesDerrotados + 1;
+
+      textoModo = `Modo: ${modoFormateado}`;
+      textoPuntos = `Puntos: ${state.score}`;
+      textoFase = sistemaLector.bossMode ? `Fase ${fase}: ¡JEFE!` : `Fase ${fase}: ${completadas}/${totalSet}`;
+      textoRestan = `Restan: ${state.totalPalabrasNivel !== undefined ? state.totalPalabrasNivel : "-"}`;
+    }
+
+    // Actualizamos el DOM únicamente si el texto ha cambiado (idéntica optimización a tu lógica previa)
+    const elModo = document.getElementById("hud-modo");
+    if (elModo && elModo.textContent !== textoModo) {
+      elModo.textContent = textoModo;
+    }
+
+    const elPuntos = document.getElementById("hud-puntos");
+    if (elPuntos && elPuntos.textContent !== textoPuntos) {
+      elPuntos.textContent = textoPuntos;
+    }
+
+    const elFase = document.getElementById("hud-fase");
+    if (elFase && elFase.textContent !== textoFase) {
+      elFase.textContent = textoFase;
+    }
+
+    const elRestan = document.getElementById("hud-restan");
+    if (elRestan && elRestan.textContent !== textoRestan) {
+      elRestan.textContent = textoRestan;
+    }
+  }}

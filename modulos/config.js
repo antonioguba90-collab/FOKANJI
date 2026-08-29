@@ -3,7 +3,7 @@
 // ==========================================
 export const canvas = document.getElementById("game");
 export const ctx = canvas.getContext("2d");
-export const hud = document.getElementById("hud");
+export const hud = document.getElementById("hud-superior");
 export const msg = document.getElementById("msg");
 export const mobileInput = document.getElementById("mobile-input");
 export const menuEl = document.getElementById("menu");
@@ -60,7 +60,7 @@ export let btnPausa = document.getElementById("btn-pausa") || (() => {
   btn.id = "btn-pausa";
   btn.innerHTML = "⏸️ Pausa";
   btn.className = "control-btn2"; // Usamos la clase CSS
-  btn.style.top = "15px";
+  btn.style.top = "27px";
   btn.style.background = "rgba(34, 156, 170, 0.5)";
   btn.style.color = "#ffffff";
   document.body.appendChild(btn);

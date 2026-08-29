@@ -175,58 +175,113 @@ export function dibujarEnemigoComun(ctx, e, isLocked, state, baseFontR) {
   ctx.fillText(e.jp, textoX, kanjiY);
 
   // ========================================================
-  // TEXTOS INFERIORES: Traducción (es) y Romaji
+// ========================================================
+// TEXTOS SECUNDARIOS: Romaji (encima del Kanji) y Traducción (abajo)
   // ========================================================
-  ctx.textAlign = "center"; 
-  const posInferiorX = posicionRealX; 
-  const bloqueInferiorY = posicionRealY + (destinoHeight / 2) + 15; 
+  const fontSizeSecundario = Math.max(10 * factorEscalaMovil, baseFontR * escalaRomaji * 1.2); 
+  const lineHeight = fontSizeSecundario * 1.2;
+  const maxAnchoTexto = Math.max(destinoWidth * 1.2, 120); 
 
-  const fontSizeSecundario = Math.max(12 * factorEscalaMovil, baseFontR * escalaRomaji * 1.5); 
+  // Función para limitar estrictamente a un máximo de 2 líneas
+  const obtenerDosLineasTexto = (texto) => {
+    const palabras = texto.split(' ');
+    let lineas = [];
+    let lineaActual = '';
+    
+    for (let i = 0; i < palabras.length; i++) {
+      let prueba = lineaActual ? lineaActual + ' ' + palabras[i] : palabras[i];
+      if (ctx.measureText(prueba).width > maxAnchoTexto && lineaActual) {
+        lineas.push(lineaActual);
+        lineaActual = palabras[i];
+      } else {
+        lineaActual = prueba;
+      }
+    }
+    if (lineaActual) lineas.push(lineaActual);
 
+    if (lineas.length > 2) {
+      let primera = lineas[0];
+      let segunda = lineas.slice(1).join(' ');
+      while (ctx.measureText(segunda + '...').width > maxAnchoTexto && segunda.length > 0) {
+        segunda = segunda.slice(0, -1);
+      }
+      return [primera, segunda + '...'];
+    }
+
+    return lineas;
+  };
+
+  // 1. ROMAJI DE AYUDA (Colocado justo ENCIMA del Kanji situado a la derecha)
+  if (e.timerAyuda >= obtenerUmbralAyuda()) {
+    ctx.font = `bold ${fontSizeSecundario}px monospace`;
+    const romajiMayus = e.romaji.toUpperCase();
+    const lineasRomaji = obtenerDosLineasTexto(romajiMayus);
+    
+    ctx.lineWidth = 3.5;
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.8)";
+
+    // Calculamos la posición X alineada con el kanji y la Y justo encima de él
+    const romajiX = textoX; 
+    let currentRomajiY = kanjiY - fontSize - 6; // Justo arriba del kanji
+
+    if (isLocked) {
+      let globalCharCount = 0;
+
+      lineasRomaji.forEach((linea) => {
+        // Si quieres que el romaji de arriba esté centrado respecto al kanji o alineado a la izquierda como él:
+        // Usamos romajiX como base de inicio
+        let currentX = romajiX;
+
+        for (let i = 0; i < linea.length; i++) {
+          const char = linea[i];
+          const charWidth = ctx.measureText(char).width;
+
+          const isTypedChar = globalCharCount < state.typedLen;
+          globalCharCount++;
+
+          ctx.textAlign = "left";
+          ctx.strokeText(char, currentX, currentRomajiY);
+          ctx.fillStyle = isTypedChar ? "#ffeb3b" : "#e0e0e0"; 
+          ctx.fillText(char, currentX, currentRomajiY);
+
+          currentX += charWidth;
+        }
+        currentRomajiY += lineHeight; 
+      });
+    } else {
+      ctx.textAlign = "left"; // Alineado con el bloque del kanji
+      lineasRomaji.forEach((linea) => {
+        ctx.strokeText(linea, romajiX, currentRomajiY);
+        ctx.fillStyle = "#4dd0e1";
+        ctx.fillText(linea, romajiX, currentRomajiY);
+        currentRomajiY += lineHeight;
+      });
+    }
+  }
+
+  // 2. TRADUCCIÓN EN ESPAÑOL (Ubicada abajo del todo, respetando el tamaño del sprite)
   if (state.mostrarTraduccion && e.es) {
     ctx.save();
     ctx.font = `bold ${fontSizeSecundario}px sans-serif`;
     
     const textoTraduccion = `(${e.es})`;
-    ctx.strokeStyle = "rgba(0, 0, 0, 0.8)";
-    ctx.lineWidth = 4;
-    ctx.strokeText(textoTraduccion, posInferiorX, bloqueInferiorY);
-    ctx.fillStyle = "#ffffff";         
-    ctx.fillText(textoTraduccion, posInferiorX, bloqueInferiorY);
-    ctx.restore();
-  }
-
-  if (e.timerAyuda >= obtenerUmbralAyuda()) {
-    const offsetTraduccion = (state.mostrarTraduccion && e.es) ? (fontSizeSecundario * 1.2) : 0;
-    const romajiY = bloqueInferiorY + offsetTraduccion;
-
-    ctx.font = `bold ${fontSizeSecundario}px monospace`;
-    const romajiMayus = e.romaji.toUpperCase();
+    const lineasTrad = obtenerDosLineasTexto(textoTraduccion);
     
-    ctx.lineWidth = 4;
+    // Posición inferior centrada respecto al sprite (o puedes usar textoX si prefieres que vaya abajo del kanji)
+    const posInferiorX = e.x; 
+    let tradY = e.y + (destinoHeight / 2) + 12;
+
     ctx.strokeStyle = "rgba(0, 0, 0, 0.8)";
+    ctx.lineWidth = 3.5;
+    ctx.fillStyle = "#ffffff";        
 
-    if (isLocked) {
-      const typed = romajiMayus.slice(0, state.typedLen);
-      const rest = romajiMayus.slice(state.typedLen);
-      
-      const totalW = ctx.measureText(romajiMayus).width;
-      const startX = posInferiorX - (totalW / 2);
+    lineasTrad.forEach((linea) => {
+      ctx.textAlign = "center";
+      ctx.strokeText(linea, posInferiorX, tradY);
+      ctx.fillText(linea, posInferiorX, tradY);
+      tradY += lineHeight;
+    });
 
-      ctx.textAlign = "left"; 
-      ctx.fillStyle = "#ffeb3b"; 
-      ctx.strokeText(typed, startX, romajiY);
-      ctx.fillText(typed, startX, romajiY);
-
-      ctx.fillStyle = "#e0e0e0";
-      const typedW = ctx.measureText(typed).width;
-      ctx.strokeText(rest, startX + typedW, romajiY);
-      ctx.fillText(rest, startX + typedW, romajiY);
-    } else {
-      ctx.textAlign = "center"; 
-      ctx.fillStyle = "#4dd0e1"; 
-      ctx.strokeText(romajiMayus, posInferiorX, romajiY);
-      ctx.fillText(romajiMayus, posInferiorX, romajiY);
-    }
+    ctx.restore();
   }
 }

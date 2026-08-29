@@ -56,17 +56,20 @@ body::before {
   left: 0;
   width: 100%;
   display: flex;
+  flex-wrap: wrap; /* Permite que baje a otra línea si no cabe */
   justify-content: space-between;
   align-items: center;
+  row-gap: 4px; /* Espacio vertical si se divide en dos líneas */
+  column-gap: 8px; /* Espacio horizontal entre elementos */
   padding: 6px 12px;
   box-sizing: border-box;
   font-family: monospace;
   font-size: 13px;
   color: #ffffff;
- background: hwb(261 1% 0% / 0.329); /* Fondo translúcido sutil para que resalte */
+  background: hwb(261 1% 0% / 0.329);
   text-shadow: 1px 1px 2px #000;
   pointer-events: none;
-  z-index: 1000; /* Asegura que esté por encima del canvas */
+  z-index: 1000;
 }
   #msg {
     position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);

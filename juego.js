@@ -439,7 +439,13 @@ if (state.gameStructure !== "arcade") {
         target.y = -9999; 
         target.jp = ""; 
         target.romaji = "";
-        state.bullets = [];
+        state.bullets = [];   // Borra cualquier proyectil restante
+        state.popups = [];    // Borra cualquier texto o círculo de palabra flotante
+        state.lockedId = null;// Quita cualquier fijación o mira de selección
+        state.typedLen = 0;  
+        if (state.player) {
+          state.player.estadoAnim = 'backflip'; // 👈 Cambiado de 'normal' a 'saludar'
+          state.player.frameAnim = 0;}
         setTimeout(() => {
           winGame();
         }, 900); // 1.8 segundos para disfrutar de la explosión final
@@ -734,6 +740,7 @@ window.addEventListener("keydown", (ev) => {
   if (ev.repeat) return; 
   if (state.gameOver) { if (ev.key === "Enter") startGame(state.currentMode); return; }
   handleChar(ev.key.toLowerCase());
+
 });
 
 mobileInput.addEventListener("input", () => {

@@ -159,7 +159,7 @@ export function dibujarGranJefe(ctx, e, isLocked, state, baseFontJp, baseFontR, 
   ctx.textAlign = "center";
 
   const kanjiLineHeight = baseFontJp * 2;
-  const offsetYKanji = -60; // Sube el kanji por encima del centro del sprite
+  const offsetYKanji = -30 * factorEscalaMovil; // Sube el kanji por encima del centro del sprite
   const lineasKanji = drawWrappedText(ctx, e.jp, e.x, e.y + offsetYKanji, anchoMaximoDinamico, kanjiLineHeight);  const alturaTotalKanji = lineasKanji * kanjiLineHeight;
 
  // D. TEXTOS INFERIORES (Traducción y Romaji debajo del Sprite)

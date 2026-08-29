@@ -163,7 +163,7 @@ const factorEscalaMovil = Math.max(Math.min(window.innerWidth / 1200, 1), 0.6);
   ctx.textAlign = "center";
 
   const kanjiLineHeight = baseFontJp * 2;
-  const offsetYKanji = -60; // Sube el kanji por encima del centro del sprite
+  const offsetYKanji = -30 * factorEscalaMovil; // Sube el kanji por encima del centro del sprite
   const lineasKanji = drawWrappedText(ctx, e.jp, e.x, e.y + offsetYKanji, anchoMaximoDinamico, kanjiLineHeight);  const alturaTotalKanji = lineasKanji * kanjiLineHeight;
 
  // D. TEXTOS INFERIORES (Traducción y Romaji debajo del Sprite)

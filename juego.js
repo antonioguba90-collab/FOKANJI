@@ -435,7 +435,10 @@ function avanzarFaseJefe(target) {
         mp3.play();
 if (state.gameStructure !== "arcade") {
       if (eraJefeFinal) {
-        // Retrasamos el mensaje de victoria 1.8 segundos para disfrutar de la explosión
+        // 1. Bloqueamos el juego inmediatamente para que no spawnee nada más
+        state.gameOver = true; 
+        
+        // 2. Retrasamos el mensaje de victoria 1.8 segundos disfrutando de la explosión
         setTimeout(() => {
           winGame();
         }, 1800);

@@ -81,7 +81,7 @@ function init() {
   state.player = { x: state.W / 2, y: alturaVisible - 30, size: Math.min(state.W, state.H) * 0.04 + 10 };
   state.enemies = []; state.bullets = []; state.particles = []; state.popups = [];
   state.lockedId = null; state.typedLen = 0; state.score = 0; state.kills = 0;
-  state.gameOver = false; state.paused = false; state.spawnTimer = 0;
+  state.gameOver = false;state.isWinning = false; state.paused = false; state.spawnTimer = 0;
   state.spawnInterval = 180; state.nextId = 1;
   state.gameOverAnim = null;
   
@@ -240,7 +240,10 @@ function update(dtFactor = 1) {
   }
 
   if (state.gameOver || !state.started || state.paused) return;
-
+if (state.isWinning) {
+    actualizarParticulas(dtFactor);
+    return;
+  }
   if (state.gameStructure === "arcade") {
     controladorModoArcade.update(spawnEnemy, dtFactor);
   } else {
@@ -429,16 +432,23 @@ function avanzarFaseJefe(target) {
     sistemaLector.activeBoss = null;
     state.lockedId = null;
     state.typedLen = 0;
+        
+if (state.gameStructure !== "arcade") {
+     if (eraJefeFinal) {
+        state.isWinning = true; 
+        target.y = -9999; 
+        target.jp = ""; 
+        target.romaji = "";
+        state.bullets = [];
+        setTimeout(() => {
+          winGame();
+        }, 900); // 1.8 segundos para disfrutar de la explosión final
+        return; // <--- Este return frena por completo el flujo para que NUNCA llame a triggerJefeFinalBattle
+      }
         mp3.pause();
         mp3.cargar(MUSIC[state.currentMode]);
         mp3.setRepeat(true);
         mp3.play();
-if (state.gameStructure !== "arcade") {
-      if (eraJefeFinal) {
-          winGame();
-        return;
-      }
-
       sistemaLector.miniJefesDerrotados++;
       
       // 🔍 VERIFICACIÓN ROBUSTA DEL POOL GLOBAL RESTANTE
@@ -618,6 +628,7 @@ function startGame(mode) {
     state.totalPalabrasNivel = state.ALL_WORDS_POOL.length;
     state.palabrasContadasGlobalSet = new Set();
     state.mostrarTraduccion = obtenerAjuste('mostrarTraduccion');
+    state.isWinning = false;
 
     document.getElementById('start-screen').classList.add('hidden');
     document.getElementById("game").classList.remove("hidden");

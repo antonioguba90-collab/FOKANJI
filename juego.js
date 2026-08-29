@@ -622,10 +622,19 @@ function winGame() {
       mp3.setRepeat(true);
       mp3.play();
       
-      state.started = false;
+        state.started = false;
+      state.paused = false; // 👈 Asegura que la pausa no se quede colgada
+      
+      // 1️⃣ Oculta el contenedor del juego (clave para que no se quede el fondo negro)
+      document.getElementById("game").classList.add("hidden");
+      document.getElementById("hud-superior").classList.add("hidden");
+      
+      // 2️⃣ Muestra el menú principal de forma limpia
       menuEl.classList.remove("hidden");
       menuEl.style.display = "block";
       msg.style.display = "none";
+      
+      // 3️⃣ Si quieres que vaya directo a elegir vocabulario manteniendo la estructura actual:
       mostrarSoloVistaMenu("view-vocabulary");
       refrescarProgresoVocabulario();
     });

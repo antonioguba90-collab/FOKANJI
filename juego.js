@@ -69,7 +69,16 @@ state.gameStructure = "fases";
 
 btnPausa.addEventListener("click", togglePause);
 //btnCheatBoss.addEventListener("click", cheatSaltarAlJefe);
+function posicionarJugador() {
+  const alturaH = window.visualViewport ? window.visualViewport.height : state.H;
+  const oceanoH = alturaH - alturaHorizonte;
 
+  state.player = { 
+    x: state.W / 2, 
+    y: alturaHorizonte + (oceanoH * 0.92), // Mantiene tu 92% exacto
+    size: Math.min(state.W, state.H) * 0.04 + 10 
+  };
+}
 function init() {
   document.addEventListener("DOMContentLoaded", () => {
     btnPausa.style.display = "none";
@@ -77,8 +86,8 @@ function init() {
     mostrarSoloVistaMenu("view-structure");
   });
 
-  const alturaVisible = window.visualViewport ? window.visualViewport.height : state.H;
-  state.player = { x: state.W / 2, y: alturaVisible - 30, size: Math.min(state.W, state.H) * 0.04 + 10 };
+
+posicionarJugador(); 
   state.enemies = []; state.bullets = []; state.particles = []; state.popups = [];
   state.lockedId = null; state.typedLen = 0; state.score = 0; state.kills = 0;
   state.gameOver = false;state.isWinning = false; state.paused = false; state.spawnTimer = 0;
@@ -783,3 +792,14 @@ initInterfazMenu(MODES, { startGame });
 init();
 resize();
 requestAnimationFrame(loop);
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    if (state.player && state.started) {
+      const alturaH = window.visualViewport.height;
+      const oceanoH = alturaH - alturaHorizonte;
+      
+      // Recalcula la posición proporcionalmente tanto si la pantalla crece como si encoge
+      state.player.y = alturaHorizonte + (oceanoH * 0.92);
+    }
+  });
+}
